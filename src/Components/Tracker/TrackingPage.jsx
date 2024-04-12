@@ -170,9 +170,13 @@ export default function TrackingPage() {
     const PSDClaimed = async () => {
         try {
             let PSDClaimed = await get_PSD_Claimed(accountAddress)
-            let tokenPrice = await getStateTokenPrice(); //  a function to get the current token price
-        let formatted_PSD_Claimed = (parseFloat(PSDClaimed) * tokenPrice).toFixed(2); // Calculate PSD claimed dynamically based on current token price
-            setParityDollarClaimed(formatted_PSD_Claimed)
+            let formatted_PSD_Claimed = ethers.utils.formatEther(PSDClaimed || '0')
+            let fixed = Number(formatted_PSD_Claimed).toFixed(2)
+            // let PSTClaimed = await get_PST_Claimed(accountAddress)
+            // let formatted_PST_Claimed = ethers.utils.formatEther(PSTClaimed || '0')
+            // let PST_Claimed_InDollar = await getUserUsdValue(formatted_PST_Claimed || '0')
+            // let fixed = Number(PST_Claimed_InDollar).toFixed(2)
+            setParityDollarClaimed(fixed)
         } catch (error) {
             console.error('error:', error);
         }

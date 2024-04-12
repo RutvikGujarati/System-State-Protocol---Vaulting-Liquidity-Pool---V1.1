@@ -228,7 +228,7 @@ export default function Functions({ children }) {
                 if (isParityReached && PST_DepositInNumber > 0) {
                     allInOnePopup(null, 'Token Parity Reached', null, `OK`, null);
                     // You can trigger a pop-up or display a message to the user here
-                    
+
                 }
     
                 // Return whether token parity is reached
@@ -370,6 +370,15 @@ export default function Functions({ children }) {
         }
 
     }
+
+    const getCurrentTokenPrice = () => {
+        // Generate a random token price within the range of $0.001 to $0.01
+        const minPrice = 0.001;
+        const maxPrice = 0.01;
+        const randomPrice = Math.random() * (maxPrice - minPrice) + minPrice;
+        return randomPrice;
+    }
+    
     const get_PSD_Claimed = async (address) => {
         try {
             if (address) {
@@ -833,6 +842,7 @@ export default function Functions({ children }) {
                 getParityTokensDeposits,
                 get_PSD_Claimed,
                 get_PST_Claimed,
+                getCurrentTokenPrice,
                 getParityDollarClaimed,
                 getParityAmountDistributed,
                 getRatioPriceTargets,
