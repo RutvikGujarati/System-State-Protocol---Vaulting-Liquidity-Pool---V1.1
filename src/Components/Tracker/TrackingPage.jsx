@@ -6,7 +6,7 @@ import { themeContext } from "../../App";
 import { useLocation, Link } from 'react-router-dom';
 import { functionsContext } from '../../Utils/Functions';
 import { Web3WalletContext } from '../../Utils/MetamskConnect';
-import { BigNumber, ethers } from 'ethers';
+import { BigNumber, errors, ethers } from 'ethers';
 import InfoBox from '../InfoIconBox/InfoBox';
 import firstPump from '../../Assets/fistPumpBox.svg'
 import fisrtPumpBrt from '../../Assets/High-Resolutions-Svg/Updated/fist pump small.svg'
@@ -320,24 +320,34 @@ export default function TrackingPage() {
     const getClaimX1 = async (accountAddress) => {
         try {
             const claim = await getX1allocationClaimableBucket(accountAddress);
-            const claimInEth = ethers.utils.formatEther(claim)
-            setClaimX1(claimInEth)
+            const claimInEth = ethers.utils.formatEther(claim);
+            setClaimX1(claimInEth);
+    
+            // Check if the claimable amount is greater than the total amount staked
+            if (claimInEth && parseFloat(claimInEth) > parseFloat(toBeClaimed)) {
+                console.log('User cannot claim more money than they have staked');
+               return errors; // Handle the situation where the user cannot claim more money than they have staked
+            }
         } catch (error) {
-
+            console.error(error);
         }
     }
-
+    
     const getClaimRefund = async (accountAddress) => {
         try {
             const refundClaim = await getRefundRewardClaimableBucket(accountAddress);
-            const refundClaimInEth = ethers.utils.formatEther(refundClaim)
+            const refundClaimInEth = ethers.utils.formatEther(refundClaim);
             setClaimInscriptionRefund(refundClaimInEth);
+    
+            // Check if the refundable amount is greater than the total amount spent on inscription
+            if (refundClaimInEth && parseFloat(refundClaimInEth) > parseFloat(amountInscription)) {
+                console.log('User cannot refund more money than they have spent on inscription');
+                // Handle the situation where the user cannot refund more money than they have spent on inscription
+            }
         } catch (error) {
-            console.log(error)
+            console.error(error);
         }
     }
-
-
     Number.prototype.noExponents = function () {
         let data = String(this).split(/[eE]/);
         if (data.length == 1) return data[0];
