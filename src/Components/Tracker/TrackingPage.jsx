@@ -207,6 +207,7 @@ export default function TrackingPage() {
         try {
             let isReached = await getParityReached(accountAddress)
             setIsParityReached(isReached)
+            // allInOnePopup("'Token Parity Reached'");
         } catch (error) {
             console.error('error: ', error);
         }
