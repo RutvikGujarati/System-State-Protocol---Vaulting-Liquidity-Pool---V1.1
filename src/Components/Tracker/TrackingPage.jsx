@@ -685,8 +685,8 @@ export default function TrackingPage() {
                                         <div className="d-flex pt-1">
                                             <div className='margin-right'>
                                                 {/* <i className={`iconSize fa-solid fa-vault ${theme}`}></i> */}
-                                                {/* <InfoBox data='Total % rewards claimed by users to date' /> */}
-                                                <span className={`${tooltip} hoverText`} data-tooltip='Total % rewards claimed by users to date' data-flow="bottom"> <i className={`fas mx-2 fa-exclamation-circle ${theme}`}></i></span>
+                                                {/* <InfoBox data='Total % rewards claimed by all users to date' /> */}
+                                                <span className={`${tooltip} hoverText`} data-tooltip='Total % rewards claimed by all users to date' data-flow="bottom"> <i className={`fas mx-2 fa-exclamation-circle ${theme}`}></i></span>
                                             </div>
                                             <div className={`flex-grow-1 fontSize text-start  ${textTheme}`}>
                                                 <div className={`${textTitle} `}>TOTAL % REWARDS</div>
