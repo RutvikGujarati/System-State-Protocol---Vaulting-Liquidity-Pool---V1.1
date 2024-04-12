@@ -173,12 +173,15 @@ export default function RatioPriceTargets() {
             <div className={`view-pagerpt  ${(theme === "darkTheme" && "Theme-view-page") || (theme === "dimTheme" && "dimThemeBlockView" && "dim-theme-items-border")} `} >
               <div></div>
               
-              <Link 
- onClick={()=>setseeFullPage(!seeFullPage)}
- className={`view-link ${(theme === "darkTheme" && "text-white") || (theme === "dimTheme" && "dimThemeBlockView" && "dimThemeBlockView")}`} 
- style={{ textDecoration: 'none', color: 'inherit', alignSelf: 'flex-start', marginLeft: '-550px'}}>
+              <div className="view-container">
+ <Link 
+    onClick={()=>setseeFullPage(!seeFullPage)}
+    className={`view-link ${(theme === "darkTheme" && "text-white") || (theme === "dimTheme" && "dimThemeBlockView" && "dimThemeBlockView")}`} 
+    style={{ textDecoration: 'none', color: 'inherit', marginLeft:"-350px"}}>
     VIEW ALL TRANSACTIONS {seeFullPage ?<span> &uarr;</span> : <span> &darr;</span>}
-</Link>
+ </Link>
+ <div style={{ marginLeft: 'auto' }}></div> {/* Hidden element for alignment */}
+</div>
 
               <div className={`table_pageIndex ${theme==='dimTheme' && 'text-white'}`}>
              

@@ -155,12 +155,15 @@ console.log('escorwvalult : ', escrowVaultTargets);
           <div className="view-mains">
             <div className={`view-pageMixTab  ${(theme === "darkTheme" && "Theme-view-page") || (theme === "dimTheme" && "dimThemeBlockView" && "dim-theme-items-border")} `}>
               <div className="makeResponsiveDiv"></div>
-              <Link
-                onClick={() => setseeFullPage(!seeFullPage)}
-                className={` trasName ${(theme === "darkTheme" && "text-white") || (theme === "dimTheme" && "dimThemeBlockView" && "dimThemeBlockView")} `} >
-                  
-                VIEW ALL TRANSACTIONS {seeFullPage ? <span> &uarr;</span> : <span> &darr;</span>}
-              </Link>
+              <div className="view-container">
+ <Link 
+    onClick={()=>setseeFullPage(!seeFullPage)}
+    className={`view-link ${(theme === "darkTheme" && "text-white") || (theme === "dimTheme" && "dimThemeBlockView" && "dimThemeBlockView")}`} 
+    style={{ textDecoration: 'none', color: 'inherit', marginLeft:"10px"}}>
+    VIEW ALL TRANSACTIONS {seeFullPage ?<span> &uarr;</span> : <span> &darr;</span>}
+ </Link>
+ <div style={{ marginLeft: 'auto' }}></div> {/* Hidden element for alignment */}
+</div>
               <div className="table_pageIndex">
         
                 <span
