@@ -109,7 +109,7 @@ export default function RatioPriceTargets() {
     }
   }
   const formatTimeDifference = async (seconds) => {
-    if (seconds >= 60 * 60 * 24) {
+    if (seconds >= 60 * 60 * 24 * 36.9) { // Change this line to reflect 36.9 days
       const days = Math.floor(seconds / (24 * 60 * 60));
       return `${days} day${days > 1 ? 's' : ''}`;
     } else if (seconds >= 60 * 60) {
@@ -121,8 +121,8 @@ export default function RatioPriceTargets() {
     } else {
       return `${seconds} second${seconds !== 1 ? 's' : ''}`;
     }
-
   }
+  
   useEffect(() => {
     if (userConnected) {
       RatioPriceTargets()

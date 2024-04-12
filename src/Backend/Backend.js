@@ -151,24 +151,30 @@ export default function Backend() {
 
     }
     const isStateTokenPriceAchived = async () => {
-        let priceUpdateInDay = Number(process.env.REACT_APP_STATE_TOKEN_PRICE_UPDATE_AFTER_IN_DAY)
-
-        let lastStateTokenPriceUpdate = await STATE_TOKEN_CONTRACT.connect(Provider).lastPriceUpdate()
-        let lastPriceUpdateTimestamp = lastStateTokenPriceUpdate.toString()
-
-        let currentTimestamp = Math.floor(Date.now() / 1000);
-
-        const OneDayInSeconds = priceUpdateInDay * 24 * 60 * 60;
-
-        const timeDifferenceInSeconds = Number(currentTimestamp) - Number(lastPriceUpdateTimestamp);
-        console.log('timeDifferenceInSeconds:',timeDifferenceInSeconds);
-
-        if (timeDifferenceInSeconds >= OneDayInSeconds) {
+        try {
+          const priceUpdateInHours = Number(process.env.REACT_APP_STATE_TOKEN_PRICE_UPDATE_AFTER_IN_HOUR);
+      
+          const lastStateTokenPriceUpdate = await STATE_TOKEN_CONTRACT.connect(Provider).lastPriceUpdate();
+          const lastPriceUpdateTimestamp = Number(lastStateTokenPriceUpdate.toString());
+      
+          const currentTimestamp = Math.floor(Date.now() / 1000);
+      
+          const OneHourInSeconds = priceUpdateInHours * 60 * 60;
+          const timeDifferenceInSeconds = currentTimestamp - lastPriceUpdateTimestamp;
+      
+          console.log('timeDifferenceInSeconds:', timeDifferenceInSeconds);
+      
+          if (timeDifferenceInSeconds >= OneHourInSeconds * 36.9) {
             return true;
-        } else {
+          } else {
             return false;
+          }
+        } catch (error) {
+          console.error('Error checking state token price update:', error);
+          return false; // Return false in case of error
         }
-    }
+      };
+      
     
     const main = async () => {
 

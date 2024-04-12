@@ -70,7 +70,7 @@ export default function TrackingPage() {
     const [parityTokensClaimed, setParityTokensClaimed] = useState('0')
     const [IsParityReached, setIsParityReached] = useState(false)
     const [perpeptualYieldLocked, setPerpetualYieldLocked] = useState('0')
-
+    const [priceUpdateDate, setPriceUpdateDate] = useState("0");
     const [amountInscription, setAmountInscription] = useState('0')
     const [stateTokenHoldPercentage, setStateTokenHoldPercentage] = useState('0')
     const [stateTokenHold, setStateTokenHold] = useState('0')
@@ -418,12 +418,21 @@ export default function TrackingPage() {
         }
     }
 
-    // const getLastPriceUpdate = useCallback(async () => {
-    //     const days = await getLastPriceUpdateDate();
-    //     let day = (36.9 - Number(days)) == 0 ? 36.9 : (36.9 - Number(days));
-    //     // let day = (24 - hourse) == 0 ? 24 : (24 - hourse);
-    //     setPriceUpdateDate(day)
-    // }, [setPriceUpdateDate])
+    useEffect(() => {
+        const getLastPriceUpdate = async () => {
+          try {
+            const days = await getRemainingTime();
+            let day = (36.9 - Number(days)) == 0 ? 36.9 : (36.9 - Number(days));
+            // let day = (24 - hourse) == 0 ? 24 : (24 - hourse);
+            setPriceUpdateDate(day);
+          } catch (error) {
+            console.error('Error fetching last price update:', error);
+          }
+        };
+      
+        getLastPriceUpdate();
+      }, []); // Empty dependency array to run only once on component mount
+      
 
     useEffect(() => {
         try {
@@ -452,34 +461,30 @@ export default function TrackingPage() {
 
     function getRemainingTime(timestamp) {
         const now = Math.floor(Date.now() / 1000); // Current timestamp in seconds
-        const oneDay = 86400
-        const priceUpdateInSeconds = Number(process.env.REACT_APP_STATE_TOKEN_PRICE_UPDATE_AFTER_IN_DAY) * oneDay
-
-
+        const oneHour = 3600;
+        const priceUpdateInSeconds = Number(process.env.REACT_APP_STATE_TOKEN_PRICE_UPDATE_AFTER_IN_HOUR) * oneHour;
+      
         const difference = (Number(timestamp) + priceUpdateInSeconds) - now; // Difference in seconds
-    
+      
         if (difference <= 0) {
-            return 'Timestamp has already passed';
+          return 'Timestamp has already passed';
         }
-    
-        const days = Math.floor(difference / (24 * 60 * 60));
-        const hours = Math.floor((difference % (24 * 60 * 60)) / (60 * 60));
-        const minutes = Math.floor((difference % (60 * 60)) / 60);
-        const seconds = difference % 60;
-    
+      
+        const totalHours = difference / oneHour;
+        const hours = Math.floor(totalHours);
+      
         let remainingTime = '';
-        if (days > 0) {
-            remainingTime += `${days} DAY${days > 1 ? 'S' : ''}`;
-        } else if (hours > 0) {
-            remainingTime += `${hours} HOUR${hours > 1 ? 'S' : ''}`;
+        if (hours > 0) {
+          remainingTime += `${hours} HOUR${hours > 1 ? 'S' : ''}`;
         } else {
-            remainingTime += `${minutes} MINUTE${minutes > 1 ? 'S' : ''}`;
+          const minutes = Math.floor((difference % oneHour) / 60);
+          remainingTime += `${minutes} MINUTE${minutes > 1 ? 'S' : ''}`;
         }
-    
+      
         return remainingTime;
-    }
-    
-    
+      }
+
+      
     const getRemainingTimeForStateTokenPriceUpdate = async() =>{
         const timeStamp = await getLastStateTokenPriceUpdateTimestamp()
         const remainTime = await getRemainingTime(timeStamp)
