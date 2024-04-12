@@ -97,8 +97,8 @@ export default function IncrementPriceTarget() {
       const currentTimestamp = Math.floor(Date.now() / 1000);
       const timeDifferenceInSeconds = currentTimestamp - Number(givenTimestamp);
       const timeDifference = await formatTimeDifference(Number(timeDifferenceInSeconds));
-      const PriceTarget = Number(formattedPriceTarget).toFixed(4);
-      const targetAmount = Number(formattedTargetAmount).toFixed(4) + ' ' + await currencyName;
+      const PriceTarget = Number(formattedPriceTarget).toFixed(6);
+      const targetAmount = Number(formattedTargetAmount).toFixed(6) + ' ' + await currencyName;
 
       return (
         <div key={index} className={`box-items  ${(theme === "darkTheme" && "Theme-box-item") || (theme === "dimTheme" && "dim-theme-items" && "dim-theme-items-border") || "viewItemsTop"} `}>

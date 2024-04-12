@@ -63,7 +63,7 @@ export default function StateTokenTarget() {
     const processTargets = async (target, index, currencyName) => {
         try {
             const formattedRatioTarget = ethers.utils.formatEther(target?.ratioPriceTarget.toString())
-            const ratioPriceTarget = Number(formattedRatioTarget).toFixed(4);
+            const ratioPriceTarget = Number(formattedRatioTarget).toFixed(6);
             const formattedTargetAmount = ethers.utils.formatEther(target?.TargetAmount.toString())
             const targetAmount = Number(formattedTargetAmount).toFixed(4) + ' ' + currencyName ?? currencyName;
             const givenTimestamp = target?.Time.toString()
