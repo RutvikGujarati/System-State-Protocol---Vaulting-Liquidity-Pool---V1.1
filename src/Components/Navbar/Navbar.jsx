@@ -89,11 +89,11 @@ export default function Index() {
               </span>
             </div>
             <div className={`d-flex navBar-btn me-3 ${isOnInscription}`} >
-              <Link className={`nav-link my-auto  docs mx-3 ${location.pathname === '/Create-Vaults' && 'ins'}`} role="button" to={'Create-Vaults'}>
-                Create Vault
-              </Link>
               <Link className={` nav-link my-auto docs mx-3 ${location.pathname === '/inscription' && 'ins'}`} role="button" to={'inscription'}>
                 Inscription
+              </Link>
+              <Link className={`nav-link my-auto  docs mx-3 ${location.pathname === '/Create-Vaults' && 'ins'}`} role="button" to={'Create-Vaults'}>
+                Create Vault
               </Link>
               <Link className=" nav-link my-auto docs mx-2" role="button" target="_blank" to={'https://system-state-documentation.gitbook.io/'}>
                 Documentation
