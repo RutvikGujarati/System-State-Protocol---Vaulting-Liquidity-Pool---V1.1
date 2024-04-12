@@ -1560,7 +1560,7 @@ contract System_State_Protocol is Ownable(msg.sender) {
         uint256 escrowVault,
         uint256 tokenParity,
         uint256 ProtocolFees,
-        uint256 DevlopmentFee,
+        uint256 DevelopmentFee,
         uint256 EscrowfundInUsdValue
     );
     event WithdrawalEvent(
@@ -1665,14 +1665,14 @@ contract System_State_Protocol is Ownable(msg.sender) {
         uint256 escrowVault = (value).mul(236).div(1000); // Escrow Vault - 23.6%
         uint256 tokenParity = (value).mul(800).div(10000); // tokenParity - 8.0%
         uint256 ProtocolFees = (value).mul(560).div(10000); // Automation/oracle/ProtocolFees - 5.60%
-        uint256 devlopmentFee = (value).mul(100).div(10000); // ● Devlopment Fee - 1%
+        uint256 developmentFee = (value).mul(100).div(10000); // ● Devlopment Fee - 1%
 
         return (
             ratioPriceTarget,
             escrowVault,
             tokenParity,
             ProtocolFees,
-            devlopmentFee
+            developmentFee
         );
     }
 
@@ -1705,17 +1705,24 @@ contract System_State_Protocol is Ownable(msg.sender) {
         uint256 userUsdValue = value.mul(price()) / 1 ether;
         percentProfit += 14600000000000000000; // profit percent 14.6%
 
+        // Correcting iTP calculation to be 100%
+        uint256 iTP = 100; // Initial Token Percentage
+
         (
             uint256 ratioPriceTarget,
             uint256 escrowVault,
             uint256 tokenParity,
             uint256 ProtocolFees,
-            uint256 devlopmentFee
+            uint256 developmentFee
         ) = calculationFunction(value);
-        (bool success, ) = payable(OracleWallet).call{value: devlopmentFee}("");
+        (bool success, ) = payable(OracleWallet).call{value: developmentFee}(
+            ""
+        );
 
-        uint256 PSDdistributionPercentage = (userUsdValue).mul(854).div(1000); // ● PSD Distribution Percentage 85.4%
-        uint256 PSTdistributionPercentage = (value).mul(800).div(10000); // ● PST Distribution Percentage 8%
+        // Reward distribution percentages
+        uint256 PSDdistributionPercentage = userUsdValue.mul(854).div(1000); // PSD Distribution Percentage 85.4%
+        uint256 PSTdistributionPercentage = value.mul(800).div(10000); // PST Distribution Percentage 8%
+        // uint256 OracleFee = value.mul(1).div(100); // Oracle fee 1%
 
         PSDdistributionPercentageMapping[
             msg.sender
@@ -1723,6 +1730,7 @@ contract System_State_Protocol is Ownable(msg.sender) {
         PSTdistributionPercentageMapping[
             msg.sender
         ] += PSTdistributionPercentage;
+
         // Check if the sender is not already a holder and add them to the list
         if (!isDepositor(msg.sender)) {
             usersWithDeposits.push(msg.sender);
@@ -1751,7 +1759,7 @@ contract System_State_Protocol is Ownable(msg.sender) {
 
         emit DepositEvent(ID, success, msg.sender, msg.value, userUsdValue);
 
-        uint256 escrowfundInUsdValue = (escrowVault.mul(price())) / 1 ether;
+        uint256 escrowfundInUsdValue = escrowVault.mul(price()) / 1 ether;
 
         emit ParityShareCalculation(
             value,
@@ -1759,7 +1767,7 @@ contract System_State_Protocol is Ownable(msg.sender) {
             escrowVault,
             tokenParity,
             ProtocolFees,
-            devlopmentFee,
+            developmentFee,
             escrowfundInUsdValue
         );
 
@@ -1772,10 +1780,19 @@ contract System_State_Protocol is Ownable(msg.sender) {
             escrowPriceTarget
         );
 
-        totalPSDshare += PSDdistributionPercentage; // ● PSD Distribution Percentage 88.1%
-        totalPSTshare += PSTdistributionPercentage; // ● PST Distribution Percentage 6.75%
+        // Adjusting iTP for IPT vaults
+        if (tokenParity == 0) {
+            iTP = 100;
+        } else {
+            // Calculate iTP based on the specified formula
+            // Adjust this formula according to your specific requirements
+            iTP = tokenParity.mul(1215).div(1000); // 1215% for the first vault opening
+        }
 
-        updateParityAmount(tokenParity);
+        totalPSDshare += PSDdistributionPercentage; // PSD Distribution Percentage 88.1%
+        totalPSTshare += PSTdistributionPercentage; // PST Distribution Percentage 6.75%
+
+        // Update protocol fees and ID
         updateProtocolFee(ProtocolFees);
         ID += 1;
     }
