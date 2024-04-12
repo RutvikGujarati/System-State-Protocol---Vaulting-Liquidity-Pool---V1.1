@@ -16,7 +16,7 @@ export default function IncrementPriceTarget() {
   const { socket, getPrice, getIncrementPriceTargets , getDepositors } = useContext(functionsContext)
   const [price, setPrice] = useState('0')
   const [escrowVaultTargets, setEscrowVaultTargets] = useState([])
-  const [seeFullPage, setseeFullPage] = useState(false)
+  const [seeFullPage, setSeeFullPage] = useState(false)
   const [nextPage, setNextPage] = useState(0)
   const [noOfPage, setNoOfPage] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
@@ -36,54 +36,58 @@ export default function IncrementPriceTarget() {
     }
 
   }
+
   const IncrementPriceTarget = async () => {
     if (accountAddress && currencyName) {
-      try {
-        let price = await getPrice();
-        let formattedPrice = await ethers.utils.formatEther(price || '0')
-        setPrice(formattedPrice)
-
-        let All_USERS_TARGETS = []
-
-        let allDepositorsAddress = await getDepositors()
-        
-        for (let index = 0; index < allDepositorsAddress.length; index++) {
-          const address = allDepositorsAddress[index];
-          let incrementPriceTarget = await getIncrementPriceTargets(address)
-          All_USERS_TARGETS.push(...incrementPriceTarget || [])
-        }
-
-         //This is for table page Updated
-       
-         if (All_USERS_TARGETS.length < 25) {
-           setNoOfPage(1)
-         } else {
-           setNoOfPage(Math.ceil(All_USERS_TARGETS.length / 25))
+       try {
+         let price = await getPrice();
+         let formattedPrice = await ethers.utils.formatEther(price || '0');
+         setPrice(formattedPrice);
+   
+         let All_USERS_TARGETS = [];
+   
+         let allDepositorsAddress = await getDepositors();
+         
+         for (let index = 0; index < allDepositorsAddress.length; index++) {
+           const address = allDepositorsAddress[index];
+           let incrementPriceTarget = await getIncrementPriceTargets(address);
+           All_USERS_TARGETS.push(...incrementPriceTarget || []);
          }
-        
-        // Correct: Create a new array or object
-        const sortedArray = [...All_USERS_TARGETS || []].sort((a, b) => {
-          const formattedRatioTargetA = ethers.utils.formatEther(a?.priceTarget.toString());
-          const formattedRatioTargetB = ethers.utils.formatEther(b?.priceTarget.toString());
-
-          const numericValueA = Number(formattedRatioTargetA);
-          const numericValueB = Number(formattedRatioTargetB);
-
-          return numericValueA - numericValueB;
-        });
-        try {
-          let items = await Promise.all(sortedArray.map((target, index) => processTargets(target, index, currencyName)));
-          setEscrowVaultTargets(items.filter(Boolean));
-        } catch (error) {
-          console.error('Error processing targets:', error);
-        }
-
-      } catch (error) {
-        console.error('error:', error);
-      }
+   
+         // Calculate total pages
+         const itemsPerPage = 25;
+         const totalPages = Math.ceil(All_USERS_TARGETS.length / itemsPerPage);
+         setNoOfPage(totalPages); // Update the total number of pages
+   
+         // Sort the targets
+         const sortedArray = [...All_USERS_TARGETS || []].sort((a, b) => {
+           const formattedRatioTargetA = ethers.utils.formatEther(a?.priceTarget.toString());
+           const formattedRatioTargetB = ethers.utils.formatEther(b?.priceTarget.toString());
+   
+           const numericValueA = Number(formattedRatioTargetA);
+           const numericValueB = Number(formattedRatioTargetB);
+   
+           return numericValueA - numericValueB;
+         });
+   
+         // Process and display targets for the current page
+         const startIndex = (currentPage - 1) * itemsPerPage;
+         const endIndex = startIndex + itemsPerPage;
+         const itemsForCurrentPage = sortedArray.slice(startIndex, endIndex);
+   
+         try {
+           let items = await Promise.all(itemsForCurrentPage.map((target, index) => processTargets(target, index, currencyName)));
+           setEscrowVaultTargets(items.filter(Boolean));
+         } catch (error) {
+           console.error('Error processing targets:', error);
+         }
+   
+       } catch (error) {
+         console.error('error:', error);
+       }
     }
-  }
-
+   }
+   
  const processTargets = async (target, index, currencyName) => {
     try {
 
@@ -99,9 +103,6 @@ export default function IncrementPriceTarget() {
       return (
         <div key={index} className={`box-items  ${(theme === "darkTheme" && "Theme-box-item") || (theme === "dimTheme" && "dim-theme-items" && "dim-theme-items-border") || "viewItemsTop"} `}>
           <div className="box-1" id="box1">
-            {/* <span className={`cube-icon ${(theme === "darkTheme" && "Theme-background-logo") || (theme === "dimTheme" && "dimThemeBlockIcon")} `} >
-              <FontAwesomeIcon icon={faListCheck} style={{ color: "#96989c", width: "20px", height: "20px" }} />
-            </span> */}
             <div> <p> <span>Transaction</span> </p>
               <p className={`  ${(theme === "darkTheme" && "Theme-block-time") || (theme === "dimTheme" && "Theme-block-time") || "time-opacity "} `} >
                 {timeDifference ?? timeDifference} ago
@@ -120,15 +121,14 @@ export default function IncrementPriceTarget() {
       console.log('error:', error)
     }
   }
-  useEffect(() => {
+ useEffect(() => {
     if (userConnected) {
-      
-      IncrementPriceTarget()
+       IncrementPriceTarget()
     }
-  }, [accountAddress, currencyName, theme, socket])
+   }, [accountAddress, currencyName, theme, socket, currentPage]); 
+
   return (
     <>
-    {/* {escrowVaultTargets} */}
       <div className="">
         <div className={`container-1 ${shadow}  ${(theme === "darkTheme" && "Theme-block-container") || (theme === "dimTheme" && "dimThemeBg")}`}>
           <div className={`box-titles2 mx-3 ${theme === "darkTheme" && ""} `} id={``} >
@@ -142,14 +142,18 @@ export default function IncrementPriceTarget() {
           </div>
           <div className="view-main">
             <div className={`view-pageIncre  ${(theme === "darkTheme" && "Theme-view-page") || (theme === "dimTheme" && "dimThemeBlockView" && "dim-theme-items-border")} `}>
-             <div className="makeBalance"></div>
-              <Link 
-              onClick={()=>setseeFullPage(!seeFullPage)}
-              className={`${(theme === "darkTheme" && "text-white") || (theme === "dimTheme" && "dimThemeBlockView" && "dimThemeBlockView")} `} >
-                VIEW ALL TRANSACTIONS {seeFullPage ?<span> &uarr;</span>	: <span> &darr;</span>}
-              </Link>
+
+           <div className="view-container">
+ <Link 
+    onClick={()=>setSeeFullPage(!seeFullPage)}
+    className={`view-link ${(theme === "darkTheme" && "text-white") || (theme === "dimTheme" && "dimThemeBlockView" && "dimThemeBlockView")}`} 
+    style={{ textDecoration: 'none', color: 'inherit', marginLeft:"-190px"}}>
+    VIEW ALL TRANSACTIONS {seeFullPage ?<span> &uarr;</span> : <span> &darr;</span>}
+ </Link>
+ <div style={{ marginLeft: 'auto' }}></div> {/* Hidden element for alignment */}
+</div>
+
               <div className={`table_pageIndex ${theme==='dimTheme' && 'text-white'}`}>
-                No. of Pages
                 <span
                   className="pageBtnDir"
                   onClick={() => {
@@ -157,9 +161,8 @@ export default function IncrementPriceTarget() {
                       setNextPage(nextPage - 25)
                       setCurrentPage(currentPage - 1)
                     }
-
                   }}>&#10216;</span>
-                <span>{currentPage} {" "}/ {" "}{noOfPage}</span>
+                <span>{currentPage} / {noOfPage}</span>
                 <span
                   className="pageBtnDir"
                   onClick={() => {
@@ -167,7 +170,7 @@ export default function IncrementPriceTarget() {
                       setNextPage(nextPage + 25)
                       setCurrentPage(currentPage + 1)
                     }
-                  }}>{" "}&#12297;</span>
+                  }}>&#12297;</span>
               </div>
             </div>
           </div>

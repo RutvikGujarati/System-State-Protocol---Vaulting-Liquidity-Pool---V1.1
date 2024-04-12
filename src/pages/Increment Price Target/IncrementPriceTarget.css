@@ -26,6 +26,17 @@
   font-family: 'Roboto', sans-serif;
 
 }
+.view-link {
+  margin-left: 10px; /* Adjust the margin as needed */
+  align-self: flex-start; /* Align the link to the start of the cross axis */
+ }
+ 
+.view-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center; /* This centers the items vertically if needed */
+ }
+ 
 
 .main-cont-bor {
   border: 1px solid #dee0e1;
@@ -68,7 +79,7 @@
   border-top: 1px solid rgb(232, 232, 232);
   text-align: center;
   flex-wrap: wrap;
-}
+ }
 .view-main{
   padding: 0 12px;
 }

@@ -24,58 +24,56 @@ export default function RatioPriceTargets() {
 
   const RatioPriceTargets = async () => {
     if (accountAddress) {
-      try {
-        let price = await getPrice();
-        let formattedPrice = await ethers.utils.formatEther(price || '0')
-        setPrice(formattedPrice)
-
-
-        let All_USERS_TARGETS = []
-
-        let allDepositorsAddress = await getDepositors()
-        // console.log('allDepositorsAddress111',allDepositorsAddress)
-        
-        for (let index = 0; index < allDepositorsAddress.length; index++) {
-          const address = allDepositorsAddress[index];
-          let targets = await getRatioPriceTargets(address)
-          All_USERS_TARGETS.push(...targets || [])
-        }
-        
-        // console.log('All_USERS_TARGETS::::::::::',All_USERS_TARGETS);
-        // console.log('lengthRPtArray',All_USERS_TARGETS.length)
-        if (All_USERS_TARGETS.length > 25) {
-          setNoOfPage(Math.ceil(All_USERS_TARGETS.length / 25))
-        } else {
-          setNoOfPage(1)
-        }
-        
-        // let targets = await getRatioPriceTargets(accountAddress)
-        // console.log('targets:', targets);
-        // Correct: Create a new array or object
-        const sortedArray = [...All_USERS_TARGETS || []].sort((a, b) => {
-          const formattedRatioTargetA = ethers.utils.formatEther(a?.ratioPriceTarget.toString());
-          const formattedRatioTargetB = ethers.utils.formatEther(b?.ratioPriceTarget.toString());
-
-          const numericValueA = Number(formattedRatioTargetA);
-          const numericValueB = Number(formattedRatioTargetB);
-
-          return numericValueA - numericValueB;
-        });
-        
-        try {
-          let items = await Promise.all(sortedArray.map((target, index) =>
-            processTargets(target, index, currencyName))
-          );
-          setRatioPriceTargets(items.filter(Boolean));
-        } catch (error) {
-          console.error('Error processing targets:', error);
-        }
-      } catch (error) {
-        console.error('error:', error);
-      }
+       try {
+         let price = await getPrice();
+         let formattedPrice = await ethers.utils.formatEther(price || '0');
+         setPrice(formattedPrice);
+   
+         let All_USERS_TARGETS = [];
+   
+         let allDepositorsAddress = await getDepositors();
+         
+         for (let index = 0; index < allDepositorsAddress.length; index++) {
+           const address = allDepositorsAddress[index];
+           let targets = await getRatioPriceTargets(address);
+           All_USERS_TARGETS.push(...targets || []);
+         }
+   
+         // Calculate total pages
+         const itemsPerPage = 25;
+         const totalPages = Math.ceil(All_USERS_TARGETS.length / itemsPerPage);
+         setNoOfPage(totalPages); // Update the total number of pages
+   
+         // Sort the targets
+         const sortedArray = [...All_USERS_TARGETS || []].sort((a, b) => {
+           const formattedRatioTargetA = ethers.utils.formatEther(a?.ratioPriceTarget.toString());
+           const formattedRatioTargetB = ethers.utils.formatEther(b?.ratioPriceTarget.toString());
+   
+           const numericValueA = Number(formattedRatioTargetA);
+           const numericValueB = Number(formattedRatioTargetB);
+   
+           return numericValueA - numericValueB;
+         });
+   
+         // Process and display targets for the current page
+         const startIndex = (currentPage - 1) * itemsPerPage;
+         const endIndex = startIndex + itemsPerPage;
+         const itemsForCurrentPage = sortedArray.slice(startIndex, endIndex);
+   
+         try {
+           let items = await Promise.all(itemsForCurrentPage.map((target, index) =>
+             processTargets(target, index, currencyName))
+           );
+           setRatioPriceTargets(items.filter(Boolean));
+         } catch (error) {
+           console.error('Error processing targets:', error);
+         }
+       } catch (error) {
+         console.error('error:', error);
+       }
     }
-  }
-
+   }
+   
   const processTargets = async (target, index, currencyName) => {
     try {
       const formattedRatioTarget = ethers.utils.formatEther(target?.ratioPriceTarget.toString())
@@ -174,13 +172,16 @@ export default function RatioPriceTargets() {
           <div className="view-main">
             <div className={`view-pagerpt  ${(theme === "darkTheme" && "Theme-view-page") || (theme === "dimTheme" && "dimThemeBlockView" && "dim-theme-items-border")} `} >
               <div></div>
-              <Link
-              onClick={()=>setseeFullPage(!seeFullPage)} 
-              className={`${(theme === "darkTheme" && "text-white") || (theme === "dimTheme" && "dimThemeBlockView" && "dimThemeBlockView")} `} >
-                VIEW ALL TRANSACTIONS {seeFullPage ?<span> &uarr;</span>	: <span> &darr;</span>}
-              </Link>
+              
+              <Link 
+ onClick={()=>setseeFullPage(!seeFullPage)}
+ className={`view-link ${(theme === "darkTheme" && "text-white") || (theme === "dimTheme" && "dimThemeBlockView" && "dimThemeBlockView")}`} 
+ style={{ textDecoration: 'none', color: 'inherit', alignSelf: 'flex-start', marginLeft: '-550px'}}>
+    VIEW ALL TRANSACTIONS {seeFullPage ?<span> &uarr;</span> : <span> &darr;</span>}
+</Link>
+
               <div className={`table_pageIndex ${theme==='dimTheme' && 'text-white'}`}>
-                No. of Pages
+             
                 <span
                   className="pageBtnDir"
                   onClick={() => {

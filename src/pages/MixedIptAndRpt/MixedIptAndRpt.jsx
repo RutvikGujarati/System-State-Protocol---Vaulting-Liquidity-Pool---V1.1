@@ -1,13 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./MixedIptAndRpt.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faListCheck } from "@fortawesome/free-solid-svg-icons";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faListCheck } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { themeContext } from "../../App";
 import "../../Utils/Theme.css";
 import { Web3WalletContext } from "../../Utils/MetamskConnect";
 import { functionsContext } from "../../Utils/Functions";
-import { BigNumber, ethers } from "ethers";
+import {  ethers } from "ethers";
 
 export default function IncrementPriceTarget() {
   const { theme } = useContext(themeContext);
@@ -39,56 +39,54 @@ export default function IncrementPriceTarget() {
   }
   const IncrementPriceTarget = async () => {
     if (accountAddress && currencyName) {
-      try {
-        let price = await getPrice();
-        let formattedPrice = await ethers.utils.formatEther(price || '0')
-        setPrice(formattedPrice)
-
-        let All_USERS_TARGETS = []
-
-        let allDepositorsAddress = await getDepositors()
-
-        let allStateTokensAddress = await getStateTokenHolders()
-
-        for (let index = 0; index < allStateTokensAddress.length; index++) {
-          const address = allStateTokensAddress[index];
-          let targets = await getStateTokenTargets(address)
-          All_USERS_TARGETS.push(...targets || [])
-        }
-
-        All_USERS_TARGETS.filter((item,
-          index) => All_USERS_TARGETS.indexOf(item) === index);
-        if (All_USERS_TARGETS.length < 25) {
-          setNoOfPage(1)
-        } else {
-          setNoOfPage(Math.ceil(All_USERS_TARGETS.length / 25))
-        }
-
-        const sortedArray = [...All_USERS_TARGETS || []].sort((a, b) => {
-
-          const formattedRatioTargetA = ethers.utils.formatEther(a?.priceTarget?.toString() || a?.ratioPriceTarget?.toString());
-          const formattedRatioTargetB = ethers.utils.formatEther(b?.priceTarget?.toString() || b?.ratioPriceTarget?.toString());
-
-
-          const numericValueA = Number(formattedRatioTargetA || '0');
-          const numericValueB = Number(formattedRatioTargetB || '0');
-
-          return numericValueA - numericValueB;
-        });
-        try {
-
-          let items = await Promise.all(sortedArray.map((target, index) => processTargets(target, index, currencyName)));
-          console.log('items:',items);
-          setEscrowVaultTargets(items.filter(Boolean));
-        } catch (error) {
-          console.error('Error processing targets:', error);
-        }
-
-      } catch (error) {
-        console.error('error:', error);
-      }
+       try {
+         let price = await getPrice();
+         let formattedPrice = await ethers.utils.formatEther(price || '0');
+         setPrice(formattedPrice);
+   
+         let All_USERS_TARGETS = [];
+   
+         let allDepositorsAddress = await getDepositors();
+         
+         for (let index = 0; index < allDepositorsAddress.length; index++) {
+           const address = allDepositorsAddress[index];
+           let incrementPriceTarget = await getIncrementPriceTargets(address);
+           All_USERS_TARGETS.push(...incrementPriceTarget || []);
+         }
+   
+         // Calculate total pages
+         const itemsPerPage = 25;
+         const totalPages = Math.ceil(All_USERS_TARGETS.length / itemsPerPage);
+         setNoOfPage(totalPages); // Update the total number of pages
+   
+         // Sort the targets
+         const sortedArray = [...All_USERS_TARGETS || []].sort((a, b) => {
+           const formattedRatioTargetA = ethers.utils.formatEther(a?.priceTarget.toString());
+           const formattedRatioTargetB = ethers.utils.formatEther(b?.priceTarget.toString());
+   
+           const numericValueA = Number(formattedRatioTargetA);
+           const numericValueB = Number(formattedRatioTargetB);
+   
+           return numericValueA - numericValueB;
+         });
+   
+         // Process and display targets for the current page
+         const startIndex = (currentPage - 1) * itemsPerPage;
+         const endIndex = startIndex + itemsPerPage;
+         const itemsForCurrentPage = sortedArray.slice(startIndex, endIndex);
+   
+         try {
+           let items = await Promise.all(itemsForCurrentPage.map((target, index) => processTargets(target, index, currencyName)));
+           setEscrowVaultTargets(items.filter(Boolean));
+         } catch (error) {
+           console.error('Error processing targets:', error);
+         }
+   
+       } catch (error) {
+         console.error('error:', error);
+       }
     }
-  }
+   }
 
   const processTargets = async (target, index, currencyName) => {
     if (index >= (0 + nextPage) && index <= (25 + nextPage)) {
@@ -138,7 +136,7 @@ console.log('escorwvalult : ', escrowVaultTargets);
       <div className={`mainMixContainer p-2 container-fluid ${theme == 'dimTheme' && 'dimTheme-index-class'}`}>
         <div className={`container-1 padding_top pt-3 ${shadow}  ${(theme === "darkTheme" && "Theme-block-container") || (theme === "dimTheme" && "dimThemeBg")}`}>
           <div className={`box-titles1 mx-3 ${theme === "darkTheme" && ""} `} id={``} >
-            {/* <h1 className={`box-titles fontsCustome ${(theme === "darkTheme" && "bg-dark" && "text-white") || (theme === "dimTheme" && "title-color")}`} >
+            {/* <h1 className={`box-titles fontsCustom ${(theme === "darkTheme" && "bg-dark" && "text-white") || (theme === "dimTheme" && "title-color")}`} >
             Ratio Price Targets (rPT)
             </h1> */}
             <h1 className={`box-title mb-3 ${(theme === "darkTheme" && "bg-dark" && "text-white") || (theme === "dimTheme" && "title-color")}`}>
@@ -160,10 +158,11 @@ console.log('escorwvalult : ', escrowVaultTargets);
               <Link
                 onClick={() => setseeFullPage(!seeFullPage)}
                 className={` trasName ${(theme === "darkTheme" && "text-white") || (theme === "dimTheme" && "dimThemeBlockView" && "dimThemeBlockView")} `} >
+                  
                 VIEW ALL TRANSACTIONS {seeFullPage ? <span> &uarr;</span> : <span> &darr;</span>}
               </Link>
               <div className="table_pageIndex">
-                No. of Pages
+        
                 <span
                   className="pageBtnDir"
                   onClick={() => {
