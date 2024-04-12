@@ -112,13 +112,13 @@ export default function TrackingPage() {
     // Done
     const ToBeClaimed = async () => {
         try {
-            // let toBeClaimed = await getToBeClaimed(accountAddress)
-            // let formattedToBeClaimed = ethers.utils.formatEther(toBeClaimed ? toBeClaimed : '0')
+            let toBeClaimed = await getToBeClaimed(accountAddress)
+            let formattedToBeClaimed = ethers.utils.formatEther(toBeClaimed ? toBeClaimed : '0')
             // let fixed = Number(formattedToBeClaimed).toFixed(4) + ' ' + currencyName
             // setToBeClaimed(fixed)
 
-            let userBucketBalance = await getToBeClaimed(accountAddress)
-            let formattedToBeClaimed = await getFormatEther(userBucketBalance || '0')
+            // let userBucketBalance = await getToBeClaimed(accountAddress)
+            // let formattedToBeClaimed = await getFormatEther(userBucketBalance || '0')
 
             let ParityShareTokensDetail = await getParityDollarClaimed(accountAddress)
             let parityClaimableAmount = ParityShareTokensDetail?.parityClaimableAmount
