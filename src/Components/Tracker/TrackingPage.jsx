@@ -783,7 +783,7 @@ export default function TrackingPage() {
                                             </div>
                                             <div className={`flex-grow-1 fontSize text-start  ${textTheme}`}>
                                                 <div>
-                                                    <div className={`${textTitle}`}>CLAIM X1 (XN) REFUND</div>
+                                                    <div className={`${textTitle}`}>CLAIM X1 (XN) REBATE</div>
                                                     {/* <div className={`varSize `}><span className={`spanText ${spanDarkDim}`}>{stateTokenHold} / {stateTokenHoldPercentage}%</span></div> */}
                                                     <div className={`varSize `}><span className={`spanText ${spanDarkDim}`}>$ {claimX1}</span></div>
                                                 </div>
