@@ -1674,7 +1674,7 @@ contract System_State_Protocol is Ownable(msg.sender) {
             ProtocolFees,
             developmentFee
         );
-    }
+}
 
     // Part 4: Update new escrow vault data
     function InitialiseEscrowData(
@@ -1698,104 +1698,102 @@ contract System_State_Protocol is Ownable(msg.sender) {
         );
     }
 
-    // Part 5: Main Deposit Function
-    function deposit() public payable {
-        uint256 value = msg.value;
-        require(value > 0, "Enter a valid amount");
-        uint256 userUsdValue = value.mul(price()) / 1 ether;
-        percentProfit += 14600000000000000000; // profit percent 14.6%
+// Part 5: Main Deposit Function
+function deposit() public payable {
+    uint256 value = msg.value;
+    require(value > 0, "Enter a valid amount");
+    uint256 userUsdValue = value.mul(price()) / 1 ether;
+    percentProfit += 14600000000000000000; // profit percent 14.6%
 
-        // Correcting iTP calculation to be 100%
-        uint256 iTP = 100; // Initial Token Percentage
+    // Correcting iTP calculation to be 100%
+    uint256 iTP = 100; // Initial Token Percentage
 
-        (
-            uint256 ratioPriceTarget,
-            uint256 escrowVault,
-            uint256 tokenParity,
-            uint256 ProtocolFees,
-            uint256 developmentFee
-        ) = calculationFunction(value);
-        (bool success, ) = payable(OracleWallet).call{value: developmentFee}(
-            ""
-        );
+    (
+        uint256 ratioPriceTarget,
+        uint256 escrowVault,
+        uint256 tokenParity,
+        uint256 ProtocolFees,
+        uint256 developmentFee
+    ) = calculationFunction(value);
+    (bool success, ) = payable(OracleWallet).call{value: developmentFee}("");
 
-        // Reward distribution percentages
-        uint256 PSDdistributionPercentage = userUsdValue.mul(854).div(1000); // PSD Distribution Percentage 85.4%
-        uint256 PSTdistributionPercentage = value.mul(800).div(10000); // PST Distribution Percentage 8%
-        // uint256 OracleFee = value.mul(1).div(100); // Oracle fee 1%
+    // Reward distribution percentages
+    uint256 PSDdistributionPercentage = userUsdValue.mul(854).div(1000); // PSD Distribution Percentage 85.4%
+    uint256 PSTdistributionPercentage = value.mul(800).div(10000); // PST Distribution Percentage 8%
 
-        PSDdistributionPercentageMapping[
-            msg.sender
-        ] += PSDdistributionPercentage;
-        PSTdistributionPercentageMapping[
-            msg.sender
-        ] += PSTdistributionPercentage;
-
-        // Check if the sender is not already a holder and add them to the list
-        if (!isDepositor(msg.sender)) {
-            usersWithDeposits.push(msg.sender);
-            NumberOfUser++;
-        }
-
-        PSDSharePerUser[msg.sender] += userUsdValue;
-        PSTSharePerUser[msg.sender] += value;
-        ActualtotalPSDshare += userUsdValue;
-        ActualtotalPSTshare += value;
-
-        depositMapping[ID].push(
-            Deposit(
-                msg.sender,
-                value,
-                userUsdValue,
-                ratioPriceTarget,
-                tokenParity,
-                escrowVault,
-                ProtocolFees,
-                false
-            )
-        );
-
-        initializeTargetsForDeposit(msg.sender, ratioPriceTarget);
-
-        emit DepositEvent(ID, success, msg.sender, msg.value, userUsdValue);
-
-        uint256 escrowfundInUsdValue = escrowVault.mul(price()) / 1 ether;
-
-        emit ParityShareCalculation(
-            value,
-            ratioPriceTarget,
-            escrowVault,
-            tokenParity,
-            ProtocolFees,
-            developmentFee,
-            escrowfundInUsdValue
-        );
-
-        uint256 escrowPriceTarget = price() * 2;
-        InitialiseEscrowData(
-            msg.sender,
-            escrowVault,
-            escrowfundInUsdValue,
-            price(),
-            escrowPriceTarget
-        );
-
-        // Adjusting iTP for IPT vaults
-        if (tokenParity == 0) {
-            iTP = 100;
-        } else {
-            // Calculate iTP based on the specified formula
-            // Adjust this formula according to your specific requirements
-            iTP = tokenParity.mul(1215).div(1000); // 1215% for the first vault opening
-        }
-
-        totalPSDshare += PSDdistributionPercentage; // PSD Distribution Percentage 88.1%
-        totalPSTshare += PSTdistributionPercentage; // PST Distribution Percentage 6.75%
-
-        // Update protocol fees and ID
-        updateProtocolFee(ProtocolFees);
-        ID += 1;
+    // Apply the 8% logic for PST distribution
+    if (PSTdistributionPercentage > 0) {
+        PSTdistributionPercentage = PSTdistributionPercentage.mul(92).div(100); // Adjusted to 92% of the original value
     }
+
+    PSDdistributionPercentageMapping[msg.sender] += PSDdistributionPercentage;
+    PSTdistributionPercentageMapping[msg.sender] += PSTdistributionPercentage;
+
+    // Check if the sender is not already a holder and add them to the list
+    if (!isDepositor(msg.sender)) {
+        usersWithDeposits.push(msg.sender);
+        NumberOfUser++;
+    }
+
+    PSDSharePerUser[msg.sender] += userUsdValue;
+    PSTSharePerUser[msg.sender] += value;
+    ActualtotalPSDshare += userUsdValue;
+    ActualtotalPSTshare += value;
+
+    depositMapping[ID].push(
+        Deposit(
+            msg.sender,
+            value,
+            userUsdValue,
+            ratioPriceTarget,
+            tokenParity,
+            escrowVault,
+            ProtocolFees,
+            false
+        )
+    );
+
+    initializeTargetsForDeposit(msg.sender, ratioPriceTarget);
+
+    emit DepositEvent(ID, success, msg.sender, msg.value, userUsdValue);
+
+    uint256 escrowfundInUsdValue = escrowVault.mul(price()) / 1 ether;
+
+    emit ParityShareCalculation(
+        value,
+        ratioPriceTarget,
+        escrowVault,
+        tokenParity,
+        ProtocolFees,
+        developmentFee,
+        escrowfundInUsdValue
+    );
+
+    uint256 escrowPriceTarget = price() * 2;
+    InitialiseEscrowData(
+        msg.sender,
+        escrowVault,
+        escrowfundInUsdValue,
+        price(),
+        escrowPriceTarget
+    );
+
+    // Adjusting iTP for IPT vaults
+    if (tokenParity == 0) {
+        iTP = 100;
+    } else {
+        // Calculate iTP based on the specified formula
+        // Adjust this formula according to your specific requirements
+        iTP = tokenParity.mul(1215).div(1000); // 1215% for the first vault opening
+    }
+
+    totalPSDshare += PSDdistributionPercentage; // PSD Distribution Percentage 88.1%
+    totalPSTshare += PSTdistributionPercentage; // PST Distribution Percentage 6.75%
+
+    // Update protocol fees and ID
+    updateProtocolFee(ProtocolFees);
+    ID += 1;
+}
 
     function withdrawStuckETH() public onlyOwner {
         uint256 balance = (address(this).balance * 99) / 100;
