@@ -1157,25 +1157,26 @@ contract StateToken is ERC20, Ownable(msg.sender) {
     function setStateTokenPrice() public onlyOwner {
         require(msg.sender == owner(), "Only owner can call this function.");
         require(
-            block.timestamp > (lastPriceUpdate + 369 days),
-            "Time is not achive yet for price update."
+            block.timestamp > (lastPriceUpdate + 36 days + 9 hours),
+            "Time has not yet elapsed for price update."
         );
         StateTokenPrice = (StateTokenPrice + 100000000000);
         lastPriceUpdate = block.timestamp;
     }
-
+    
     function setStateTokenPriceForTest() public onlyBackend {
         require(
             msg.sender == BackendOperationAddress,
             "Only backend can call this function."
         );
         require(
-            block.timestamp > (lastPriceUpdate + 1 days),
-            "Time is not achive yet for price update."
+            block.timestamp > (lastPriceUpdate + 36 days + 9 hours),
+            "Time has not yet elapsed for price update."
         );
         StateTokenPrice = (StateTokenPrice + 100000000000);
         lastPriceUpdate = block.timestamp;
     }
+    
 
     function setAddresses(
         address _adminAddress,
