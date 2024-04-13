@@ -627,6 +627,25 @@ export default function Functions({ children }) {
         }
     }
 
+    const fetch = require('node-fetch'); // Import the node-fetch library for making HTTP requests
+
+const fetchEtherToUsdRate = async () => {
+    try {
+        // Make a GET request to CoinGecko API to fetch the current Ethereum to USD price
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+        const data = await response.json();
+
+        // Extract the ETH to USD price from the response
+        const etherToUsdRate = data.ethereum.usd;
+
+        return etherToUsdRate;
+    } catch (error) {
+        console.error('Error fetching ETH to USD rate:', error);
+        throw error; // Propagate the error to the caller
+    }
+}
+
+
     const getRefundRewardClaimableBucket = async (accountAddress) => {
         const contract = await getStateTokenContract();
         try {
@@ -867,6 +886,7 @@ export default function Functions({ children }) {
                 getwithdrawX1allocationReward,
                 getWithdrawRefundReward,
                 getX1allocationBucket,
+                fetchEtherToUsdRate,
                 getcSpendOnInscription,
                 getinscriptionRewardClaim,
                 getX1allocationBucketClaim,

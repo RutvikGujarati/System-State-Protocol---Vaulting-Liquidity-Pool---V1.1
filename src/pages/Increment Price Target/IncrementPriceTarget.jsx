@@ -23,7 +23,7 @@ export default function IncrementPriceTarget() {
 
   
   const formatTimeDifference = async (seconds) => {
-    if (seconds >= 60 * 60 * 24 * 36.9) { // Change this line to reflect 36.9 days
+    if (seconds >= 60 * 60 * 24 ) { // Change this line to reflect 36.9 days
       const days = Math.floor(seconds / (24 * 60 * 60));
       return `${days} day${days > 1 ? 's' : ''}`;
     } else if (seconds >= 60 * 60) {
