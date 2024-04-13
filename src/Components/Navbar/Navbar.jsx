@@ -22,13 +22,19 @@ export default function Index() {
 
   const fetchPrice = async () => {
     try {
-      let price = await getPrice();
-      let formattedPrice = ethers.utils.formatEther(price || '0')
+      // Convert $0.001 to its equivalent in ethers
+      const priceInEther = ethers.utils.parseEther('0.001');
+  
+      // Convert the price in ethers to its formatted string representation
+      const formattedPrice = ethers.utils.formatEther(priceInEther);
+  
+      // Set the formatted price
       setprice(formattedPrice);
     } catch (error) {
       console.error('error:', error);
     }
   }
+  
   const [connectedIcon, setConnectedIcon] = useState(mumbaiIcon)
   const [themeIcon, setThemeIcon] = useState(<i className="far fa-sun fa-fw dropdown-item-icon theme-icon me-1" data-href="#fa-sun-bright" />)
   const getIcon = async () => {
