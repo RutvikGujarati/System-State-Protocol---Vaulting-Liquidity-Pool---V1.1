@@ -2,8 +2,8 @@ import React, { useContext, useState } from "react";
 import "./RatioPriceTargets.css";
 import "../../Utils/Theme.css";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCube } from "@fortawesome/free-solid-svg-icons";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faCube } from "@fortawesome/free-solid-svg-icons";
 import { themeContext } from "../../App";
 import { Web3WalletContext } from "../../Utils/MetamskConnect";
 import { functionsContext } from "../../Utils/Functions";
@@ -142,32 +142,6 @@ export default function RatioPriceTargets() {
           </div>
           <div className={`${seeFullPage ? 'seenFullContent':''} reponsive-box1 `}>
             {ratioPriceTargets}
-            {/* {
-              ratioPriceTargets.map((target, index) => {
-                const formattedRatioTarget = ethers.utils.formatEther(target?.ratioPriceTarget.toString())
-                const ratioPriceTarget = Number(formattedRatioTarget).toFixed(4);
-                const formattedTargetAmount = ethers.utils.formatEther(target?.TargetAmount.toString())
-                const targetAmount = Number(formattedTargetAmount).toFixed(4) + ' ' + currencyName ?? currencyName;
-
-                return (
-                  <div key={index} className={`box-items  ${(theme === "darkTheme" && "Theme-box-item") || (theme === "dimTheme" && "dim-theme-items" && "dim-theme-items-border") || "viewItemsTop"}`} >
-                    <div className="box-1" id="box1">
-                      <span className={`cube-icon ${(theme === "darkTheme" && "Theme-background-logo") || (theme === "dimTheme" && "dimThemeBlockIcon")}`}>
-                        <FontAwesomeIcon icon={faCube} style={{ color: "#96989c", width: "20px", height: "20px" }} />
-                      </span>
-                      <div> <p> <span>Transaction</span> </p>
-                        <p className={`${(theme === "darkTheme" && "Theme-block-time") || (theme === "dimTheme" && "Theme-block-time") || "time-opacity "}`}>12 secs ago</p>
-                      </div>
-                    </div>
-                    <div className="box-1 box-2" id="box2">
-                      <p className={`d-flex flex-column para-column-fit  ${(theme === "darkTheme" && "Theme-col2-para") || (theme === "dimTheme" && "Theme-col2-para")}`} >Target Price<span> Target Price : {ratioPriceTarget}
-                      </span> </p>
-                    </div>
-                    <p className={`box-3  ${(theme === "darkTheme" && "Theme-btn-block") || (theme === "dimTheme" && "dimThemeBtnBg")}`}> {targetAmount}</p>
-                  </div>
-                )
-              })
-            } */}
           </div>
           <div className="view-main">
             <div className={`view-pagerpt  ${(theme === "darkTheme" && "Theme-view-page") || (theme === "dimTheme" && "dimThemeBlockView" && "dim-theme-items-border")} `} >
@@ -208,8 +182,6 @@ export default function RatioPriceTargets() {
     &#10217;
   </span>
 </div>
-
-
             </div>
           </div>
         </div>

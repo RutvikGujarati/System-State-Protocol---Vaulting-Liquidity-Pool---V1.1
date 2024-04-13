@@ -341,10 +341,10 @@ export default function TrackingPage() {
         const refundClaimInEth = ethers.utils.formatEther(refundClaim);
         
         // Dynamically fetch the current USD price from an external API
-        const etherToUsdRate = await fetchEtherToUsdRate(); // Example function to fetch the current ETH to USD rate
+        // const etherToUsdRate = await fetchEtherToUsdRate(); // Example function to fetch the current ETH to USD rate
 
         // Convert refund claim from ether to dollars
-        const refundClaimInDollars = refundClaimInEth * etherToUsdRate;
+        const refundClaimInDollars = refundClaimInEth ;
         setClaimInscriptionRefund(refundClaimInDollars);
 
         // Check if the refundable amount is greater than the total amount spent on inscription

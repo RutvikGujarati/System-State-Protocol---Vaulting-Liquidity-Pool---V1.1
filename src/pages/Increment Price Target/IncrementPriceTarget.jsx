@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./IncrementPriceTarget.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faListCheck } from "@fortawesome/free-solid-svg-icons";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faListCheck } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { themeContext } from "../../App";
 import "../../Utils/Theme.css";
