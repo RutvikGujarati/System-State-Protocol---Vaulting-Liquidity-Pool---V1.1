@@ -22,7 +22,11 @@
 .open_vault_view{
 
 }
-
+.small-metamask-logo {
+    width: 30px; /* Adjust width as needed */
+    height: auto; 
+    margin-left: 10px; /* Maintain aspect ratio */
+  }
 .tokenSize{
     width: 8rem;
     margin-right: 1rem;

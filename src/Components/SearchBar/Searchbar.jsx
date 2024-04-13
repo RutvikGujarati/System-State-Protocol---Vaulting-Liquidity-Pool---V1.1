@@ -7,6 +7,7 @@ import './Searchbar.css'
 import { Web3WalletContext } from "../../Utils/MetamskConnect";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import fistPump from '../../Assets/High-Resolutions-Svg/Updated/fist pump small.svg'
+import metamask from "../../Assets/metamask.png";
 import SystemStateLogo from "../../Assets/High-Resolutions-Svg/Updated/logo.svg";
 import { functionsContext } from "../../Utils/Functions";
 import { PSD_ADDRESS, STATE_TOKEN_ADDRES, conciseAddress } from "../../Utils/ADDRESSES/Addresses";
@@ -264,6 +265,37 @@ export default function Searchbar() {
     }
   }, [socket])
 
+  const AddTokenToWallet = () => {
+    const tokenAddress = '0x3887373A5dD1246576D181d2b18a5Edd9D6AbFbA'; // Replace with your token's contract address
+    const tokenSymbol = 'tPLS'; // Replace with your token's symbol
+    const tokenDecimals = 18; // Replace with your token's decimals
+    const tokenImage = {fistPump}; // Replace with your token's image URL
+   
+  }
+
+  const addTokenToWallet = async () => {
+    if (window.ethereum) {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_watchAsset',
+          params: {
+            type: 'ERC20', // Indicates that this is an ERC20 token
+            options: {
+              address: "0x3887373A5dD1246576D181d2b18a5Edd9D6AbFbA", // The address of the token contract
+              symbol: "tPLS", // A ticker symbol or shorthand, up to 5 characters
+              decimals: "18", // The number of decimals in the token
+              image: {fistPump}, // A string url of the token logo
+            },
+          },
+        });
+      } catch (error) {
+        console.error("Failed to add token to wallet", error);
+      }
+    } else {
+      console.error("MetaMask is not installed");
+    }
+ };
+
   const isVisibleHomeSearch = (selectedValue === 'Claim IPT & RPT' && 'isVisible') || (selectedValue === 'Claim Parity Tokens' && 'isVisible')
 
   return (
@@ -327,37 +359,41 @@ export default function Searchbar() {
 
                     :
 
-                    <div className={` search ${theme} ${theme === "lightTheme" && "text-dark"} ${(theme === "darkTheme" && "Theme-block-container") || (theme === ("dimTheme") && ("dimThemeBg"))}`}>
-                      <p className={`m-0 ms-3 d-none d-md-block ${block + dark} ${theme === ("lightTheme") && ("depositInputLight") || theme === "dimTheme" && "depositInputGrey darkColor"} ${theme === "darkTheme" && "depositInputDark darkColor"}`}>State</p>
+                    <div className={`search ${theme} ${theme === "lightTheme" && "text-dark"} ${(theme === "darkTheme" && "Theme-block-container") || (theme === ("dimTheme") && ("dimThemeBg"))}`}>
+    <div className="d-flex align-items-center">
+        <p className={`m-0 ms-3 d-none d-md-block ${block + dark} ${theme === ("lightTheme") && ("depositInputLight") || theme === "dimTheme" && "depositInputGrey darkColor"} ${theme === "darkTheme" && "depositInputDark darkColor"}`}>State</p>
+        
+    </div>
 
-                      {/* <select defaultValue="State Token" className={`form-select w-25 d-none d-md-block ${block + dark} ${theme === ("lightTheme") && ("depositInputLight") || theme === "dimTheme" && "depositInputGrey darkColor"} ${theme === "darkTheme" && "depositInputDark darkColor"}`} aria-label="Name Tags">
-                        <option className={`${theme} option-list `} value="State"> State</option>
-                        <option className={`${theme} option-list `} value="X1">X1</option>
-                      </select> */}
-                      <form className=" w-100 search-form">
-                        {/* ${isVisible}  */}
-                        {/* ${buyTokenSelector === 'Claim Protocol Fee' && 'isVisible'} */}
-                        <input className={`w-75 ms-3 me-4 form-control inputactive  ${block} ${theme === "lightTheme" && "depositInputLight" || theme === "dimTheme" && "depositInputGrey darkColor"} ${theme === "darkTheme" && "depositInputDark darkColor"}`}
-                          pattern={`[0-9,.]*`}
-                          type="text"
-                          onBlur={handleBlur}
-                          value={search}
-                          disabled={isBuyTokenInputDisabled}
-                          placeholder={placeHolder}
-                          onChange={e => addCommasAsYouType(e)}
-                        />
-                        {/* <select onChange={(e) => { setBuyTokenSelector(e.target.value) }} value={buyTokenSelector} className={`mx-2 form-select w-25 d-none d-md-block ${block + dark} ${theme === "lightTheme" && "depositInputLight" || theme === "dimTheme" && "depositInputGrey darkColor"} ${theme === "darkTheme" && "depositInputDark darkColor"}`} aria-label="Name Tags" >
-                          <option className={`${theme} option-list`} value="Inscribe"> Inscribe</option>
-                          <option className={`${theme} option-list`} value="Claim"> Claim</option>
+    <form className="w-100 search-form">
+    <div style={{ marginRight: '10mm' }}> {/* Create space for the MetaMask logo */}
+      {/* <button onClick={handleSaveToken} className="save-token-button"> */}
 
-                        </select> */}
-                        <button disabled={buyTokenSelector === 'Inscribe' && (Number(search) <= 0 && search == '' ? true : false)}
-                          className={`fist-pump-img first_pump_serchbar ${(theme === "darkTheme" && "firstdumDark") || (theme === "dimTheme" && "dimThemeBg")} `}
-                          onClick={(e) => { isHandleBuyToken(e) }}>
-                          <img src={fistPump} className="w-100 h-100" />
-                        </button>
-                      </form>
-                    </div>
+        <img src={metamask} alt="MetaMask Logo" onClick={addTokenToWallet} style={{ cursor: 'pointer' }}className="small-metamask-logo" />
+        {/* </button> */}
+      </div>
+      <input
+        className={`w-75 ms-3 me-4 form-control inputactive ${block} ${theme === "lightTheme" && "depositInputLight" || theme === "dimTheme" && "depositInputGrey darkColor"} ${theme === "darkTheme" && "depositInputDark darkColor"}`}
+        pattern={`[0-9,.]*`}
+        type="text"
+        onBlur={handleBlur}
+        value={search}
+        disabled={isBuyTokenInputDisabled}
+        placeholder={placeHolder}
+        onChange={e => addCommasAsYouType(e)}
+      />
+     
+      <button
+        disabled={buyTokenSelector === 'Inscribe' && (Number(search) <= 0 && search == '' ? true : false)}
+        className={`fist-pump-img first_pump_serchbar ${(theme === "darkTheme" && "firstdumDark") || (theme === "dimTheme" && "dimThemeBg")} `}
+        onClick={(e) => { isHandleBuyToken(e) }}
+      >
+        <img src={fistPump} className="w-100 h-100" alt="Fist Pump" />
+      </button>
+    </form>
+</div>
+
+
                 }
 
 

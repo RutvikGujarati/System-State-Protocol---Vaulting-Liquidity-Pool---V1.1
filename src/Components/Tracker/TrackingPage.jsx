@@ -470,35 +470,43 @@ export default function TrackingPage() {
     }
 
 
-    function getRemainingTime(timestamp) {
+    function getRemainingTime(timestamp, intervalInDays, intervalInHours) {
         const now = Math.floor(Date.now() / 1000); // Current timestamp in seconds
+        const oneDay = 86400;
         const oneHour = 3600;
-        const priceUpdateInSeconds = Number(process.env.REACT_APP_STATE_TOKEN_PRICE_UPDATE_AFTER_IN_HOUR) * oneHour;
-      
+        const priceUpdateInSeconds = (intervalInDays * oneDay) + (intervalInHours * oneHour);
+    
         const difference = (Number(timestamp) + priceUpdateInSeconds) - now; // Difference in seconds
-      
+    
         if (difference <= 0) {
-          return 'Timestamp has already passed';
+            return 'Timestamp has already passed';
         }
-      
-        const totalHours = difference / oneHour;
-        const hours = Math.floor(totalHours);
-      
+    
+        const days = Math.floor(difference / (24 * 60 * 60));
+        const hours = Math.floor((difference % (24 * 60 * 60)) / (60 * 60));
+        const minutes = Math.floor((difference % (60 * 60)) / 60);
+        const seconds = difference % 60;
+    
         let remainingTime = '';
-        if (hours > 0) {
-          remainingTime += `${hours} HOUR${hours > 1 ? 'S' : ''}`;
-        } else {
-          const minutes = Math.floor((difference % oneHour) / 60);
-          remainingTime += `${minutes} MINUTE${minutes > 1 ? 'S' : ''}`;
+        if (days > 0) {
+            remainingTime += `${days} DAY${days > 1 ? 'S ' : ''}`;
         }
-      
+        if (hours > 0) {
+            remainingTime += `${hours} HOUR${hours > 1 ? 'S' : ''}`;
+        } else {
+            remainingTime += `${minutes} MINUTE${minutes > 1 ? 'S' : ''}`;
+        }
+    
         return remainingTime;
-      }
-    const getRemainingTimeForStateTokenPriceUpdate = async() =>{
-        const timeStamp = await getLastStateTokenPriceUpdateTimestamp()
-        const remainTime = await getRemainingTime(timeStamp)
-        setRemainingTimeForStateTokenPriceUpdate(remainTime)
     }
+    
+    
+    const getRemainingTimeForStateTokenPriceUpdate = async () => {
+        const timeStamp = await getLastStateTokenPriceUpdateTimestamp();
+        const remainTime = await getRemainingTime(timeStamp, 36,9 ); // Convert 36.9 days to seconds
+        setRemainingTimeForStateTokenPriceUpdate(remainTime);
+    }
+    
     useEffect(() => {
         if (userConnected) {
             TotalValueLockedInDollar()

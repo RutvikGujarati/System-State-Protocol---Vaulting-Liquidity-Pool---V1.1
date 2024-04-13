@@ -2,6 +2,9 @@
 
 pragma solidity ^0.8.0;
 
+/*
+All individuals engaging in the minting of state tokens and recording their wallet address on the smart contract hereby consent to participate in this endeavour a.k.a "experiment" and to contribute towards the advancement of humanities understanding of blockchain technology are fully aware that they shall be reimbursed for the initial inscription expenditure and shall not have any expectation of rewards.
+*/
 contract PLSTokenPriceFeed {
     uint256 private priceInUSD;
     address private BackendOperationAddress;
