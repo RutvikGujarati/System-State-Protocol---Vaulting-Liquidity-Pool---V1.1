@@ -47,16 +47,24 @@ export default function MetamskConnect({ children }) {
       metamaskAccounts = await window?.ethereum?.request({
         method: "eth_requestAccounts",
       });
-      // console.log(metamaskAccounts, "Metamask Account");
-      return metamaskAccounts[0];
+      if (window?.ethereum?.networkVersion == '943' || window?.ethereum?.networkVersion == '11155111' || window?.ethereum?.networkVersion == '5' || window?.ethereum?.networkVersion == '69' || window?.ethereum?.networkVersion == '80001') {
+        return metamaskAccounts[0]
+      } else {
+        window.alert("Connect to Mumbai , Sepolia , Mumbai, Pulsechain")
+        throw "Connect to Mumbai Network"
+      }
+      // let balance = await window.ethereum.metaMask.getBalanceOf(metamaskAccounts[0])
+      // console.log(balance, "metamask");
+      console.log(metamaskAccounts)
     } catch (error) {
-      console.error(error, "hi");
+      console.error(error, "hi")
       // eslint-disable-next-line
       if (error.code == -32002) {
-        window.alert('Please Manually connect to Metamask');
+        window.alert('Please Manually connect to metamask')
       }
     }
-  };
+
+  }
   
 
   const getMetamaskBalance = async (response) => {

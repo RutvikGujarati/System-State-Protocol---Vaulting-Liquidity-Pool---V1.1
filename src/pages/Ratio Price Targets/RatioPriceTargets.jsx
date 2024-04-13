@@ -183,27 +183,33 @@ export default function RatioPriceTargets() {
  <div style={{ marginLeft: 'auto' }}></div> {/* Hidden element for alignment */}
 </div>
 
-              <div className={`table_pageIndex ${theme==='dimTheme' && 'text-white'}`}>
-             
-                <span
-                  className="pageBtnDir"
-                  onClick={() => {
-                    if (currentPage > 1 && currentPage <= noOfPage) {
-                      setNextPage(nextPage - 25)
-                      setCurrentPage(currentPage - 1)
-                    }
+<div className={`table_pageIndex ${theme === 'dimTheme' && 'text-white'}`}>
+  <span
+    className="pageBtnDir"
+    onClick={() => {
+      if (currentPage > 1) {
+        setCurrentPage(currentPage - 1); // Decrement current page
+      }
+    }}
+  >
+    &#10216;
+  </span>
+  <span>
+    {currentPage} / {noOfPage}
+  </span>
+  <span
+    className="pageBtnDir"
+    onClick={() => {
+      if (currentPage < noOfPage) {
+        setCurrentPage(currentPage + 1); // Increment current page
+      }
+    }}
+  >
+    &#10217;
+  </span>
+</div>
 
-                  }}>&#10216;</span>
-                <span>{currentPage} / {noOfPage}</span>
-                <span
-                  className="pageBtnDir"
-                  onClick={() => {
-                    if (currentPage < noOfPage) {
-                      setNextPage(nextPage + 25)
-                      setCurrentPage(currentPage + 1)
-                    }
-                  }}>{" "}&#12297;</span>
-              </div>
+
             </div>
           </div>
         </div>
