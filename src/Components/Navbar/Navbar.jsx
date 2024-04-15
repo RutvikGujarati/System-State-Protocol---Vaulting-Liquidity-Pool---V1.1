@@ -22,13 +22,8 @@ export default function Index() {
 
   const fetchPrice = async () => {
     try {
-      // Convert $0.001 to its equivalent in ethers
-      const priceInEther = ethers.utils.parseEther('0.001');
-  
-      // Convert the price in ethers to its formatted string representation
-      const formattedPrice = ethers.utils.formatEther(priceInEther);
-  
-      // Set the formatted price
+      let price = await getPrice();
+      let formattedPrice = ethers.utils.formatEther(price || '0')
       setprice(formattedPrice);
     } catch (error) {
       console.error('error:', error);

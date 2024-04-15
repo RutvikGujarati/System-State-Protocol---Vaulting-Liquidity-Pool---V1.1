@@ -1908,8 +1908,7 @@ function deposit() public payable {
         require(success1, "Admin transaction failed.");
         emit ClaimAllRewardEvent(user, userShare, adminShare);
 
-        uint256 allRewardAmountInUsdValue = (allRewardAmount.mul(price())) /
-            1 ether;
+        uint256 allRewardAmountInUsdValue = (allRewardAmount.mul(priceFeed.getPrice())) / 1 ether;
         PSDClaimed[user] += allRewardAmountInUsdValue;
         PSTClaimed[user] += allRewardAmount;
         ActualtotalPSDshare -= allRewardAmountInUsdValue;
