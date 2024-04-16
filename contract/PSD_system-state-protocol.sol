@@ -1787,7 +1787,6 @@ function deposit() public payable {
         iTP = 100;
     } else {
         // Calculate iTP based on the specified formula
-        // Adjust this formula according to your specific requirements
         iTP = tokenParity.mul(1215).div(1000); // 1215% for the first vault opening
     }
 
