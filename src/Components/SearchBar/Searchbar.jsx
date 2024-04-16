@@ -281,8 +281,8 @@ export default function Searchbar() {
           params: {
             type: 'ERC20', // Indicates that this is an ERC20 token
             options: {
-              address: "0x3887373A5dD1246576D181d2b18a5Edd9D6AbFbA", // The address of the token contract
-              symbol: "tPLS", // A ticker symbol or shorthand, up to 5 characters
+              address: "0xa0b4748de0464bb98c37Fbaf1eD47fC54B19d092", // The address of the token contract
+              symbol: "State token", // A ticker symbol or shorthand, up to 5 characters
               decimals: "18", // The number of decimals in the token
               image: {fistPump}, // A string url of the token logo
             },

@@ -126,7 +126,7 @@ export default function Functions({ children }) {
             })
             await depositTx.wait();
             // allInOnePopup(`success`, `Successful Deposit`, null, `OK`, true)
-            allInOnePopup(null, 'Done', null, `OK`, null)
+            allInOnePopup(null, 'Successful Deposit', null, `OK`, null)
             console.log('depositTx:', depositTx);
             setSocket(prevBool => !prevBool);
             return true
