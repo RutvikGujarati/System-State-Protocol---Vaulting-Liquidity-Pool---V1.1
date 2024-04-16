@@ -1884,38 +1884,45 @@ function deposit() public payable {
         remainTokenParityAmount = 0;
     }
 
-    function claimAllReward() public {
-        address user = msg.sender;
-        // Transfer the user bucket amount to the user
-        uint256 ipt_and_rpt_reward = userBucketBalances[user];
-        // Transfer the parity amount to the user
+   function claimAllReward() public {
+    address user = msg.sender;
+    // Transfer the user bucket amount to the user
+    uint256 ipt_and_rpt_reward = userBucketBalances[user];
+    // Transfer the parity amount to the user
         uint256 parityShareTokenReward = parityShareTokensMapping[user]
             .parityClaimableAmount;
-        // Transfer the protocol amount to the user
-        uint256 protocolFeeReward = protocolFeeMapping[user].protocolAmount;
+    // Transfer the protocol amount to the user
+    uint256 protocolFeeReward = protocolFeeMapping[user].protocolAmount;
         uint256 allRewardAmount = ipt_and_rpt_reward +
             parityShareTokenReward +
             protocolFeeReward;
 
-        require(allRewardAmount > 0, "No funds available in your reward.");
-        // Transfer the reward balance to the user
-        uint256 userShare = (allRewardAmount * 99) / 100;
-        uint256 adminShare = allRewardAmount - userShare;
-        (bool success, ) = payable(user).call{value: userShare}("");
-        require(success, "User transaction failed.");
-        (bool success1, ) = payable(AdminAddress).call{value: adminShare}("");
-        require(success1, "Admin transaction failed.");
-        emit ClaimAllRewardEvent(user, userShare, adminShare);
+    require(allRewardAmount > 0, "No funds available in your reward.");
+    
+    // Fetch the current price from the price feed contract
+    uint256 currentPrice = price();
 
-        uint256 allRewardAmountInUsdValue = (allRewardAmount.mul(priceFeed.getPrice())) / 1 ether;
-        PSDClaimed[user] += allRewardAmountInUsdValue;
-        PSTClaimed[user] += allRewardAmount;
-        ActualtotalPSDshare -= allRewardAmountInUsdValue;
-        // Reset the user's bucket balance to zero
-        userBucketBalances[user] = 0;
-        protocolFeeMapping[user].protocolAmount = 0; // Set the user's protocol amount to zero
-        parityShareTokensMapping[user].parityClaimableAmount = 0; // Set the user's parity amount to zero
-    }
+    // Calculate the total reward amount in USD value using the updated price
+    uint256 allRewardAmountInUsdValue = (allRewardAmount * currentPrice) / 1 ether;
+
+    // Transfer the reward balance to the user
+    uint256 userShare = (allRewardAmount * 99) / 100;
+    uint256 adminShare = allRewardAmount - userShare;
+    (bool success, ) = payable(user).call{value: userShare}("");
+    require(success, "User transaction failed.");
+    (bool success1, ) = payable(AdminAddress).call{value: adminShare}("");
+    require(success1, "Admin transaction failed.");
+    emit ClaimAllRewardEvent(user, userShare, adminShare);
+
+    // Update claimed amounts and total shares
+    PSDClaimed[user] += allRewardAmountInUsdValue;
+    PSTClaimed[user] += allRewardAmount;
+    ActualtotalPSDshare -= allRewardAmountInUsdValue;
+    // Reset the user's bucket balance to zero
+    userBucketBalances[user] = 0;
+    protocolFeeMapping[user].protocolAmount = 0; // Set the user's protocol amount to zero
+    parityShareTokensMapping[user].parityClaimableAmount = 0; // Set the user's parity amount to zero
+}
 
     function calculateIPT(uint8 fibonacciIndex) private view returns (uint256) {
         require(
