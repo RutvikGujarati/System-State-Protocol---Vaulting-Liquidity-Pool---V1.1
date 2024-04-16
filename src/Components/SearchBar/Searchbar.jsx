@@ -281,7 +281,7 @@ export default function Searchbar() {
           params: {
             type: 'ERC20', // Indicates that this is an ERC20 token
             options: {
-              address: "0xa0b4748de0464bb98c37Fbaf1eD47fC54B19d092", // The address of the token contract
+              address: "0x53E351Ff87f7FDa5F8bA63Ea995C65cf571B6525", // The address of the token contract
               symbol: "State token", // A ticker symbol or shorthand, up to 5 characters
               decimals: "18", // The number of decimals in the token
               image: {fistPump}, // A string url of the token logo
