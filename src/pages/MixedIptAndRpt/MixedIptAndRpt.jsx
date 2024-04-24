@@ -154,7 +154,7 @@ console.log('escorwvalult : ', escrowVaultTargets);
  <Link 
     onClick={()=>setseeFullPage(!seeFullPage)}
     className={`view-link ${(theme === "darkTheme" && "text-white") || (theme === "dimTheme" && "dimThemeBlockView" && "dimThemeBlockView")}`} 
-    style={{ textDecoration: 'none', color: 'inherit', marginLeft:"10px"}}>
+    style={{ textDecoration: 'none', color: 'inherit', marginLeft:"-1000px"}}>
     VIEW ALL TRANSACTIONS {seeFullPage ?<span> &uarr;</span> : <span> &darr;</span>}
  </Link>
  <div style={{ marginLeft: 'auto' }}></div> {/* Hidden element for alignment */}
