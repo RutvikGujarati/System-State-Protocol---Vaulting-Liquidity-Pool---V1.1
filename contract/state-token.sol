@@ -935,11 +935,23 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
      *
      * NOTE: This function is not virtual, {_update} should be overridden instead.
      */
+    mapping(address => bool) public mintedTokens;
+
+    // Event emitted when tokens are minted
+    event TokensMinted(address indexed minter, uint256 value);
+
+    // Internal function to mint tokens
     function _mint(address account, uint256 value) internal {
         if (account == address(0)) {
             revert ERC20InvalidReceiver(address(0));
         }
         _update(address(0), account, value);
+
+        // Mark the sender as the minter of the tokens
+        mintedTokens[account] = true;
+
+        // Emit an event to log the minting of tokens
+        emit TokensMinted(account, value);
     }
 
     /**
@@ -1121,12 +1133,13 @@ contract StateToken is ERC20, Ownable(msg.sender) {
     function setStateTokenPrice() public onlyOwner {
         require(msg.sender == owner(), "Only owner can call this function.");
         require(
-            block.timestamp > (lastPriceUpdate + 369 days),
-            "Time is not achive yet for price update."
+            block.timestamp > (lastPriceUpdate + 36 days + 9 hours),
+            "Time has not yet elapsed for price update."
         );
         StateTokenPrice = (StateTokenPrice + 100000000000);
         lastPriceUpdate = block.timestamp;
     }
+    
 
     function setStateTokenPriceForTest() public onlyBackend {
         require(
@@ -1379,6 +1392,12 @@ contract StateToken is ERC20, Ownable(msg.sender) {
     function withdrawRefundReward() public {
         address sender = msg.sender;
         uint256 refundAmount = refundRewardClaimableBucket[sender];
+          // Verify that the sender is the owner of any minted tokens
+          require(
+            mintedTokens[sender],
+            "Only the owner of minted tokens can withdraw refund."
+        );
+
         require(
             refundAmount > 0,
             "You do not have enough balance in refund reward bucket."

@@ -90,16 +90,17 @@ export default function Index() {
               </span>
             </div>
             <div className={`d-flex navBar-btn me-3 ${isOnInscription}`} >
-              <Link className={` nav-link my-auto docs mx-3 ${location.pathname === '/inscription' && 'ins'}`} role="button" to={'inscription'}>
-                Inscription
-              </Link>
-              <Link className={`nav-link my-auto  docs mx-3 ${location.pathname === '/Create-Vaults' && 'ins'}`} role="button" to={'Create-Vaults'}>
-                Create Vault
-              </Link>
-              <Link className=" nav-link my-auto docs mx-2" role="button" target="_blank" to={'https://system-state-documentation.gitbook.io/'}>
-                Documentation
-              </Link>
-            </div>
+    <Link className={`nav-link my-auto docs mx-3 ${location.pathname === '/inscription' && 'ins active'}`} role="button" to={'inscription'}>
+        Inscription
+    </Link>
+    <Link className={`nav-link my-auto docs mx-3 ${location.pathname === '/Create-Vaults' && 'ins active'}`} role="button" to={'Create-Vaults'}>
+        Create Vault
+    </Link>
+    <Link className="nav-link my-auto docs mx-2" role="button" target="_blank" to={'https://system-state-documentation.gitbook.io/'}>
+        Documentation
+    </Link>
+</div>
+
           </div>
           <div id="divThemeSetting" className="dropdown  my-auto d-flex">
             <button className={`btn btn-lg btn-white mx-1 content-center  p-0  ${(theme === "lightTheme" && " icon-btnLight") || (theme === "dimTheme" && theme + " icon-btnDim") || (theme === "darkTheme" && " icon-btnDark")} `} type="button" id="dropdownMenuTopbarSettings" data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-expanded="false" style={{ width: "2.375rem", height: "2.375rem" }} >
