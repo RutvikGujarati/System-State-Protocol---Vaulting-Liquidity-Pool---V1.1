@@ -1485,7 +1485,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
     StateToken private stateToken;
     address private AdminAddress;
     address private BackendOperationAddress;
-    address private AdminWallet;  // changed oracleWallet to AdminWallet
+    address private AdminWallet; // changed oracleWallet to AdminWallet
     using SafeMath for uint256;
     uint256 public ID = 1;
     uint256 private totalPSDshare;
@@ -1669,7 +1669,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
     // Part 1: Extract Parity Fees Calculation
     function calculationFunction(
         uint256 value
-    ) private  returns (uint256, uint256, uint256, uint256, uint256) {
+    ) private returns (uint256, uint256, uint256, uint256, uint256) {
         uint256 ratioPriceTarget = (value).mul(500).div(1000); // Ratio Price Targets - 50%
         uint256 escrowVault = (value).mul(200).div(1000); // Escrow Vault - 20.0%
         uint256 tokenParity = (value).mul(800).div(10000); // tokenParity - 8.0%
@@ -1730,9 +1730,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
             uint256 ProtocolFees,
             uint256 developmentFee
         ) = calculationFunction(value);
-        (bool success, ) = payable(AdminWallet).call{value: developmentFee}(
-            ""
-        );
+        (bool success, ) = payable(AdminWallet).call{value: developmentFee}("");
 
         // Reward distribution percentages
         uint256 PSDdistributionPercentage = userUsdValue.mul(854).div(1000); // PSD Distribution Percentage 85.4%
@@ -1921,13 +1919,22 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         // Fetch the current price from the price feed contract
         uint256 currentPrice = price();
 
-        // Calculate the total reward amount in USD value using the updated price
-        uint256 allRewardAmountInUsdValue = (allRewardAmount * currentPrice) /
-            1 ether;
+        // Calculate the PSD reward in USD value
+        // Assuming PSDClaimed[user] holds the number of PSD tokens claimed by the user
+        uint256 psdRewardInUsdValue = PSDClaimed[user] * currentPrice;
+
+        // Ensure there is a reward to claim
+        require(
+            psdRewardInUsdValue > 0,
+            "No PSD funds available in your reward."
+        );
+
+        // Calculate the total reward amount in USD value
+        uint256 allRewardAmountInUsdValue = psdRewardInUsdValue;
 
         // Transfer the reward balance to the user
-        uint256 userShare = (allRewardAmount * 99) / 100;
-        uint256 adminShare = allRewardAmount - userShare;
+        uint256 userShare = (allRewardAmountInUsdValue * 99) / 100;
+        uint256 adminShare = allRewardAmountInUsdValue - userShare;
         (bool success, ) = payable(user).call{value: userShare}("");
         require(success, "User transaction failed.");
         (bool success1, ) = payable(AdminAddress).call{value: adminShare}("");
