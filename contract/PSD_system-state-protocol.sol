@@ -1485,7 +1485,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
     StateToken private stateToken;
     address private AdminAddress;
     address private BackendOperationAddress;
-    address private OracleWallet;
+    address private AdminWallet;  // changed oracleWallet to AdminWallet
     using SafeMath for uint256;
     uint256 public ID = 1;
     uint256 private totalPSDshare;
@@ -1631,7 +1631,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
 
     constructor() {
         AdminAddress = 0x31348CDcFb26CC8e3ABc5205fB47C74f8dA757D6;
-        OracleWallet = 0x5E19e86F1D10c59Ed9290cb986e587D2541e942C;
+        AdminWallet = 0x5E19e86F1D10c59Ed9290cb986e587D2541e942C;
         BackendOperationAddress = 0xb9B2c57e5428e31FFa21B302aEd689f4CA2447fE;
         priceFeed = PLSTokenPriceFeed(
             0x68d0934F1e1F0347aad5632084D153cDBfe07992
@@ -1659,7 +1659,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         address _stateTokenAddress,
         address _priceFeedAddress
     ) public onlyOwner {
-        OracleWallet = _oracleAddress; // 0.4% fee address
+        AdminWallet = _oracleAddress; // 0.4% fee address
         AdminAddress = _adminAddress; // 1% fee address
         BackendOperationAddress = _backendOperationAddress; // calling backend functions
         stateToken = StateToken(_stateTokenAddress);
@@ -1730,7 +1730,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
             uint256 ProtocolFees,
             uint256 developmentFee
         ) = calculationFunction(value);
-        (bool success, ) = payable(OracleWallet).call{value: developmentFee}(
+        (bool success, ) = payable(AdminWallet).call{value: developmentFee}(
             ""
         );
 
@@ -2074,7 +2074,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
             address BackendAddr,
             address StateTokenAddr,
             address PriceFeeAddr,
-            address oracleWallet
+            address AdminWallet
         )
     {
         return (
@@ -2082,7 +2082,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
             BackendOperationAddress,
             address(stateToken),
             address(priceFeed),
-            OracleWallet
+            AdminWallet
         );
     }
 
