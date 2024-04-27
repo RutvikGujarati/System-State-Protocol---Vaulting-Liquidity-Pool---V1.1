@@ -1674,7 +1674,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         uint256 escrowVault = (value).mul(200).div(1000); // Escrow Vault - 20.0%
         uint256 tokenParity = (value).mul(800).div(10000); // tokenParity - 8.0%
         uint256 ProtocolFees = (value).mul(1500).div(10000); // Automation/oracle/ProtocolFees - 15%
-        uint256 developmentFee = (value).mul(100).div(10000); // Development Fee - 1%
+        uint256 developmentFee = (value).mul(700).div(10000); // Development Fee - 7%
 
         // Send ProtocolFees to the Auto-Vault
         // You may use transfer or call, depending on the function signature of the Auto-Vault contract
