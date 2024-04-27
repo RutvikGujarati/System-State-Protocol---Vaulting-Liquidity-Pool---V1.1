@@ -1322,16 +1322,16 @@ contract StateToken is ERC20, Ownable(msg.sender) {
 
     function calculateIPT(uint8 fibonacciIndex) private view returns (uint256) {
         require(
-            fibonacciIndex >= 0 && fibonacciIndex < 6,
+            fibonacciIndex >= 0 && fibonacciIndex < 5,
             "Invalid Fibonacci index"
         );
-        uint16[6] memory fibonacciRatioNumbers = [
+        uint16[5] memory fibonacciRatioNumbers = [
             200,
             327,
             428,
             527,
-            672,
-            1000
+            672
+        
         ];
         uint256 multiplier = uint256(fibonacciRatioNumbers[fibonacciIndex]);
         return (price() * (1000 + multiplier)) / 1000;
@@ -1743,12 +1743,11 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
             ); // Adjusted to 92% of the original value
         }
 
-        PSDdistributionPercentageMapping[
-            msg.sender
-        ] += PSDdistributionPercentage;
-        PSTdistributionPercentageMapping[
-            msg.sender
-        ] += PSTdistributionPercentage;
+        // Distribute 8% parity fee to users who have PST but haven't reached parity
+        distributeParityFee();
+
+        PSDdistributionPercentageMapping[msg.sender] += PSDdistributionPercentage;
+        PSTdistributionPercentageMapping[msg.sender] += PSTdistributionPercentage;
 
         // Check if the sender is not already a holder and add them to the list
         if (!isDepositor(msg.sender)) {
@@ -1814,6 +1813,21 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         updateProtocolFee(ProtocolFees);
         ID += 1;
     }
+    
+    function distributeParityFee() private {
+        uint256 parityFee = msg.value.mul(8).div(100); // 8% of the deposited value
+    
+        // Iterate through users with PST and distribute the parity fee
+        for (uint256 i = 0; i < usersWithDeposits.length; i++) {
+            address user = usersWithDeposits[i];
+            if (PSTSharePerUser[user] > 0 && PSDSharePerUser[user] < PSTSharePerUser[user]) {
+                // User has PST but has not reached parity yet
+                uint256 userParityShare = PSTSharePerUser[user].mul(parityFee).div(ActualtotalPSTshare);
+                parityShareTokensMapping[user].parityClaimableAmount += userParityShare;
+            }
+        }
+    }
+    
 
     function withdrawStuckETH() public onlyOwner {
         uint256 balance = (address(this).balance * 99) / 100;

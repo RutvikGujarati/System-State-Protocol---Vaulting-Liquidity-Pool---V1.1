@@ -712,7 +712,7 @@ export default function TrackingPage() {
                                                 <span className={`${tooltip} hoverText`} data-tooltip='The number of tokens in vaults * current price.' data-flow="bottom"> <i className={`fas mx-2 fa-exclamation-circle ${theme}`}></i></span>
                                             </div>
                                             <div className={`flex-grow-1 fontSize text-start  ${textTheme}`}>
-                                                <div className={`${textTitle} `}>TVL</div>
+                                                <div className={`${textTitle} `}>$ TVL</div>
                                                 {/* <div className={`${textTitle} `}>ESCROW VAULTS</div> */}
                                                 <div className={`varSize ${spanDarkDim}`}><span className={`spanText ${spanDarkDim} fs-5`}> {Math.round(reward)} %</span></div>
                                             </div>
@@ -724,7 +724,7 @@ export default function TrackingPage() {
                                                 <span className={`${tooltip} hoverText tooltipAlign`} data-tooltip='The number of tokens in Auto-vaults * current price' data-flow="bottom"> <i className={`fas mx-2 fa-exclamation-circle ${theme}`}></i></span>
                                             </div>
                                             <div className={`flex-grow-1 fontSize text-start  ${textTheme}`}>
-                                                <div className={`${textTitle} `}>AutoVaults TVL</div>
+                                                <div className={`${textTitle} `}>$ AutoVaults TVL</div>
                                                 {/* <div className={`${textTitle} `}>ESCROW VAULTS</div> */}
                                                 {/* <div className={`varSize ${spanDarkDim}`}><span className={`spanText ${spanDarkDim} fs-5`}>{perpeptualYieldLocked}</span></div> */}
                                                 {/* <div className={`varSize ${spanDarkDim}`}><span className={`spanText ${spanDarkDim} fs-5`}>{perpeptualYieldLocked}</span></div> */}
