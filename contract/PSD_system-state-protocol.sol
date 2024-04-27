@@ -1379,9 +1379,9 @@ contract StateToken is ERC20, Ownable(msg.sender) {
                         uint256 X1allocationReward = ThisTargetAmount
                             .mul(382)
                             .div(1000); // ● X1 Allocation reward - 38.2%
-                        uint256 adminDevWallet = ThisTargetAmount.mul(236).div(
+                        uint256 adminDevWallet = ThisTargetAmount.mul(200).div(
                             1000
-                        ); // ● Admin Dev Wallet - 23.6%
+                        ); // ● Admin Dev Wallet - 20.0%
 
                         uint256 refundRewardBucketInUsd = refundRewardBucket[
                             user
@@ -1671,7 +1671,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         uint256 value
     ) private pure returns (uint256, uint256, uint256, uint256, uint256) {
         uint256 ratioPriceTarget = (value).mul(500).div(1000); // Ratio Price Targets - 50%
-        uint256 escrowVault = (value).mul(236).div(1000); // Escrow Vault - 23.6%
+        uint256 escrowVault = (value).mul(200).div(1000); // Escrow Vault - 20.0%
         uint256 tokenParity = (value).mul(800).div(10000); // tokenParity - 8.0%
         uint256 ProtocolFees = (value).mul(560).div(10000); // Automation/oracle/ProtocolFees - 5.60%
         uint256 developmentFee = (value).mul(100).div(10000); // Devlopment Fee - 1%
