@@ -310,9 +310,10 @@ export default function Searchbar() {
                 {
                   isHome ?
                     <div className={` search ${theme} ${theme === "lightTheme" && "text-dark"} ${(theme === "darkTheme" && "Theme-block-container") || (theme === ("dimTheme") && ("dimThemeBg"))}`}>
-                      <p className={`m-0 ms-3 tokenSize d-none d-md-block ${block + dark} ${theme === ("lightTheme") && ("depositInputLight") || theme === "dimTheme" && "depositInputGrey darkColor"} ${theme === "darkTheme" && "depositInputDark darkColor"}`}>
-                        {currencyName}<span>(Pulsechain)</span>
-                      </p>
+                     <p className={`m-0 ms-3 tokenSize d-none d-md-block ${block + dark} ${theme === "lightTheme" && "depositInputLight" || theme === "dimTheme" && "depositInputGrey darkColor"} ${theme === "darkTheme" && "depositInputDark darkColor"}`}>
+    {currencyName}&nbsp;<span>(Pulsechain)</span>
+</p>
+
 
                       {/* <select onChange={(e) => {
                         console.log(e)
