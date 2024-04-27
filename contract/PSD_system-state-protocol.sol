@@ -1669,18 +1669,24 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
     // Part 1: Extract Parity Fees Calculation
     function calculationFunction(
         uint256 value
-    ) private pure returns (uint256, uint256, uint256, uint256, uint256) {
+    ) private  returns (uint256, uint256, uint256, uint256, uint256) {
         uint256 ratioPriceTarget = (value).mul(500).div(1000); // Ratio Price Targets - 50%
         uint256 escrowVault = (value).mul(200).div(1000); // Escrow Vault - 20.0%
         uint256 tokenParity = (value).mul(800).div(10000); // tokenParity - 8.0%
-        uint256 ProtocolFees = (value).mul(560).div(10000); // Automation/oracle/ProtocolFees - 5.60%
-        uint256 developmentFee = (value).mul(100).div(10000); // Devlopment Fee - 1%
+        uint256 ProtocolFees = (value).mul(1500).div(10000); // Automation/oracle/ProtocolFees - 15%
+        uint256 developmentFee = (value).mul(100).div(10000); // Development Fee - 1%
+
+        // Send ProtocolFees to the Auto-Vault
+        // You may use transfer or call, depending on the function signature of the Auto-Vault contract
+        // For simplicity, I'm using transfer assuming Auto-Vault implements a payable receive function
+        address autoVault = 0x31348CDcFb26CC8e3ABc5205fB47C74f8dA757D6;
+        payable(autoVault).transfer(ProtocolFees);
 
         return (
             ratioPriceTarget,
             escrowVault,
             tokenParity,
-            ProtocolFees,
+            0, // ProtocolFees is sent separately, so set it to 0 here
             developmentFee
         );
     }
