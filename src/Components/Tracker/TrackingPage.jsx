@@ -598,7 +598,7 @@ export default function TrackingPage() {
                                                 <div className='w-100 d-flex align-items-end justify-content-between'>
                                                     <div>
                                                         <div className={`${textTitle}`}>CONTRACT STATUS</div>
-                                                        <div className={`varSize ${spanDarkDim}`}><span className={`spanTextAdd ${spanDarkDim}`}>DISCOVERY - NOT RENOUNCED YET</span></div>
+                                                        <div className={`varSize ${spanDarkDim}`}><span className={`spanTextAdd ${spanDarkDim}`}>Contract Status - NOT RENOUNCED YET</span></div>
                                                     </div>
                                                     {/* <InfoBox data='See whitepaper under ”TokenListings”' /> */}
 
@@ -787,7 +787,7 @@ export default function TrackingPage() {
                                                     <div className={`d-flex `}>
                                                         <div className={`flex-grow-1 fontSize text-start ${textTheme}`}>
                                                             <div className={`${textTitle}`}>CONTRACT STATUS</div>
-                                                            <div className='varSize'><span className={`spanTextAdd ${spanDarkDim}`}>DISCOVERY - NOT RENOUNCED YET</span></div>
+                                                            <div className='varSize'><span className={`spanTextAdd ${spanDarkDim}`}>Contract Status - NOT RENOUNCED YET</span></div>
                                                         </div>
                                                         {/* <InfoBox data='See whitepaper under ”TokenListings' /> */}
                                                         <div className='d-flex align-items-end pb-2'>

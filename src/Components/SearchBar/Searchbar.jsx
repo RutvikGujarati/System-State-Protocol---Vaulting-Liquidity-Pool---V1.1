@@ -412,7 +412,7 @@ export default function Searchbar() {
                     Dexscreener
                   </span>
                   <span className={` min-block px-3 ${(theme === "darkTheme" && "Theme-btn-block") || (theme === "dimTheme" && "dimThemeBtnBg")}`}>
-                    Discovery
+                    Contract Status
                   </span>
                   <span className={` min-block px-3 ${(theme === "darkTheme" && "Theme-btn-block") || (theme === "dimTheme" && "dimThemeBtnBg")}`}>
                     Beta
