@@ -10,7 +10,8 @@ import { BigNumber, errors, ethers } from 'ethers';
 import InfoBox from '../InfoIconBox/InfoBox';
 import firstPump from '../../Assets/fistPumpBox.svg'
 import fisrtPumpBrt from '../../Assets/High-Resolutions-Svg/Updated/fist pump small.svg'
-import { PSD_ADDRESS, STATE_TOKEN_ADDRES, allInOnePopup, conciseAddress } from '../../Utils/ADDRESSES/Addresses';
+import { PSD_ADDRESS, allInOnePopup, conciseAddress } from '../../Utils/ADDRESSES/Addresses';
+// import {STATE_TOKEN_ADDRES}from "../../Utils/ADDRESSES/Addresses"
 
 export default function TrackingPage() {
     const { theme } = useContext(themeContext)
@@ -59,7 +60,7 @@ export default function TrackingPage() {
         getWithdrawRefundReward,
         getTotalNumberOfReward,
         getNumberOfStateProtocolUsers,
-        getLastStateTokenPriceUpdateTimestamp
+        // getLastStateTokenPriceUpdateTimestamp
         
     } = useContext(functionsContext)
     const { accountAddress, networkName, userConnected, WalletBalance, currencyName, } = useContext(Web3WalletContext)
@@ -106,7 +107,7 @@ export default function TrackingPage() {
             return `${baseUrl}/${PSD_ADDRESS}`
         }
         else {
-            return `${baseUrl}/${STATE_TOKEN_ADDRES}`
+            // return `${baseUrl}/${STATE_TOKEN_ADDRES}`
         }
     }
 
@@ -501,11 +502,11 @@ export default function TrackingPage() {
     }
     
     
-    const getRemainingTimeForStateTokenPriceUpdate = async () => {
-        const timeStamp = await getLastStateTokenPriceUpdateTimestamp();
-        const remainTime = await getRemainingTime(timeStamp, 36,9 ); // Convert 36.9 days to seconds
-        setRemainingTimeForStateTokenPriceUpdate(remainTime);
-    }
+    // const getRemainingTimeForStateTokenPriceUpdate = async () => {
+    //     const timeStamp = await getLastStateTokenPriceUpdateTimestamp();
+    //     const remainTime = await getRemainingTime(timeStamp, 36,9 ); // Convert 36.9 days to seconds
+    //     setRemainingTimeForStateTokenPriceUpdate(remainTime);
+    // }
     
     useEffect(() => {
         if (userConnected) {
@@ -529,7 +530,7 @@ export default function TrackingPage() {
             getInscriptionPrice();
             getRewardPerc();
             getStateTokenUserInNumber()
-            getRemainingTimeForStateTokenPriceUpdate()
+            // getRemainingTimeForStateTokenPriceUpdate()
         }
     }, [accountAddress, currencyName, socket, NumberOfUser])
 
@@ -588,7 +589,7 @@ export default function TrackingPage() {
                                                         <span className={`spanTextAdd ${spanDarkDim}`}>
                                                             <Link to={navigateToExplorer} target="_blank" className={`spanTextAdd ${spanDarkDim}`} >
                                                                 {
-                                                                    isHome ? conciseAddress(PSD_ADDRESS) : conciseAddress(STATE_TOKEN_ADDRES)
+                                                                    isHome ? conciseAddress(PSD_ADDRESS) : conciseAddress
                                                                 }
                                                             </Link>
                                                         </span>
@@ -777,7 +778,7 @@ export default function TrackingPage() {
                                                                 className={`spanTextAdd ${spanDarkDim}`}
                                                             >
                                                                 {
-                                                                    isHome ? conciseAddress(PSD_ADDRESS) : conciseAddress(STATE_TOKEN_ADDRES)
+                                                                    isHome ? conciseAddress(PSD_ADDRESS) : conciseAddress()
                                                                 }
                                                             </Link>
                                                         </span>

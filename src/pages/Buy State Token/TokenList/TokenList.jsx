@@ -8,7 +8,7 @@ import MetamaskIcon from '../../../Assets/Icons/icn-metamask.svg'
 import './TokenList.css'
 import './InscriptionGraph.css'
 import { themeContext } from '../../../App';
-import { STATE_TOKEN_ADDRES } from '../../../Utils/ADDRESSES/Addresses';
+// import { STATE_TOKEN_ADDRES } from '../../../Utils/ADDRESSES/Addresses';
 import { functionsContext } from '../../../Utils/Functions';
 import Graph from '../../../Components/GraphChartForInscription/GraphChart';
 import { Web3WalletContext } from '../../../Utils/MetamskConnect'
@@ -83,58 +83,58 @@ export default function TokenList() {
         },
     ];
     const data = [
-        {
-            id: 1,
-            srNo: 1,
-            name: 'State',
-            decimals: 18,
-            price: '0.0000001',
-            volume: '$21,153,721,172.00',
-            change: 0,
-            EVM_Chain: 'Pulsechain',
-            img: icon5,
-            icon: MetamaskIcon,
-            address: STATE_TOKEN_ADDRES
-        },
-        {
-            id: 2,
-            srNo: 2,
-            name: 'PLS',
-            decimals: 18,
-            price: '0.00006210',
-            volume: '$21,153,721,172.00',
-            change: +9.45,
-            EVM_Chain: 'Pulsechain',
-            img: icon4,
-            icon: MetamaskIcon,
-            address: STATE_TOKEN_ADDRES
-        },
-        {
-            id: 3,
-            srNo: 3,
-            name: 'PLSX',
-            decimals: 18,
-            price: '0.00001819',
-            volume: '$21,153,721,172.00',
-            change: -1.88,
-            EVM_Chain: 'Pulsechain',
-            img: icon2,
-            icon: MetamaskIcon,
-            address: STATE_TOKEN_ADDRES
-        },
-        {
-            id: 4,
-            srNo: 4,
-            name: 'pXEN',
-            decimals: 18,
-            price: '0.000000002116',
-            volume: '$21,153,721,172.00',
-            change: +22.78,
-            EVM_Chain: 'Pulsechain',
-            img: icon3,
-            icon: MetamaskIcon,
-            address: STATE_TOKEN_ADDRES
-        },
+        // {
+        //     id: 1,
+        //     srNo: 1,
+        //     name: 'State',
+        //     decimals: 18,
+        //     price: '0.0000001',
+        //     volume: '$21,153,721,172.00',
+        //     change: 0,
+        //     EVM_Chain: 'Pulsechain',
+        //     img: icon5,
+        //     icon: MetamaskIcon,
+        //     // address: STATE_TOKEN_ADDRES
+        // },
+        // {
+        //     id: 2,
+        //     srNo: 2,
+        //     name: 'PLS',
+        //     decimals: 18,
+        //     price: '0.00006210',
+        //     volume: '$21,153,721,172.00',
+        //     change: +9.45,
+        //     EVM_Chain: 'Pulsechain',
+        //     img: icon4,
+        //     icon: MetamaskIcon,
+        //     address: STATE_TOKEN_ADDRES
+        // },
+        // {
+        //     id: 3,
+        //     srNo: 3,
+        //     name: 'PLSX',
+        //     decimals: 18,
+        //     price: '0.00001819',
+        //     volume: '$21,153,721,172.00',
+        //     change: -1.88,
+        //     EVM_Chain: 'Pulsechain',
+        //     img: icon2,
+        //     icon: MetamaskIcon,
+        //     address: STATE_TOKEN_ADDRES
+        // },
+        // {
+        //     id: 4,
+        //     srNo: 4,
+        //     name: 'pXEN',
+        //     decimals: 18,
+        //     price: '0.000000002116',
+        //     volume: '$21,153,721,172.00',
+        //     change: +22.78,
+        //     EVM_Chain: 'Pulsechain',
+        //     img: icon3,
+        //     icon: MetamaskIcon,
+        //     address: STATE_TOKEN_ADDRES
+        // },
 
     ]
     createTheme('solarLight', {

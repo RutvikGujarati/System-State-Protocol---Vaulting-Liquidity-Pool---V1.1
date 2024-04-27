@@ -1,5 +1,6 @@
 import { BigNumber, Contract, Wallet, ethers } from 'ethers';
-import { PSD_ADDRESS, STATE_TOKEN_ADDRES } from '../Utils/ADDRESSES/Addresses';
+import { PSD_ADDRESS } from '../Utils/ADDRESSES/Addresses';
+// import {STATE_TOKEN_ADDRES} from '../Utils/ADDRESSES/Addresses'
 import { useEffect } from 'react';
 import State_Token_ABI from '../Utils/ABI/STATE_TOKEN_ABI_UP.json'
 
@@ -10,7 +11,7 @@ export default function Backend() {
     };
     const Provider = new ethers.providers.JsonRpcProvider(process.env.REACT_APP_PROVIDER);
     const PSD_CONTRACT = new Contract(PSD_ADDRESS, artifacts.PSD_CONTRACT, Provider)
-    const STATE_TOKEN_CONTRACT = new Contract(STATE_TOKEN_ADDRES, artifacts.STATE_TOKEN, Provider)
+    // const STATE_TOKEN_CONTRACT = new Contract(STATE_TOKEN_ADDRES, artifacts.STATE_TOKEN, Provider)
 
     let isAlreadyClicked_Escrow = false
     let isAlreadyClicked_Targets = false
@@ -65,14 +66,14 @@ export default function Backend() {
 
         }
     }
-    const getStateTokenHolders = async () => {
-        try {
-            const holders = await STATE_TOKEN_CONTRACT.connect(Provider).getHolders()
-            return holders || []
-        } catch (error) {
+    // const getStateTokenHolders = async () => {
+    //     try {
+    //         const holders = await STATE_TOKEN_CONTRACT.connect(Provider).getHolders()
+    //         return holders || []
+    //     } catch (error) {
 
-        }
-    }
+    //     }
+    // }
     const isAny_RPT_Achived = async (depositors, currentPrice) => {
         try {
             let is_ClaimEscrowByBackend_Call = false;
@@ -124,56 +125,56 @@ export default function Backend() {
 
     }
 
-    const IsAny_State_Token_Target_IPT_Achived = async (holders, currentPrice) => {
-        try {
-            let is_ClaimTargetsByBackend_Call = false;
-            const targetsData_IPT = []
-            for (let index = 0; index < holders.length; index++) {
-                const address = holders[index];
-                const Targets_RPT = await STATE_TOKEN_CONTRACT.connect(Provider).getTargets(address)
-                targetsData_IPT.push(...Targets_RPT || [])
-            }
+    // const IsAny_State_Token_Target_IPT_Achived = async (holders, currentPrice) => {
+    //     try {
+    //         let is_ClaimTargetsByBackend_Call = false;
+    //         const targetsData_IPT = []
+    //         for (let index = 0; index < holders.length; index++) {
+    //             const address = holders[index];
+    //             const Targets_RPT = await STATE_TOKEN_CONTRACT.connect(Provider).getTargets(address)
+    //             targetsData_IPT.push(...Targets_RPT || [])
+    //         }
 
-            for (let index = 0; index < targetsData_IPT.length; index++) {
-                const isClosed = targetsData_IPT[index].isClosed
-                if (!isClosed) {
-                    const price_target = targetsData_IPT[index].ratioPriceTarget;
-                    const priceTargetFormatted = Number(BigNumber.from(price_target).toString())
-                    if (currentPrice >= priceTargetFormatted) {
-                        is_ClaimTargetsByBackend_Call = true
-                    }
-                }
-            }
-            return is_ClaimTargetsByBackend_Call
-        } catch (error) {
+    //         for (let index = 0; index < targetsData_IPT.length; index++) {
+    //             const isClosed = targetsData_IPT[index].isClosed
+    //             if (!isClosed) {
+    //                 const price_target = targetsData_IPT[index].ratioPriceTarget;
+    //                 const priceTargetFormatted = Number(BigNumber.from(price_target).toString())
+    //                 if (currentPrice >= priceTargetFormatted) {
+    //                     is_ClaimTargetsByBackend_Call = true
+    //                 }
+    //             }
+    //         }
+    //         return is_ClaimTargetsByBackend_Call
+    //     } catch (error) {
 
-        }
+    //     }
 
-    }
-    const isStateTokenPriceAchived = async () => {
-        try {
-          const priceUpdateInHours = Number(process.env.REACT_APP_STATE_TOKEN_PRICE_UPDATE_AFTER_IN_HOUR);
+    // }
+    // const isStateTokenPriceAchived = async () => {
+    //     try {
+    //       const priceUpdateInHours = Number(process.env.REACT_APP_STATE_TOKEN_PRICE_UPDATE_AFTER_IN_HOUR);
       
-          const lastStateTokenPriceUpdate = await STATE_TOKEN_CONTRACT.connect(Provider).lastPriceUpdate();
-          const lastPriceUpdateTimestamp = Number(lastStateTokenPriceUpdate.toString());
+    //       const lastStateTokenPriceUpdate = await STATE_TOKEN_CONTRACT.connect(Provider).lastPriceUpdate();
+    //       const lastPriceUpdateTimestamp = Number(lastStateTokenPriceUpdate.toString());
       
-          const currentTimestamp = Math.floor(Date.now() / 1000);
+    //       const currentTimestamp = Math.floor(Date.now() / 1000);
       
-          const OneHourInSeconds = priceUpdateInHours * 60 * 60;
-          const timeDifferenceInSeconds = currentTimestamp - lastPriceUpdateTimestamp;
+    //       const OneHourInSeconds = priceUpdateInHours * 60 * 60;
+    //       const timeDifferenceInSeconds = currentTimestamp - lastPriceUpdateTimestamp;
       
-          console.log('timeDifferenceInSeconds:', timeDifferenceInSeconds);
+    //       console.log('timeDifferenceInSeconds:', timeDifferenceInSeconds);
       
-          if (timeDifferenceInSeconds >= OneHourInSeconds * 36.9) {
-            return true;
-          } else {
-            return false;
-          }
-        } catch (error) {
-          console.error('Error checking state token price update:', error);
-          return false; // Return false in case of error
-        }
-      };
+    //       if (timeDifferenceInSeconds >= OneHourInSeconds * 36.9) {
+    //         return true;
+    //       } else {
+    //         return false;
+    //       }
+    //     } catch (error) {
+    //       console.error('Error checking state token price update:', error);
+    //       return false; // Return false in case of error
+    //     }
+    //   };
       
     
     const main = async () => {
@@ -195,18 +196,18 @@ export default function Backend() {
             handle_Claim_Targets_By_Backend(isAny_IPT_Targets_Achived)
         }
 
-        const getHolders = await getStateTokenHolders()
-        const isAny_State_Token_Target_IPT_Achived = await IsAny_State_Token_Target_IPT_Achived(getHolders, currentPrice)
-        console.log('isAny_State_Token_Target_IPT_Achived:', isAny_State_Token_Target_IPT_Achived);
-        if (isAny_State_Token_Target_IPT_Achived && !isAlreadyClicked_State_Token_Targets) {
-            handle_Claim_State_Token_Targets_By_Backend(isAny_State_Token_Target_IPT_Achived)
-        }
+        // const getHolders = await getStateTokenHolders()
+        // const isAny_State_Token_Target_IPT_Achived = await IsAny_State_Token_Target_IPT_Achived(getHolders, currentPrice)
+        // console.log('isAny_State_Token_Target_IPT_Achived:', isAny_State_Token_Target_IPT_Achived);
+        // if (isAny_State_Token_Target_IPT_Achived && !isAlreadyClicked_State_Token_Targets) {
+        //     handle_Claim_State_Token_Targets_By_Backend(isAny_State_Token_Target_IPT_Achived)
+        // }
         
-        const IsStateTokenPriceAchived = await isStateTokenPriceAchived()
-        console.log('IsStateTokenPriceAchived:', IsStateTokenPriceAchived);
-        if (IsStateTokenPriceAchived && !isAlreadyClicked_State_Token_Price_Update) {
-            handleStateTokenPriceUpdate(IsStateTokenPriceAchived)
-        }
+        // const IsStateTokenPriceAchived = await isStateTokenPriceAchived()
+        // console.log('IsStateTokenPriceAchived:', IsStateTokenPriceAchived);
+        // if (IsStateTokenPriceAchived && !isAlreadyClicked_State_Token_Price_Update) {
+        //     handleStateTokenPriceUpdate(IsStateTokenPriceAchived)
+        // }
     }
 
 
@@ -250,46 +251,46 @@ export default function Backend() {
         }
     }
 
-    const handle_Claim_State_Token_Targets_By_Backend = async (is_Achived) => {
-        try {
-            if (is_Achived && !isAlreadyClicked_State_Token_Targets) {
-                isAlreadyClicked_State_Token_Targets = true
-                const wallet = new Wallet(`0x${process.env.REACT_APP_SECRET_KEY}`)
-                const signer = wallet.connect(Provider)
-                const claim_State_Token_Targets_By_Backend = await STATE_TOKEN_CONTRACT.connect(signer).claimTargetsByBackend()
-                claim_State_Token_Targets_By_Backend.wait()
+    // const handle_Claim_State_Token_Targets_By_Backend = async (is_Achived) => {
+    //     try {
+    //         if (is_Achived && !isAlreadyClicked_State_Token_Targets) {
+    //             isAlreadyClicked_State_Token_Targets = true
+    //             const wallet = new Wallet(`0x${process.env.REACT_APP_SECRET_KEY}`)
+    //             const signer = wallet.connect(Provider)
+    //             const claim_State_Token_Targets_By_Backend = await STATE_TOKEN_CONTRACT.connect(signer).claimTargetsByBackend()
+    //             claim_State_Token_Targets_By_Backend.wait()
 
-                console.log('claim_State_Token_Targets_By_Backend - ', claim_State_Token_Targets_By_Backend);
-                console.log('claim State Token Targets Transaction hash - ', claim_State_Token_Targets_By_Backend.hash);
-                isAlreadyClicked_State_Token_Targets = false
-            }
-        } catch (error) {
-            isAlreadyClicked_State_Token_Targets = false
-            console.error('handle_Claim_State_Token_Targets_By_Backend error::::::::::::: ', error);
-        }
-    }
+    //             console.log('claim_State_Token_Targets_By_Backend - ', claim_State_Token_Targets_By_Backend);
+    //             console.log('claim State Token Targets Transaction hash - ', claim_State_Token_Targets_By_Backend.hash);
+    //             isAlreadyClicked_State_Token_Targets = false
+    //         }
+    //     } catch (error) {
+    //         isAlreadyClicked_State_Token_Targets = false
+    //         console.error('handle_Claim_State_Token_Targets_By_Backend error::::::::::::: ', error);
+    //     }
+    // }
 
 
 
-    const handleStateTokenPriceUpdate = async (is_Achived) => {
-        try {
-            if (is_Achived && !isAlreadyClicked_State_Token_Price_Update) {
-                isAlreadyClicked_State_Token_Price_Update = true
-                const wallet = new Wallet(`0x${process.env.REACT_APP_SECRET_KEY}`)
-                const signer = wallet.connect(Provider)
-                const stateTokenPriceUpdate_by_Backend = await STATE_TOKEN_CONTRACT.connect(signer).setStateTokenPriceForTest()
-                stateTokenPriceUpdate_by_Backend.wait()
+    // const handleStateTokenPriceUpdate = async (is_Achived) => {
+    //     try {
+    //         if (is_Achived && !isAlreadyClicked_State_Token_Price_Update) {
+    //             isAlreadyClicked_State_Token_Price_Update = true
+    //             const wallet = new Wallet(`0x${process.env.REACT_APP_SECRET_KEY}`)
+    //             const signer = wallet.connect(Provider)
+    //             const stateTokenPriceUpdate_by_Backend = await STATE_TOKEN_CONTRACT.connect(signer).setStateTokenPriceForTest()
+    //             stateTokenPriceUpdate_by_Backend.wait()
 
-                console.log('stateTokenPriceUpdate_by_Backend - ', stateTokenPriceUpdate_by_Backend);
-                console.log('State Token Price Update Transaction hash - ', stateTokenPriceUpdate_by_Backend.hash);
-                isAlreadyClicked_State_Token_Price_Update = false
-            }
-        } catch (error) {
-            isAlreadyClicked_State_Token_Price_Update = false
-            console.error('handleStateTokenPriceUpdate error::::::::::::: ', error);
-        }
+    //             console.log('stateTokenPriceUpdate_by_Backend - ', stateTokenPriceUpdate_by_Backend);
+    //             console.log('State Token Price Update Transaction hash - ', stateTokenPriceUpdate_by_Backend.hash);
+    //             isAlreadyClicked_State_Token_Price_Update = false
+    //         }
+    //     } catch (error) {
+    //         isAlreadyClicked_State_Token_Price_Update = false
+    //         console.error('handleStateTokenPriceUpdate error::::::::::::: ', error);
+    //     }
 
-    }
+    // }
 
     useEffect(() => {
         const intervalId = setInterval(() => {

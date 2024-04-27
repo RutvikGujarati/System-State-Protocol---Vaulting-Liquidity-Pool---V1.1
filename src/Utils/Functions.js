@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import PSD_ABI_UP from '../Utils/ABI/PSD_ABI_UP.json'
 import STATE_TOKEN_ABI_UP from '../Utils/ABI/STATE_TOKEN_ABI_UP.json'
-import { PSD_ADDRESS, STATE_TOKEN_ADDRES, allInOnePopup } from './ADDRESSES/Addresses';
+import { PSD_ADDRESS, allInOnePopup } from './ADDRESSES/Addresses';
+// import {STATE_TOKEN_ADDRES} from './ADDRESSES/Addresses'
 import { Web3WalletContext } from './MetamskConnect';
 import { BigNumber, ethers } from 'ethers';
 export const functionsContext = createContext();
@@ -449,51 +450,51 @@ export default function Functions({ children }) {
 
     // Buy State tokens functions 
 
-    const getStateTokenContract = async () => {
-        try {
-            const provider = await getProvider();
-            const signer = provider.getSigner();
-            const State_Token_Contract = new ethers.Contract(STATE_TOKEN_ADDRES, STATE_TOKEN_ABI_UP, signer);
-            return State_Token_Contract;
-        } catch (error) {
-            console.error('getStateTokenContract error:', error);
-        }
-    }
+    // const getStateTokenContract = async () => {
+    //     try {
+    //         const provider = await getProvider();
+    //         const signer = provider.getSigner();
+    //         const State_Token_Contract = new ethers.Contract(STATE_TOKEN_ADDRES, STATE_TOKEN_ABI_UP, signer);
+    //         return State_Token_Contract;
+    //     } catch (error) {
+    //         console.error('getStateTokenContract error:', error);
+    //     }
+    // }
 
-    const handle_Buy_State_Token = async (address, amount) => {
-        if (address) {
-            try {
-                const parsedAmount = await getParseEther(amount)
-                if (parsedAmount === undefined) {
-                    allInOnePopup(null, 'Please Enter Valid Amount', null, `OK`, null)
-                    return;
-                }
-                // let userUsdValue = await getUserUsdValue(amount)
-                // if (Number(amount) == '' || userUsdValue <= 1) {
-                //     // allInOnePopup(`warning`, `Invalid input`, `Please enter amount is greater then 1 dollar.`, `OK`, true)
-                //     allInOnePopup(null, `Please enter amount is greater then 1 dollar.`, null, `OK`, null)
-                //     return
-                // };
-                console.log('parsedAmount12', parsedAmount)
-                let contract = await getStateTokenContract()
-                allInOnePopup(null, 'Processing Deposit', null, `OK`, null)
-                // allInOnePopup(null, 'Processing Deposit', `Please wait for Buy State Tokens.`, `OK`, null)
-                let inscribeTx = await contract.inscribe({
-                    value: parsedAmount
-                })
-                await inscribeTx.wait()
-                console.log('inscribeTx: ', inscribeTx);
-                // allInOnePopup(`success`, `Successful Buy.`, `Operation has been completed successfully.`, `OK`, true)
-                allInOnePopup(null, `Done`, null, `OK`, null)
-                setSocket(prevBool => !prevBool);
-                return true
-            } catch (error) {
-                console.error('handle_Buy_State_Token error:', error);
-                // allInOnePopup(`error`, `Error`, `An error occurred. Please try again.`, `OK`, true);
-                allInOnePopup(null, `Transaction Reverted, Please Try Again.`, null, `OK`, null)
-            }
-        }
-    }
+    // const handle_Buy_State_Token = async (address, amount) => {
+    //     if (address) {
+    //         try {
+    //             const parsedAmount = await getParseEther(amount)
+    //             if (parsedAmount === undefined) {
+    //                 allInOnePopup(null, 'Please Enter Valid Amount', null, `OK`, null)
+    //                 return;
+    //             }
+    //             // let userUsdValue = await getUserUsdValue(amount)
+    //             // if (Number(amount) == '' || userUsdValue <= 1) {
+    //             //     // allInOnePopup(`warning`, `Invalid input`, `Please enter amount is greater then 1 dollar.`, `OK`, true)
+    //             //     allInOnePopup(null, `Please enter amount is greater then 1 dollar.`, null, `OK`, null)
+    //             //     return
+    //             // };
+    //             console.log('parsedAmount12', parsedAmount)
+    //             let contract = await getStateTokenContract()
+    //             allInOnePopup(null, 'Processing Deposit', null, `OK`, null)
+    //             // allInOnePopup(null, 'Processing Deposit', `Please wait for Buy State Tokens.`, `OK`, null)
+    //             let inscribeTx = await contract.inscribe({
+    //                 value: parsedAmount
+    //             })
+    //             await inscribeTx.wait()
+    //             console.log('inscribeTx: ', inscribeTx);
+    //             // allInOnePopup(`success`, `Successful Buy.`, `Operation has been completed successfully.`, `OK`, true)
+    //             allInOnePopup(null, `Done`, null, `OK`, null)
+    //             setSocket(prevBool => !prevBool);
+    //             return true
+    //         } catch (error) {
+    //             console.error('handle_Buy_State_Token error:', error);
+    //             // allInOnePopup(`error`, `Error`, `An error occurred. Please try again.`, `OK`, true);
+    //             allInOnePopup(null, `Transaction Reverted, Please Try Again.`, null, `OK`, null)
+    //         }
+    //     }
+    // }
     const addTokenToMetaMask = async (tokenAddress, tokenSymbol, decimals) => {
         try {
             // Request MetaMask to add the token
@@ -518,46 +519,46 @@ export default function Functions({ children }) {
             allInOnePopup(null, `An error occurred. Please try again.`, null, `OK`, null)
         }
     };
-    const getUsdcSpendOnInscription = async (address) => {
-        if (address) {
-            try {
-                let contract = await getStateTokenContract()
-                let getUsdcSpendOnInscription = await contract.getUsdcSpendOnInscription(address)
-                let value_In_Str = getUsdcSpendOnInscription.toString()
-                let formatted_Value = await getFormatEther(value_In_Str)
-                return Number(formatted_Value)
-            } catch (error) {
-                console.error('getUsdcSpendOnInscription error:', error);
-            }
-        }
-    }
+    // const getUsdcSpendOnInscription = async (address) => {
+    //     if (address) {
+    //         try {
+    //             let contract = await getStateTokenContract()
+    //             let getUsdcSpendOnInscription = await contract.getUsdcSpendOnInscription(address)
+    //             let value_In_Str = getUsdcSpendOnInscription.toString()
+    //             let formatted_Value = await getFormatEther(value_In_Str)
+    //             return Number(formatted_Value)
+    //         } catch (error) {
+    //             console.error('getUsdcSpendOnInscription error:', error);
+    //         }
+    //     }
+    // }
 
-    const getClaimX1Refund = async () => {
-        const contract = await getStateTokenContract();
-        const claim = await contract?.totalSupply;
+    // const getClaimX1Refund = async () => {
+    //     const contract = await getStateTokenContract();
+    //     const claim = await contract?.totalSupply;
 
-    }
+    // }
     
-    const getStateTokenHolding = async (address) => {
-        if (address) {
-            try {
-                let contract = await getStateTokenContract()
-                let balanceOf = await contract.balanceOf(address)
-                let balanceOf_InStr = balanceOf.toString()
-                let formatted_balanceOf = await getFormatEther(balanceOf_InStr)
+    // const getStateTokenHolding = async (address) => {
+    //     if (address) {
+    //         try {
+    //             let contract = await getStateTokenContract()
+    //             let balanceOf = await contract.balanceOf(address)
+    //             let balanceOf_InStr = balanceOf.toString()
+    //             let formatted_balanceOf = await getFormatEther(balanceOf_InStr)
 
-                let totalSelledToken = await contract.getTotalSelledTokens()
-                let totalSelledToken_InStr = await totalSelledToken.toString()
-                let formatted_totalSelledTokens = await getFormatEther(totalSelledToken_InStr)
+    //             let totalSelledToken = await contract.getTotalSelledTokens()
+    //             let totalSelledToken_InStr = await totalSelledToken.toString()
+    //             let formatted_totalSelledTokens = await getFormatEther(totalSelledToken_InStr)
 
-                let percentage = (Number(formatted_balanceOf) * 100) / Number(formatted_totalSelledTokens)
-                let tokenHolds = Number(formatted_balanceOf)
-                return { tokenHolds: tokenHolds, percentage: percentage }
-            } catch (error) {
-                console.error('getStateTokenHolding error:', error);
-            }
-        }
-    }
+    //             let percentage = (Number(formatted_balanceOf) * 100) / Number(formatted_totalSelledTokens)
+    //             let tokenHolds = Number(formatted_balanceOf)
+    //             return { tokenHolds: tokenHolds, percentage: percentage }
+    //         } catch (error) {
+    //             console.error('getStateTokenHolding error:', error);
+    //         }
+    //     }
+    // }
 
     const getDepositors = async () => {
         try {
@@ -569,63 +570,63 @@ export default function Functions({ children }) {
         }
     }
 
-    const getTotalSupply = async () => {
-        const contract = await getStateTokenContract();
-        try {
-            if (!contract) {
-                console.error('Contract not available.');
-                return;
-            }
-            // const contract = await getPsdContract();
-            const supply = await contract.totalSupply();
-            return supply;
+    // const getTotalSupply = async () => {
+    //     const contract = await getStateTokenContract();
+    //     try {
+    //         if (!contract) {
+    //             console.error('Contract not available.');
+    //             return;
+    //         }
+    //         // const contract = await getPsdContract();
+    //         const supply = await contract.totalSupply();
+    //         return supply;
 
-        } catch (err) {
-            console.log('totalSupply :', err)
-        }
+    //     } catch (err) {
+    //         console.log('totalSupply :', err)
+    //     }
 
-    }
+    // }
 
-    const getCeateVaultTime = async () => {
-        const contract = await getStateTokenContract();
-        try {
-            if (!contract) {
-                console.error('Contract not available.');
-                return;
-            }
-            const timeInSecond = await contract?.Deployed_Time();
-            const timestampInMilliseconds = timeInSecond * 1000;
-            const currentTimeInMilliseconds = Date.now();
-            const timeDifferenceInMilliseconds = currentTimeInMilliseconds - timestampInMilliseconds;
-            const daysDifference = timeDifferenceInMilliseconds / (24 * 60 * 60 * 1000);
+    // const getCeateVaultTime = async () => {
+    //     const contract = await getStateTokenContract();
+    //     try {
+    //         if (!contract) {
+    //             console.error('Contract not available.');
+    //             return;
+    //         }
+    //         const timeInSecond = await contract?.Deployed_Time();
+    //         const timestampInMilliseconds = timeInSecond * 1000;
+    //         const currentTimeInMilliseconds = Date.now();
+    //         const timeDifferenceInMilliseconds = currentTimeInMilliseconds - timestampInMilliseconds;
+    //         const daysDifference = timeDifferenceInMilliseconds / (24 * 60 * 60 * 1000);
 
-            return Math.ceil(daysDifference);
+    //         return Math.ceil(daysDifference);
 
-        } catch (err) {
-            console.log('DeployTime', err)
-        }
-    }
+    //     } catch (err) {
+    //         console.log('DeployTime', err)
+    //     }
+    // }
 
-    const getX1allocationClaimableBucket = async (address) => {
-        const contract = await getStateTokenContract();
-        try {
-            const claimX1 = await contract?.X1allocationClaimableBucket(address);
-            return claimX1;
+    // const getX1allocationClaimableBucket = async (address) => {
+    //     const contract = await getStateTokenContract();
+    //     try {
+    //         const claimX1 = await contract?.X1allocationClaimableBucket(address);
+    //         return claimX1;
 
-        } catch (error) {
-            console.error('X1allocationClaimableBucket :', error)
-        }
-    }
+    //     } catch (error) {
+    //         console.error('X1allocationClaimableBucket :', error)
+    //     }
+    // }
 
-    const getX1allocationBucket = async (address) => {
-        const contract = await getStateTokenContract();
-        try {
-            const x1ClamedInscribe = await contract?.X1allocationBucket(address)
-            return x1ClamedInscribe;
-        } catch (error) {
+    // const getX1allocationBucket = async (address) => {
+    //     const contract = await getStateTokenContract();
+    //     try {
+    //         const x1ClamedInscribe = await contract?.X1allocationBucket(address)
+    //         return x1ClamedInscribe;
+    //     } catch (error) {
 
-        }
-    }
+    //     }
+    // }
 
     const fetch = require('node-fetch'); // Import the node-fetch library for making HTTP requests
 
@@ -647,36 +648,36 @@ export default function Functions({ children }) {
     
 
 
-    const getRefundRewardClaimableBucket = async (accountAddress) => {
-        const contract = await getStateTokenContract();
-        try {
-            const RefundCalim = await contract.refundRewardClaimableBucket(accountAddress);
-            return RefundCalim;
-        } catch (err) {
-            console.error(err, 'getRefundRewardClaimableBucket method error')
-        }
-    }
+    // const getRefundRewardClaimableBucket = async (accountAddress) => {
+    //     const contract = await getStateTokenContract();
+    //     try {
+    //         const RefundCalim = await contract.refundRewardClaimableBucket(accountAddress);
+    //         return RefundCalim;
+    //     } catch (err) {
+    //         console.error(err, 'getRefundRewardClaimableBucket method error')
+    //     }
+    // }
 
-    const getStateTokenPrice = async () => {
-        const contract = await getStateTokenContract();
-        try {
-            const stateTokenPrice = await contract?.StateTokenPrice();
-            return stateTokenPrice;
-        } catch (err) {
-            console.error(err, 'stateTokenPrice method error')
-        }
-    }
+    // const getStateTokenPrice = async () => {
+    //     const contract = await getStateTokenContract();
+    //     try {
+    //         const stateTokenPrice = await contract?.StateTokenPrice();
+    //         return stateTokenPrice;
+    //     } catch (err) {
+    //         console.error(err, 'stateTokenPrice method error')
+    //     }
+    // }
 
-    const getInscriptionContractAddress = async () => {
-        try {
-            const contract = await getStateTokenContract();
-            const contractAddress = contract?.address;
-            return contractAddress;
-        }
-        catch (err) {
-            console.log('getInscriptionContractAddress:', err)
-        }
-    }
+    // const getInscriptionContractAddress = async () => {
+    //     try {
+    //         const contract = await getStateTokenContract();
+    //         const contractAddress = contract?.address;
+    //         return contractAddress;
+    //     }
+    //     catch (err) {
+    //         console.log('getInscriptionContractAddress:', err)
+    //     }
+    // }
 
     const getClaimAllReward = async (address) => {
         const contract = await getPsdContract();
@@ -692,81 +693,81 @@ export default function Functions({ children }) {
         }
     }
 
-    const getWithdrawRefundReward = async () => {
-        const contract = await getStateTokenContract();
-        const RefundCalim = await contract.refundRewardClaimableBucket(accountAddress);
-        try {
-            allInOnePopup(null, 'Processing Please Wait', null, `OK`, null)
-            if (RefundCalim <= 0) {
-                allInOnePopup(null, 'Insufficient Rewards', null, `OK`, null)
-                return;
+    // const getWithdrawRefundReward = async () => {
+    //     const contract = await getStateTokenContract();
+    //     const RefundCalim = await contract.refundRewardClaimableBucket(accountAddress);
+    //     try {
+    //         allInOnePopup(null, 'Processing Please Wait', null, `OK`, null)
+    //         if (RefundCalim <= 0) {
+    //             allInOnePopup(null, 'Insufficient Rewards', null, `OK`, null)
+    //             return;
 
-            }
-            // withdrawRefundReward (0xd8e1b051)
-            const reward = await contract?.withdrawRefundReward();
-            await reward.wait();
-            allInOnePopup(null, 'Successful Claimed', null, `OK`, null)
-        } catch (err) {
-            allInOnePopup(null, 'Transaction Reverted. Please Try Again.', null, `OK`, null)
-        }
+    //         }
+    //         // withdrawRefundReward (0xd8e1b051)
+    //         const reward = await contract?.withdrawRefundReward();
+    //         await reward.wait();
+    //         allInOnePopup(null, 'Successful Claimed', null, `OK`, null)
+    //     } catch (err) {
+    //         allInOnePopup(null, 'Transaction Reverted. Please Try Again.', null, `OK`, null)
+    //     }
 
-    }
+    // }
 
-    const getwithdrawX1allocationReward = async (address) => {
-        const contract = await getStateTokenContract();
-        try {
+    // const getwithdrawX1allocationReward = async (address) => {
+    //     const contract = await getStateTokenContract();
+    //     try {
 
-            const claimX1 = await contract?.X1allocationClaimableBucket(address)
-            allInOnePopup(null, 'Processing Transaction', null, `OK`, null)
-            if (claimX1 <= 0) {
-                allInOnePopup(null, 'Insufficient Rewards', null, `OK`, null)
-                return;
-            } else {
-                const x1Reward = await contract?.withdrawX1allocationReward();
-                await x1Reward.wait();
-            }
-            // withdrawX1allocationReward (0xc2e41d29)
-            allInOnePopup(null, 'Successful Claimed', null, `OK`, null)
+    //         const claimX1 = await contract?.X1allocationClaimableBucket(address)
+    //         allInOnePopup(null, 'Processing Transaction', null, `OK`, null)
+    //         if (claimX1 <= 0) {
+    //             allInOnePopup(null, 'Insufficient Rewards', null, `OK`, null)
+    //             return;
+    //         } else {
+    //             const x1Reward = await contract?.withdrawX1allocationReward();
+    //             await x1Reward.wait();
+    //         }
+    //         // withdrawX1allocationReward (0xc2e41d29)
+    //         allInOnePopup(null, 'Successful Claimed', null, `OK`, null)
 
-        } catch (error) {
-            allInOnePopup(null, 'Transaction Reverted. Please Try Again.', null, `OK`, null)
-            console.error('Transaction reverted:', error.message);
-            // Handle the error or take appropriate action
-        }
-    }
+    //     } catch (error) {
+    //         allInOnePopup(null, 'Transaction Reverted. Please Try Again.', null, `OK`, null)
+    //         console.error('Transaction reverted:', error.message);
+    //         // Handle the error or take appropriate action
+    //     }
+    // }
 
     //Functions defined for Graph analytics
 
-    const getcSpendOnInscription = async (address) => {
-        const contract = await getStateTokenContract();
-        try {
-            const usdSpendonInscription = await contract?.getUsdcSpendOnInscription(address)
-            return ethers.utils.formatEther(usdSpendonInscription);
-        } catch (error) {
+    // const getcSpendOnInscription = async (address) => {
+    //     const contract = await getStateTokenContract();
+    //     try {
+    //         const usdSpendonInscription = await contract?.getUsdcSpendOnInscription(address)
+    //         return ethers.utils.formatEther(usdSpendonInscription);
+    //     } catch (error) {
 
-        }
-    }
+    //     }
+    // }
     // getcSpendOnInscription()
-    const getinscriptionRewardClaim = async (address) => {
-        const contract = await getStateTokenContract()
-        try {
-            const refundReward = await contract?.refundRewardBucket(address)
-            return refundReward;
-        } catch (error) {
+    // const getinscriptionRewardClaim = async (address) => {
+    //     const contract = await getStateTokenContract()
+    //     try {
+    //         const refundReward = await contract?.refundRewardBucket(address)
+    //         return refundReward;
+    //     } catch (error) {
 
-        }
-    }
+    //     }
+    // }
     // getinscriptionRewardClaim()
 
-    const getX1allocationBucketClaim = async (address) => {
-        const contract = await getStateTokenContract();
-        try {
-            const X1allocationBucket = await contract?.X1allocationBucket(address)
-            return X1allocationBucket;
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    // const getX1allocationBucketClaim = async (address) => {
+    //     const contract = await getStateTokenContract();
+    //     try {
+    //         const X1allocationBucket = await contract?.X1allocationBucket(address)
+    //         return X1allocationBucket;
+    //     } catch (error) {
+    //         console.log(error)
+    //     }
+    // }
 
     const getDepositeValues = async () => {
         const contract = await getPsdContract();
@@ -780,48 +781,48 @@ export default function Functions({ children }) {
         }
     }
 
-    const getLastStateTokenPriceUpdateTimestamp = async () => {
-        const contract = await getStateTokenContract();
-        try {
-            const timeStamp = await contract?.lastPriceUpdate();
-            const timeStampInStr =timeStamp ?  timeStamp?.toString() : '0'
-            return timeStampInStr;
+    // const getLastStateTokenPriceUpdateTimestamp = async () => {
+    //     const contract = await getStateTokenContract();
+    //     try {
+    //         const timeStamp = await contract?.lastPriceUpdate();
+    //         const timeStampInStr =timeStamp ?  timeStamp?.toString() : '0'
+    //         return timeStampInStr;
             
-        } catch (error) {
+    //     } catch (error) {
 
-        }
-    }
+    //     }
+    // }
 
-    const getStateTokenTargets = async (address) => {
-        const contract = await getStateTokenContract()
-        try {
-            const target = await contract?.getTargets(address);
-            return target;
-        } catch (error) {
+    // const getStateTokenTargets = async (address) => {
+    //     const contract = await getStateTokenContract()
+    //     try {
+    //         const target = await contract?.getTargets(address);
+    //         return target;
+    //     } catch (error) {
 
-        }
-    }
+    //     }
+    // }
 
-    const getStateTokenHolders = async () => {
-        const contract = await getStateTokenContract();
-        try {
-            const StateTokenHolder = await contract?.getHolders();
-            return StateTokenHolder
-        } catch (error) {
-        }
-    }
+    // const getStateTokenHolders = async () => {
+    //     const contract = await getStateTokenContract();
+    //     try {
+    //         const StateTokenHolder = await contract?.getHolders();
+    //         return StateTokenHolder
+    //     } catch (error) {
+    //     }
+    // }
 
     //For testing purpose update price next day
 
-    const getUpdateStateTokenPriceForTest = async () => {
-        const contract = await getStateTokenContract();
-        try {
-            const priceUpdate = contract?.setStateTokenPriceForTest();
-            console.log('updatePrice', priceUpdate)
-        } catch (error) {
-            console.log('updatePrice', error)
-        }
-    }
+    // const getUpdateStateTokenPriceForTest = async () => {
+    //     const contract = await getStateTokenContract();
+    //     try {
+    //         const priceUpdate = contract?.setStateTokenPriceForTest();
+    //         console.log('updatePrice', priceUpdate)
+    //     } catch (error) {
+    //         console.log('updatePrice', error)
+    //     }
+    // }
 
     const getNumberOfStateProtocolUsers = async() =>{
         try {
@@ -869,35 +870,35 @@ export default function Functions({ children }) {
                 getIncrementPriceTargets,
                 getProtocolFee,
                 getDepositors,
-                handle_Buy_State_Token,
-                getUsdcSpendOnInscription,
-                getStateTokenHolding,
+                // handle_Buy_State_Token,
+                // getUsdcSpendOnInscription,
+                // getStateTokenHolding,
                 addTokenToMetaMask,
                 getUserUsdValue,
                 getTotalNumberOfReward,
                 reward,
                 getTimeStampForCreateValut,
-                getTotalSupply,
-                getCeateVaultTime,
-                getX1allocationClaimableBucket,
-                getRefundRewardClaimableBucket,
-                getStateTokenPrice,
-                getInscriptionContractAddress,
+                // getTotalSupply,
+                // getCeateVaultTime,
+                // getX1allocationClaimableBucket,
+                // getRefundRewardClaimableBucket,
+                // getStateTokenPrice,
+                // getInscriptionContractAddress,
                 getClaimAllReward,
-                getwithdrawX1allocationReward,
-                getWithdrawRefundReward,
-                getX1allocationBucket,
+                // getwithdrawX1allocationReward,
+                // getWithdrawRefundReward,
+                // getX1allocationBucket,
                 fetchEtherToUsdRate,
-                getcSpendOnInscription,
-                getinscriptionRewardClaim,
-                getX1allocationBucketClaim,
+                // getcSpendOnInscription,
+                // getinscriptionRewardClaim,
+                // getX1allocationBucketClaim,
                 getDepositeValues,
                 depositedAmount,
-                getStateTokenTargets,
-                getStateTokenHolders,
-                getUpdateStateTokenPriceForTest,
+                // getStateTokenTargets,
+                // getStateTokenHolders,
+                // getUpdateStateTokenPriceForTest,
                 getNumberOfStateProtocolUsers,
-                getLastStateTokenPriceUpdateTimestamp,
+                // getLastStateTokenPriceUpdateTimestamp,
             }}>
                 {children}
             </functionsContext.Provider>

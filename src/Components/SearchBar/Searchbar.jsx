@@ -10,7 +10,8 @@ import fistPump from '../../Assets/High-Resolutions-Svg/Updated/fist pump small.
 import metamask from "../../Assets/metamask.png";
 import SystemStateLogo from "../../Assets/High-Resolutions-Svg/Updated/logo.svg";
 import { functionsContext } from "../../Utils/Functions";
-import { PSD_ADDRESS, STATE_TOKEN_ADDRES, conciseAddress } from "../../Utils/ADDRESSES/Addresses";
+import { PSD_ADDRESS, conciseAddress } from "../../Utils/ADDRESSES/Addresses";
+// import {STATE_TOKEN_ADDRES} from "../../Utils/ADDRESSES/Addresses"
 import { ethers } from "ethers";
 import Swal from "sweetalert2";
 
@@ -193,7 +194,7 @@ export default function Searchbar() {
       return `${baseUrl}/${PSD_ADDRESS}`
     }
     else {
-      return `${baseUrl}/${STATE_TOKEN_ADDRES}`
+      // return `${baseUrl}/${STATE_TOKEN_ADDRES}`
     }
   }
 

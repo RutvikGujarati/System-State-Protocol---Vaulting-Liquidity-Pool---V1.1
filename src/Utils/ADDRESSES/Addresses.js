@@ -76,4 +76,4 @@ export const conciseAddress = (address, startSlice = 7, endSlice = 5) => {
     }
     return '';
 };
-export { PRICE_FEED_ADDRESS, STATE_TOKEN_ADDRES, PSD_ADDRESS, allInOnePopup }
+export { PRICE_FEED_ADDRESS, PSD_ADDRESS, allInOnePopup }
