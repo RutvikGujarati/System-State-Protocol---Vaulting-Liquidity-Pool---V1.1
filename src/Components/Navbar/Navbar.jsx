@@ -89,6 +89,7 @@ export default function Index() {
                 
               </span>
             </div>
+    
             <div className={`d-flex navBar-btn me-3 ${isOnInscription}`} >
     {/* <Link className={`nav-link my-auto docs mx-3 ${location.pathname === '/inscription' && 'ins active'}`} role="button" to={'inscription'}>
         Inscription
@@ -99,6 +100,12 @@ export default function Index() {
     <Link className="nav-link my-auto docs mx-2" role="button" target="_blank" to={'https://system-state-documentation.gitbook.io/'}>
         Documentation
     </Link>
+    <div className={`${theme}`}>
+    <span className="connected-wallet-text">{userConnected ? `${accountAddress.substring(0, 4)}...${accountAddress.substring(accountAddress.length - 4)}` : 'Not Connected'}</span>
+    <span data-bs-toggle="tooltip" data-bs-placement="top">
+      
+    </span>
+  </div>
 </div>
 
           </div>
@@ -154,10 +161,6 @@ export default function Index() {
 
             </ul>
           </div>
-
-
-
-
 
         </div>
         <div className={`d-flex p-0 m-0 ${(theme === "darkTheme" && "DarkThemeBorderBtm") || (theme === "dimTheme" && "themeTrackBorderBtm") || 'border-bottom'}`}>

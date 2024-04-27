@@ -770,3 +770,10 @@
     height: 4px; /* Adjust the thickness of the underline */
     background-color: #140f76; /* Adjust the color of the underline */
 }
+
+.connected-wallet-text {
+    /* Your custom styling here */
+    font-size: 13px;
+    margin-left: 10px;
+  }
+  
