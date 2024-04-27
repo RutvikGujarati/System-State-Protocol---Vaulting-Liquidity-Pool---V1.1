@@ -1304,7 +1304,7 @@ contract StateToken is ERC20, Ownable(msg.sender) {
         // Adjust the ratios to reflect the new percentages
         uint16[6] memory ratios = [200, 327, 428, 527, 672, 1000]; // Adjusted ratios
 
-        uint256 EachTargetValue = _amount / 6;
+        uint256 EachTargetValue = _amount / 5;
 
         for (uint256 i = 0; i < ratios.length; i++) {
             newTargets.push(
@@ -1970,7 +1970,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         // Adjust the ratios to reflect the new percentages
         uint16[6] memory ratios = [250, 409, 536, 659, 844, 1250]; // Adjusted ratios
 
-        uint256 EachTargetValue = _amount / 6;
+        uint256 EachTargetValue = _amount / 5;
 
         for (uint256 i = 0; i < ratios.length; i++) {
             newTargets.push(
