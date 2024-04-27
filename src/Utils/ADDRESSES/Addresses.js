@@ -48,7 +48,11 @@ const PRICE_FEED_ADDRESS = '0x68d0934F1e1F0347aad5632084D153cDBfe07992'
 
 // const PRICE_FEED_ADDRESS = '0x28187Fb765Be0B90c8c490d88B66781f86734a4B'
 // const STATE_TOKEN_ADDRES = '0x26E8c67D084D873059C8853d83f28c593CA06a83'
-const PSD_ADDRESS = '0xD560e0CcB4fecbffA467181eAf6a74A38501CaB8'    
+// const PSD_ADDRESS = '0xD560e0CcB4fecbffA467181eAf6a74A38501CaB8' 
+
+const PSD_ADDRESS = '0x7D58E2775b4dbdd84BCbec15A36A146a1BaDfB5f' 
+
+const System_State_Ratio_Vaults_V1 = "0x7D58E2775b4dbdd84BCbec15A36A146a1BaDfB5f";
 
 const allInOnePopup = (icon, title, text, button, confirmBtn, cancelBtn) => {
     return (
