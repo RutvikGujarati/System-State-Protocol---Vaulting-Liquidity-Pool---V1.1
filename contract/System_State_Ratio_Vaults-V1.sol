@@ -1677,10 +1677,10 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         uint256 developmentFee = (value).mul(700).div(10000); // Development Fee - 7%
 
         // Send ProtocolFees to the Auto-Vault
-        // You may use transfer or call, depending on the function signature of the Auto-Vault contract
+        // use transfer or call, depending on the function signature of the Auto-Vault contract
         // For simplicity, I'm using transfer assuming Auto-Vault implements a payable receive function
-        address autoVault = 0x31348CDcFb26CC8e3ABc5205fB47C74f8dA757D6;
-        payable(autoVault).transfer(ProtocolFees);
+        // address autoVault = 0x31348CDcFb26CC8e3ABc5205fB47C74f8dA757D6;
+        payable(AdminAddress).transfer(ProtocolFees);
 
         return (
             ratioPriceTarget,
