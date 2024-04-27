@@ -712,7 +712,7 @@ export default function TrackingPage() {
                                                 <span className={`${tooltip} hoverText`} data-tooltip='Total % rewards claimed by all users to date' data-flow="bottom"> <i className={`fas mx-2 fa-exclamation-circle ${theme}`}></i></span>
                                             </div>
                                             <div className={`flex-grow-1 fontSize text-start  ${textTheme}`}>
-                                                <div className={`${textTitle} `}>TOTAL % REWARDS</div>
+                                                <div className={`${textTitle} `}>TVL</div>
                                                 {/* <div className={`${textTitle} `}>ESCROW VAULTS</div> */}
                                                 <div className={`varSize ${spanDarkDim}`}><span className={`spanText ${spanDarkDim} fs-5`}> {Math.round(reward)} %</span></div>
                                             </div>
