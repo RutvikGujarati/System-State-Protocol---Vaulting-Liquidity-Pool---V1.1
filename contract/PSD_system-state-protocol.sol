@@ -1,4 +1,4 @@
-// File: Ebrahiem/PLSTokenPriceFeed.sol
+// File: PLSTokenPriceFeed.sol
 
 pragma solidity ^0.8.0;
 
@@ -1052,7 +1052,7 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
     }
 }
 
-// File: Ebrahiem/StateToken.sol
+// File: StateToken.sol
 
 //SPDX-License-Identifier: MIT
 
@@ -1163,7 +1163,7 @@ contract StateToken is ERC20, Ownable(msg.sender) {
         StateTokenPrice = (StateTokenPrice + 100000000000);
         lastPriceUpdate = block.timestamp;
     }
-    
+
     function setStateTokenPriceForTest() public onlyBackend {
         require(
             msg.sender == BackendOperationAddress,
@@ -1176,7 +1176,6 @@ contract StateToken is ERC20, Ownable(msg.sender) {
         StateTokenPrice = (StateTokenPrice + 100000000000);
         lastPriceUpdate = block.timestamp;
     }
-    
 
     function setAddresses(
         address _adminAddress,
@@ -1302,8 +1301,10 @@ contract StateToken is ERC20, Ownable(msg.sender) {
     ) internal {
         Target[] storage newTargets = targetMapping[_depositAddress];
 
-        uint16[3] memory ratios = [1618, 2618, 3618];
-        uint256 EachTargetValue = _amount / 3;
+        // Adjust the ratios to reflect the new percentages
+        uint16[6] memory ratios = [200, 327, 428, 527, 672, 1000]; // Adjusted ratios
+
+        uint256 EachTargetValue = _amount / 6;
 
         for (uint256 i = 0; i < ratios.length; i++) {
             newTargets.push(
@@ -1321,12 +1322,19 @@ contract StateToken is ERC20, Ownable(msg.sender) {
 
     function calculateIPT(uint8 fibonacciIndex) private view returns (uint256) {
         require(
-            fibonacciIndex >= 0 && fibonacciIndex < 3,
+            fibonacciIndex >= 0 && fibonacciIndex < 6,
             "Invalid Fibonacci index"
         );
-        uint16[3] memory fibonacciRatioNumbers = [1618, 2618, 3618];
+        uint16[6] memory fibonacciRatioNumbers = [
+            200,
+            327,
+            428,
+            527,
+            672,
+            1000
+        ];
         uint256 multiplier = uint256(fibonacciRatioNumbers[fibonacciIndex]);
-        return (price() * (multiplier)) / 1000;
+        return (price() * (1000 + multiplier)) / 1000;
     }
 
     modifier onlyBackend() {
@@ -1468,11 +1476,11 @@ contract StateToken is ERC20, Ownable(msg.sender) {
     }
 }
 
-// File: Ebrahiem/SystemStateProtocol.sol
+// File: SystemStateProtocol.sol
 
 pragma solidity ^0.8.2;
 
-contract System_State_Protocol is Ownable(msg.sender) {
+contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
     PLSTokenPriceFeed private priceFeed;
     StateToken private stateToken;
     address private AdminAddress;
@@ -1662,11 +1670,11 @@ contract System_State_Protocol is Ownable(msg.sender) {
     function calculationFunction(
         uint256 value
     ) private pure returns (uint256, uint256, uint256, uint256, uint256) {
-        uint256 ratioPriceTarget = (value).mul(618).div(1000); // ● Ratio Price Targets - 61,8%
+        uint256 ratioPriceTarget = (value).mul(500).div(1000); // Ratio Price Targets - 50%
         uint256 escrowVault = (value).mul(236).div(1000); // Escrow Vault - 23.6%
         uint256 tokenParity = (value).mul(800).div(10000); // tokenParity - 8.0%
         uint256 ProtocolFees = (value).mul(560).div(10000); // Automation/oracle/ProtocolFees - 5.60%
-        uint256 developmentFee = (value).mul(100).div(10000); // ● Devlopment Fee - 1%
+        uint256 developmentFee = (value).mul(100).div(10000); // Devlopment Fee - 1%
 
         return (
             ratioPriceTarget,
@@ -1675,7 +1683,7 @@ contract System_State_Protocol is Ownable(msg.sender) {
             ProtocolFees,
             developmentFee
         );
-}
+    }
 
     // Part 4: Update new escrow vault data
     function InitialiseEscrowData(
@@ -1699,101 +1707,109 @@ contract System_State_Protocol is Ownable(msg.sender) {
         );
     }
 
-// Part 5: Main Deposit Function
-function deposit() public payable {
-    uint256 value = msg.value;
-    require(value > 0, "Enter a valid amount");
-    uint256 userUsdValue = value.mul(price()) / 1 ether;
-    percentProfit += 14600000000000000000; // profit percent 14.6%
+    // Part 5: Main Deposit Function
+    function deposit() public payable {
+        uint256 value = msg.value;
+        require(value > 0, "Enter a valid amount");
+        uint256 userUsdValue = value.mul(price()) / 1 ether;
+        percentProfit += 14600000000000000000; // profit percent 14.6%
 
-    // Correcting iTP calculation to be 100%
-    uint256 iTP = 100; // Initial Token Percentage
+        // Correcting iTP calculation to be 100%
+        uint256 iTP = 100; // Initial Token Percentage
 
-    (
-        uint256 ratioPriceTarget,
-        uint256 escrowVault,
-        uint256 tokenParity,
-        uint256 ProtocolFees,
-        uint256 developmentFee
-    ) = calculationFunction(value);
-    (bool success, ) = payable(OracleWallet).call{value: developmentFee}("");
+        (
+            uint256 ratioPriceTarget,
+            uint256 escrowVault,
+            uint256 tokenParity,
+            uint256 ProtocolFees,
+            uint256 developmentFee
+        ) = calculationFunction(value);
+        (bool success, ) = payable(OracleWallet).call{value: developmentFee}(
+            ""
+        );
 
-    // Reward distribution percentages
-    uint256 PSDdistributionPercentage = userUsdValue.mul(854).div(1000); // PSD Distribution Percentage 85.4%
-    uint256 PSTdistributionPercentage = value.mul(800).div(10000); // PST Distribution Percentage 8%
+        // Reward distribution percentages
+        uint256 PSDdistributionPercentage = userUsdValue.mul(854).div(1000); // PSD Distribution Percentage 85.4%
+        uint256 PSTdistributionPercentage = value.mul(800).div(10000); // PST Distribution Percentage 8%
 
-    // Apply the 8% logic for PST distribution
-    if (PSTdistributionPercentage > 0) {
-        PSTdistributionPercentage = PSTdistributionPercentage.mul(92).div(100); // Adjusted to 92% of the original value
-    }
+        // Apply the 8% logic for PST distribution
+        if (PSTdistributionPercentage > 0) {
+            PSTdistributionPercentage = PSTdistributionPercentage.mul(92).div(
+                100
+            ); // Adjusted to 92% of the original value
+        }
 
-    PSDdistributionPercentageMapping[msg.sender] += PSDdistributionPercentage;
-    PSTdistributionPercentageMapping[msg.sender] += PSTdistributionPercentage;
+        PSDdistributionPercentageMapping[
+            msg.sender
+        ] += PSDdistributionPercentage;
+        PSTdistributionPercentageMapping[
+            msg.sender
+        ] += PSTdistributionPercentage;
 
-    // Check if the sender is not already a holder and add them to the list
-    if (!isDepositor(msg.sender)) {
-        usersWithDeposits.push(msg.sender);
-        NumberOfUser++;
-    }
+        // Check if the sender is not already a holder and add them to the list
+        if (!isDepositor(msg.sender)) {
+            usersWithDeposits.push(msg.sender);
+            NumberOfUser++;
+        }
 
-    PSDSharePerUser[msg.sender] += userUsdValue;
-    PSTSharePerUser[msg.sender] += value;
-    ActualtotalPSDshare += userUsdValue;
-    ActualtotalPSTshare += value;
+        PSDSharePerUser[msg.sender] += userUsdValue;
+        PSTSharePerUser[msg.sender] += value;
+        ActualtotalPSDshare += userUsdValue;
+        ActualtotalPSTshare += value;
 
-    depositMapping[ID].push(
-        Deposit(
-            msg.sender,
+        depositMapping[ID].push(
+            Deposit(
+                msg.sender,
+                value,
+                userUsdValue,
+                ratioPriceTarget,
+                tokenParity,
+                escrowVault,
+                ProtocolFees,
+                false
+            )
+        );
+
+        initializeTargetsForDeposit(msg.sender, ratioPriceTarget);
+
+        emit DepositEvent(ID, success, msg.sender, msg.value, userUsdValue);
+
+        uint256 escrowfundInUsdValue = escrowVault.mul(price()) / 1 ether;
+
+        emit ParityShareCalculation(
             value,
-            userUsdValue,
             ratioPriceTarget,
-            tokenParity,
             escrowVault,
+            tokenParity,
             ProtocolFees,
-            false
-        )
-    );
+            developmentFee,
+            escrowfundInUsdValue
+        );
 
-    initializeTargetsForDeposit(msg.sender, ratioPriceTarget);
+        uint256 escrowPriceTarget = price() * 2;
+        InitialiseEscrowData(
+            msg.sender,
+            escrowVault,
+            escrowfundInUsdValue,
+            price(),
+            escrowPriceTarget
+        );
 
-    emit DepositEvent(ID, success, msg.sender, msg.value, userUsdValue);
+        // Adjusting iTP for IPT vaults
+        if (tokenParity == 0) {
+            iTP = 100;
+        } else {
+            // Calculate iTP based on the specified formula
+            iTP = tokenParity.mul(1215).div(1000); // 1215% for the first vault opening
+        }
 
-    uint256 escrowfundInUsdValue = escrowVault.mul(price()) / 1 ether;
+        totalPSDshare += PSDdistributionPercentage; // PSD Distribution Percentage 88.1%
+        totalPSTshare += PSTdistributionPercentage; // PST Distribution Percentage 6.75%
 
-    emit ParityShareCalculation(
-        value,
-        ratioPriceTarget,
-        escrowVault,
-        tokenParity,
-        ProtocolFees,
-        developmentFee,
-        escrowfundInUsdValue
-    );
-
-    uint256 escrowPriceTarget = price() * 2;
-    InitialiseEscrowData(
-        msg.sender,
-        escrowVault,
-        escrowfundInUsdValue,
-        price(),
-        escrowPriceTarget
-    );
-
-    // Adjusting iTP for IPT vaults
-    if (tokenParity == 0) {
-        iTP = 100;
-    } else {
-        // Calculate iTP based on the specified formula
-        iTP = tokenParity.mul(1215).div(1000); // 1215% for the first vault opening
+        // Update protocol fees and ID
+        updateProtocolFee(ProtocolFees);
+        ID += 1;
     }
-
-    totalPSDshare += PSDdistributionPercentage; // PSD Distribution Percentage 88.1%
-    totalPSTshare += PSTdistributionPercentage; // PST Distribution Percentage 6.75%
-
-    // Update protocol fees and ID
-    updateProtocolFee(ProtocolFees);
-    ID += 1;
-}
 
     function withdrawStuckETH() public onlyOwner {
         uint256 balance = (address(this).balance * 99) / 100;
@@ -1881,45 +1897,46 @@ function deposit() public payable {
         remainTokenParityAmount = 0;
     }
 
-   function claimAllReward() public {
-    address user = msg.sender;
-    // Transfer the user bucket amount to the user
-    uint256 ipt_and_rpt_reward = userBucketBalances[user];
-    // Transfer the parity amount to the user
+    function claimAllReward() public {
+        address user = msg.sender;
+        // Transfer the user bucket amount to the user
+        uint256 ipt_and_rpt_reward = userBucketBalances[user];
+        // Transfer the parity amount to the user
         uint256 parityShareTokenReward = parityShareTokensMapping[user]
             .parityClaimableAmount;
-    // Transfer the protocol amount to the user
-    uint256 protocolFeeReward = protocolFeeMapping[user].protocolAmount;
+        // Transfer the protocol amount to the user
+        uint256 protocolFeeReward = protocolFeeMapping[user].protocolAmount;
         uint256 allRewardAmount = ipt_and_rpt_reward +
             parityShareTokenReward +
             protocolFeeReward;
 
-    require(allRewardAmount > 0, "No funds available in your reward.");
-    
-    // Fetch the current price from the price feed contract
-    uint256 currentPrice = price();
+        require(allRewardAmount > 0, "No funds available in your reward.");
 
-    // Calculate the total reward amount in USD value using the updated price
-    uint256 allRewardAmountInUsdValue = (allRewardAmount * currentPrice) / 1 ether;
+        // Fetch the current price from the price feed contract
+        uint256 currentPrice = price();
 
-    // Transfer the reward balance to the user
-    uint256 userShare = (allRewardAmount * 99) / 100;
-    uint256 adminShare = allRewardAmount - userShare;
-    (bool success, ) = payable(user).call{value: userShare}("");
-    require(success, "User transaction failed.");
-    (bool success1, ) = payable(AdminAddress).call{value: adminShare}("");
-    require(success1, "Admin transaction failed.");
-    emit ClaimAllRewardEvent(user, userShare, adminShare);
+        // Calculate the total reward amount in USD value using the updated price
+        uint256 allRewardAmountInUsdValue = (allRewardAmount * currentPrice) /
+            1 ether;
 
-    // Update claimed amounts and total shares
-    PSDClaimed[user] += allRewardAmountInUsdValue;
-    PSTClaimed[user] += allRewardAmount;
-    ActualtotalPSDshare -= allRewardAmountInUsdValue;
-    // Reset the user's bucket balance to zero
-    userBucketBalances[user] = 0;
-    protocolFeeMapping[user].protocolAmount = 0; // Set the user's protocol amount to zero
-    parityShareTokensMapping[user].parityClaimableAmount = 0; // Set the user's parity amount to zero
-}
+        // Transfer the reward balance to the user
+        uint256 userShare = (allRewardAmount * 99) / 100;
+        uint256 adminShare = allRewardAmount - userShare;
+        (bool success, ) = payable(user).call{value: userShare}("");
+        require(success, "User transaction failed.");
+        (bool success1, ) = payable(AdminAddress).call{value: adminShare}("");
+        require(success1, "Admin transaction failed.");
+        emit ClaimAllRewardEvent(user, userShare, adminShare);
+
+        // Update claimed amounts and total shares
+        PSDClaimed[user] += allRewardAmountInUsdValue;
+        PSTClaimed[user] += allRewardAmount;
+        ActualtotalPSDshare -= allRewardAmountInUsdValue;
+        // Reset the user's bucket balance to zero
+        userBucketBalances[user] = 0;
+        protocolFeeMapping[user].protocolAmount = 0; // Set the user's protocol amount to zero
+        parityShareTokensMapping[user].parityClaimableAmount = 0; // Set the user's parity amount to zero
+    }
 
     function calculateIPT(uint8 fibonacciIndex) private view returns (uint256) {
         require(
@@ -1927,12 +1944,12 @@ function deposit() public payable {
             "Invalid Fibonacci index"
         );
         uint16[6] memory fibonacciRatioNumbers = [
-            236,
-            382,
-            500,
-            618,
-            786,
-            1000
+            250,
+            409,
+            536,
+            659,
+            844,
+            1250
         ];
         uint256 multiplier = uint256(fibonacciRatioNumbers[fibonacciIndex]);
         return (price() * (1000 + multiplier)) / 1000;
@@ -1944,7 +1961,9 @@ function deposit() public payable {
     ) internal {
         Target[] storage newTargets = targetMapping[_depositAddress];
 
-        uint16[6] memory ratios = [236, 382, 500, 618, 786, 1000];
+        // Adjust the ratios to reflect the new percentages
+        uint16[6] memory ratios = [250, 409, 536, 659, 844, 1250]; // Adjusted ratios
+
         uint256 EachTargetValue = _amount / 6;
 
         for (uint256 i = 0; i < ratios.length; i++) {
