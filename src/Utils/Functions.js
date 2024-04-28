@@ -92,8 +92,10 @@ export default function Functions({ children }) {
             const profit = await contract?.percentProfit();
             const bigNumber = ethers.utils.formatEther(profit);
 
+            const price = await getPrice();
+
             // Convert BigNumber to JavaScript number
-            setReward(bigNumber)
+            setReward(bigNumber * price)
             return Number(bigNumber)
         } catch (err) {
             console.log(err)

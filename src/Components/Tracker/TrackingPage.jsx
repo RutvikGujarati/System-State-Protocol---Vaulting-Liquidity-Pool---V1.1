@@ -977,7 +977,7 @@ export default function TrackingPage() {
                       <div className={`varSize ${spanDarkDim}`}>
                         <span className={`spanText ${spanDarkDim} fs-5`}>
                           {" "}
-                          {Math.round(TotalTokenValueInVaults)} %
+                          {Math.round(reward)}
                         </span>
                       </div>
                     </div>
