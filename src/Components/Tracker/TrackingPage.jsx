@@ -214,7 +214,12 @@ export default function TrackingPage() {
   const PSDClaimed = async () => {
     try {
       let PSDClaimed = await get_PSD_Claimed(accountAddress);
-      let formatted_PSD_Claimed = ethers.utils.formatEther(PSDClaimed || "0");
+      let price = await getPrice();
+
+      let TotalTokenClaim = PSDClaimed * price;
+
+      let formatted_PSD_Claimed = ethers.utils.formatEther(TotalTokenClaim || "0");
+      
       let fixed = Number(formatted_PSD_Claimed).toFixed(2);
       // let PSTClaimed = await get_PST_Claimed(accountAddress)
       // let formatted_PST_Claimed = ethers.utils.formatEther(PSTClaimed || '0')
