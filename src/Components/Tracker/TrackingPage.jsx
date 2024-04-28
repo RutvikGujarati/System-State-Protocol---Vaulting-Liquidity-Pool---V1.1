@@ -74,6 +74,7 @@ export default function TrackingPage() {
     getwithdrawX1allocationReward,
     getWithdrawRefundReward,
     getTotalNumberOfReward,
+    getTotalTokenValueInVaults,
     getNumberOfStateProtocolUsers,
     // getLastStateTokenPriceUpdateTimestamp
   } = useContext(functionsContext);
@@ -97,6 +98,7 @@ export default function TrackingPage() {
   const [stateTokenHoldPercentage, setStateTokenHoldPercentage] = useState("0");
   const [stateTokenHold, setStateTokenHold] = useState("0");
   const [protocolFee, setProtocolFee] = useState("0");
+  const [getTotalTokenValueVaults, setTotalTokenValueInVaults] = useState("0");
   const [ProtocolFeeInDollar, setProtocolFeeInDollar] = useState("0");
   const [parityAmountDistributed, setParityAmountDistributed] = useState("0");
   const [DayStamp, setDayStamp] = useState("0");
@@ -344,6 +346,19 @@ export default function TrackingPage() {
       console.error("error:", error);
     }
   };
+
+  const TotalTokenValueInVaults = async ()=>{
+    try{
+      let TotalTokenValue = await getTotalTokenValueInVaults();
+      let TotalTokenValueFloat= parseFloat(TotalTokenValue);
+      
+      if(!isNaN(TotalTokenValueFloat)){
+        setTotalTokenValueInVaults(TotalTokenValueFloat.toFixed(6));
+      }else{setTotalTokenValueInVaults(0)}
+    }catch(error){
+      console.log('Error in getting total token value in vaults', error);
+  }
+}
 
   const protocolFeeInDollar =async ()=>{
     try{
@@ -957,7 +972,7 @@ export default function TrackingPage() {
                       <div className={`varSize ${spanDarkDim}`}>
                         <span className={`spanText ${spanDarkDim} fs-5`}>
                           {" "}
-                          {Math.round(reward)} %
+                          {Math.round(TotalTokenValueInVaults)} %
                         </span>
                       </div>
                     </div>

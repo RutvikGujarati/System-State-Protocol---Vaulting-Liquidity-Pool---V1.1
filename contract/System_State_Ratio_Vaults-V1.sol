@@ -1302,7 +1302,7 @@ contract StateToken is ERC20, Ownable(msg.sender) {
         Target[] storage newTargets = targetMapping[_depositAddress];
 
         // Adjust the ratios to reflect the new percentages
-        uint16[6] memory ratios = [200, 327, 428, 527, 672, 1000]; // Adjusted ratios
+        uint16[5] memory ratios = [200, 327, 428, 527, 672]; // Adjusted ratios
 
         uint256 EachTargetValue = _amount / 5;
 
@@ -1917,59 +1917,53 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
 
     function claimAllReward() public {
     address user = msg.sender;
+    
     // Calculate the total reward amount
-    uint256 ipt_and_rpt_reward = userBucketBalances[user];
-    uint256 parityShareTokenReward = parityShareTokensMapping[user].parityClaimableAmount;
-    uint256 protocolFeeReward = protocolFeeMapping[user].protocolAmount;
-    uint256 allRewardAmount = ipt_and_rpt_reward + parityShareTokenReward + protocolFeeReward;
-
-    require(allRewardAmount > 0, "No funds available in your reward.");
-
+    uint256 ipt_and_rpt_reward = userBucketBalances[user]; // Get the user's bucket balance
+    uint256 parityShareTokenReward = parityShareTokensMapping[user].parityClaimableAmount; // Get the user's parity share tokens
+    uint256 protocolFeeReward = protocolFeeMapping[user].protocolAmount; // Get the user's protocol fees
+    uint256 allRewardAmount = ipt_and_rpt_reward + parityShareTokenReward + protocolFeeReward; // Total reward amount
+    
     // Fetch the current price from the price feed contract
     uint256 currentPrice = price();
-
+    
     // Calculate the total reward amount in USD value
     uint256 allRewardAmountInUsdValue = (allRewardAmount * currentPrice) / 1 ether;
-
-    // Calculate the PSD reward in USD value
-    uint256 psdRewardInUsdValue = PSDClaimed[user] * currentPrice;
-
-    // Ensure there is a reward to claim
-    require(psdRewardInUsdValue > 0, "No PSD funds available in your reward.");
-
+    
     // Transfer the reward balance to the user and the admin
     uint256 userShare = (allRewardAmountInUsdValue * 99) / 100;
     uint256 adminShare = allRewardAmountInUsdValue - userShare;
     payable(user).transfer(userShare);
     payable(AdminAddress).transfer(adminShare);
-
-    emit ClaimAllRewardEvent(user, userShare, adminShare);
-
+    
     // Update claimed amounts and total shares
     PSDClaimed[user] = 0; // Reset the user's PSD claimed amount to zero
     PSTClaimed[user] += allRewardAmount; // Update the user's PST claimed amount
-    ActualtotalPSDshare -= psdRewardInUsdValue; // Update the total PSD share
-
+    ActualtotalPSDshare -= allRewardAmountInUsdValue; // Update the total PSD share
+    
     // Optionally, reset the user's bucket balance to zero if desired
     userBucketBalances[user] = 0;
     protocolFeeMapping[user].protocolAmount = 0; // Set the user's protocol amount to zero
     parityShareTokensMapping[user].parityClaimableAmount = 0; // Set the user's parity amount to zero
+    
+    // Emit the ClaimAllRewardEvent
+    emit ClaimAllRewardEvent(user, userShare, adminShare);
 }
+
     function calculateIPT(uint8 fibonacciIndex) private view returns (uint256) {
         require(
             fibonacciIndex >= 0 && fibonacciIndex < 6,
             "Invalid Fibonacci index"
         );
-        uint16[6] memory fibonacciRatioNumbers = [
+        uint16[5] memory fibonacciRatioNumbers = [
             250,
             409,
             536,
             659,
-            844,
-            1250
+            844
         ];
         uint256 multiplier = uint256(fibonacciRatioNumbers[fibonacciIndex]);
-        return (price() * (1000 + multiplier)) / 1000;
+        return (price() * (multiplier)) / 1000;
     }
 
     function initializeTargetsForDeposit(
@@ -2046,6 +2040,23 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         return depositMapping[_ID];
     }
 
+           // Function to get the total value of tokens in all vaults (RPT + IPT) multiplied by the current price
+    function getTotalTokenValueInVaults() public view returns (uint256) {
+        uint256 totalValue;
+        uint256 currentPrice = price();
+        
+        for (uint256 i = 0; i < usersWithDeposits.length; i++) {
+            address user = usersWithDeposits[i];
+            Escrow[] storage userEscrows = escrowMapping[user];
+            
+            for (uint256 j = 0; j < userEscrows.length; j++) {
+                totalValue += userEscrows[j].totalFunds;
+            }
+        }
+        
+        return totalValue * currentPrice / 1 ether;
+    }
+    
     function getDepositors() public view returns (address[] memory) {
         return usersWithDeposits;
     }

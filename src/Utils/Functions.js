@@ -692,7 +692,17 @@ export default function Functions({ children }) {
             console.log('claimAllReward', err)
         }
     }
+    const getTotalTokenValueInVaults = async()=>{
+        const contract = await getPsdContract();
+        try{
+            const TotalTokenVaultValue = await contract?.getTotalTokenValueInVaults();
 
+            await TotalTokenVaultValue.wait();
+            return TotalTokenVaultValue;
+        }catch(err){
+            console.log('TotalTokenVaultValue', err)
+        }
+}
     // const getWithdrawRefundReward = async () => {
     //     const contract = await getStateTokenContract();
     //     const RefundCalim = await contract.refundRewardClaimableBucket(accountAddress);
@@ -875,6 +885,7 @@ export default function Functions({ children }) {
                 // getStateTokenHolding,
                 addTokenToMetaMask,
                 getUserUsdValue,
+                getTotalTokenValueInVaults,
                 getTotalNumberOfReward,
                 reward,
                 getTimeStampForCreateValut,
