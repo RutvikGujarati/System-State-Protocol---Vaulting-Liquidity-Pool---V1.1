@@ -1306,7 +1306,7 @@ contract StateToken is ERC20, Ownable(msg.sender) {
 
         uint256 EachTargetValue = _amount / 5;
 
-        for (uint256 i = 0; i < ratios.length; i++) {
+        for (uint256 i = 0; i < 5; i++) {
             newTargets.push(
                 Target({
                     UserAddress: _depositAddress,
@@ -1916,55 +1916,45 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
     }
 
     function claimAllReward() public {
-        address user = msg.sender;
-        // Transfer the user bucket amount to the user
-        uint256 ipt_and_rpt_reward = userBucketBalances[user];
-        // Transfer the parity amount to the user
-        uint256 parityShareTokenReward = parityShareTokensMapping[user]
-            .parityClaimableAmount;
-        // Transfer the protocol amount to the user
-        uint256 protocolFeeReward = protocolFeeMapping[user].protocolAmount;
-        uint256 allRewardAmount = ipt_and_rpt_reward +
-            parityShareTokenReward +
-            protocolFeeReward;
+    address user = msg.sender;
+    // Calculate the total reward amount
+    uint256 ipt_and_rpt_reward = userBucketBalances[user];
+    uint256 parityShareTokenReward = parityShareTokensMapping[user].parityClaimableAmount;
+    uint256 protocolFeeReward = protocolFeeMapping[user].protocolAmount;
+    uint256 allRewardAmount = ipt_and_rpt_reward + parityShareTokenReward + protocolFeeReward;
 
-        require(allRewardAmount > 0, "No funds available in your reward.");
+    require(allRewardAmount > 0, "No funds available in your reward.");
 
-        // Fetch the current price from the price feed contract
-        uint256 currentPrice = price();
+    // Fetch the current price from the price feed contract
+    uint256 currentPrice = price();
 
-        // Calculate the PSD reward in USD value
-        // Assuming PSDClaimed[user] holds the number of PSD tokens claimed by the user
-        uint256 psdRewardInUsdValue = PSDClaimed[user] * currentPrice;
+    // Calculate the total reward amount in USD value
+    uint256 allRewardAmountInUsdValue = (allRewardAmount * currentPrice) / 1 ether;
 
-        // Ensure there is a reward to claim
-        require(
-            psdRewardInUsdValue > 0,
-            "No PSD funds available in your reward."
-        );
+    // Calculate the PSD reward in USD value
+    uint256 psdRewardInUsdValue = PSDClaimed[user] * currentPrice;
 
-        // Calculate the total reward amount in USD value
-        uint256 allRewardAmountInUsdValue = psdRewardInUsdValue;
+    // Ensure there is a reward to claim
+    require(psdRewardInUsdValue > 0, "No PSD funds available in your reward.");
 
-        // Transfer the reward balance to the user
-        uint256 userShare = (allRewardAmountInUsdValue * 99) / 100;
-        uint256 adminShare = allRewardAmountInUsdValue - userShare;
-        (bool success, ) = payable(user).call{value: userShare}("");
-        require(success, "User transaction failed.");
-        (bool success1, ) = payable(AdminAddress).call{value: adminShare}("");
-        require(success1, "Admin transaction failed.");
-        emit ClaimAllRewardEvent(user, userShare, adminShare);
+    // Transfer the reward balance to the user and the admin
+    uint256 userShare = (allRewardAmountInUsdValue * 99) / 100;
+    uint256 adminShare = allRewardAmountInUsdValue - userShare;
+    payable(user).transfer(userShare);
+    payable(AdminAddress).transfer(adminShare);
 
-        // Update claimed amounts and total shares
-        PSDClaimed[user] += allRewardAmountInUsdValue;
-        PSTClaimed[user] += allRewardAmount;
-        ActualtotalPSDshare -= allRewardAmountInUsdValue;
-        // Reset the user's bucket balance to zero
-        userBucketBalances[user] = 0;
-        protocolFeeMapping[user].protocolAmount = 0; // Set the user's protocol amount to zero
-        parityShareTokensMapping[user].parityClaimableAmount = 0; // Set the user's parity amount to zero
-    }
+    emit ClaimAllRewardEvent(user, userShare, adminShare);
 
+    // Update claimed amounts and total shares
+    PSDClaimed[user] = 0; // Reset the user's PSD claimed amount to zero
+    PSTClaimed[user] += allRewardAmount; // Update the user's PST claimed amount
+    ActualtotalPSDshare -= psdRewardInUsdValue; // Update the total PSD share
+
+    // Optionally, reset the user's bucket balance to zero if desired
+    userBucketBalances[user] = 0;
+    protocolFeeMapping[user].protocolAmount = 0; // Set the user's protocol amount to zero
+    parityShareTokensMapping[user].parityClaimableAmount = 0; // Set the user's parity amount to zero
+}
     function calculateIPT(uint8 fibonacciIndex) private view returns (uint256) {
         require(
             fibonacciIndex >= 0 && fibonacciIndex < 6,
@@ -1993,7 +1983,8 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
 
         uint256 EachTargetValue = _amount / 5;
 
-        for (uint256 i = 0; i < ratios.length; i++) {
+        // Limit the loop to 5 iterations
+        for (uint256 i = 0; i < 5; i++) {
             newTargets.push(
                 Target({
                     UserAddress: _depositAddress,
@@ -2095,7 +2086,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
             address BackendAddr,
             address StateTokenAddr,
             address PriceFeeAddr,
-            address AdminWallet
+            address AdminWall
         )
     {
         return (
