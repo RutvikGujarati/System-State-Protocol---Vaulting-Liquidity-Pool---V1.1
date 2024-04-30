@@ -1,5 +1,5 @@
 // File: PLSTokenPriceFeed.sol
-
+//0xA9c459c2fe67a135Dd1D3cddaA859f4178c527f3
 pragma solidity ^0.8.0;
 
 contract PLSTokenPriceFeed {
@@ -11,6 +11,7 @@ contract PLSTokenPriceFeed {
         // priceInUSD = 1 ether;
         BackendOperationAddress = 0xb9B2c57e5428e31FFa21B302aEd689f4CA2447fE;
     }
+    
 
     modifier onlyBackend() {
         require(
@@ -1301,11 +1302,11 @@ contract StateToken is ERC20, Ownable(msg.sender) {
     ) internal {
         Target[] storage newTargets = targetMapping[_depositAddress];
 
-        // Adjust the ratios to reflect the new percentages
+        // percentages
         uint16[3] memory ratios = [1618, 2618, 3618];
         uint256 EachTargetValue = _amount / 3;
 
-        for (uint256 i = 0; i < ratios.length; i++) {
+        for (uint256 i = 0; i < 5; i++) {
             newTargets.push(
                 Target({
                     UserAddress: _depositAddress,
@@ -1319,6 +1320,7 @@ contract StateToken is ERC20, Ownable(msg.sender) {
         }
     }
 
+   
     function calculateIPT(uint8 fibonacciIndex) private view returns (uint256) {
         require(
             fibonacciIndex >= 0 && fibonacciIndex < 3,
@@ -1328,6 +1330,7 @@ contract StateToken is ERC20, Ownable(msg.sender) {
         uint256 multiplier = uint256(fibonacciRatioNumbers[fibonacciIndex]);
         return (price() * ( multiplier)) / 1000;
     }
+
 
     modifier onlyBackend() {
         require(
@@ -1678,7 +1681,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
             ratioPriceTarget,
             escrowVault,
             tokenParity,
-            ProtocolFees, // ProtocolFees is sent separately, so set it to 0 here, but here is updation to show the fees
+            ProtocolFees, // ProtocolFees is sent separately, so set it to 0 here
             developmentFee
         );
     }
@@ -1737,8 +1740,6 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
 
         // Distribute 8% parity fee to users who have PST but haven't reached parity
         distributeParityFee();
-
-        
 
         PSDdistributionPercentageMapping[msg.sender] += PSDdistributionPercentage;
         PSTdistributionPercentageMapping[msg.sender] += PSTdistributionPercentage;
@@ -1929,11 +1930,9 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
     uint256 adminShare = allRewardAmountInUsdValue - userShare;
     payable(user).transfer(userShare);
     payable(AdminAddress).transfer(adminShare);
-   
-    emit ClaimAllRewardEvent(user, userShare, adminShare);
     
     // Update claimed amounts and total shares
-    PSDClaimed[user] += allRewardAmountInUsdValue ; // but not reset the value now
+    PSDClaimed[user] = 0; // Reset the user's PSD claimed amount to zero
     PSTClaimed[user] += allRewardAmount; // Update the user's PST claimed amount
     ActualtotalPSDshare -= allRewardAmountInUsdValue; // Update the total PSD share
     
@@ -1946,24 +1945,22 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
     emit ClaimAllRewardEvent(user, userShare, adminShare);
 }
 
-//created contract for claimereward: 0x4fA560Bc7a85C158b5f1337eA7e1995ebeEB2aFd
-
-    function calculateIPT(uint8 fibonacciIndex) private view returns (uint256) {
-        require(
-            fibonacciIndex >= 0 && fibonacciIndex < 6,
-            "Invalid Fibonacci index"
-        );
-        uint16[6] memory fibonacciRatioNumbers = [
-            236,
-            382,
-            500,
-            618,
-            786,
-            1000
-        ];
-        uint256 multiplier = uint256(fibonacciRatioNumbers[fibonacciIndex]);
-        return (price() * (1000 + multiplier)) / 1000;
-    }
+function calculateIPT(uint8 fibonacciIndex) private view returns (uint256) {
+    require(
+        fibonacciIndex >= 0 && fibonacciIndex < 6,
+        "Invalid Fibonacci index"
+    );
+    uint16[6] memory fibonacciRatioNumbers = [
+        236,
+        382,
+        500,
+        618,
+        786,
+        1000
+    ];
+    uint256 multiplier = uint256(fibonacciRatioNumbers[fibonacciIndex]);
+    return (price() * (1000 + multiplier)) / 1000;
+}
 
     function initializeTargetsForDeposit(
         address _depositAddress,
@@ -2031,6 +2028,13 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         return (fee.UserAddress, fee.protocolAmount, fee.holdToken);
     }
 
+    function getMaxTargetLength() public view returns (uint256 _maxLength) {
+        return targetMapping[msg.sender].length;
+    }
+
+    function getDeposited(uint256 _ID) public view returns (Deposit[] memory) {
+        return depositMapping[_ID];
+    }
     function getprotocolAmount(address _user)public view returns(uint256 protocolAmount){
         ProtocolFee memory fee = protocolFeeMapping[_user];
 
@@ -2038,14 +2042,6 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         uint256 Amount = (fee.protocolAmount).mul(Price);
 
         return Amount;
-    }
-
-    function getMaxTargetLength() public view returns (uint256 _maxLength) {
-        return targetMapping[msg.sender].length;
-    }
-
-    function getDeposited(uint256 _ID) public view returns (Deposit[] memory) {
-        return depositMapping[_ID];
     }
 
            // Function to get the total value of tokens in all vaults (RPT + IPT) multiplied by the current price
@@ -2125,15 +2121,6 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         return PSTClaimed[_user];
     }
 
-    function getOnlyPSDClaimed(address _user) public view returns (uint256) {
-        uint256 PST = PSDClaimed[_user];
-
-        uint256 Price = priceFeed.getPrice();
-
-        uint256 PSDValue = PST.mul(Price);
-
-        return PSDValue;
-    }
     function getParityAmountDistributed(
         address _user
     ) public view returns (uint256) {
@@ -2143,10 +2130,16 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
     function getPSDClaimed(address _user) public view returns (uint256) {
         return PSDClaimed[_user];
     }
+    function getOnlyPSDClaimed(address _user) public view returns (uint256) {
+        uint256 PST = PSDClaimed[_user];
 
-    function getPSDClaimed2(address _user) public view returns (uint256) {
-        
+        uint256 Price = priceFeed.getPrice();
+
+        uint256 PSDValue = PST.mul(Price);
+
+        return PSDValue;
     }
+
     function StateHolders()
         internal
         view

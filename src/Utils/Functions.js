@@ -61,6 +61,16 @@ export default function Functions({ children }) {
         }
     }
   
+    const onlyPSDclaimed = async (address) =>{
+        try{
+            const contract = await getPsdContract();
+            const psdValue = await contract.getOnlyPSDClaimed();
+          
+            return psdValue; 
+        }catch(error){
+            console.error('getPSDclaimed error:', error);
+        }
+    }
 
     const getTimeStampForCreateValut = async () => {
         try {
@@ -89,16 +99,30 @@ export default function Functions({ children }) {
         const contract = await getPsdContract();
         try {
 
-            const profit = await contract?.percentProfit();
-            const bigNumber = ethers.utils.formatEther(profit);
+            const profit = await contract?.getTotalTokenValueInVaults();
+            // const price = await getPrice();
+            // const dollarValueLocked = profit.mul(price);
+              // Convert BigNumber to a string representation
+        const bigNumberString = ethers.utils.formatEther(profit);
 
-            const price = await getPrice();
+        // Convert BigNumber to JavaScript number
+        const dollarValueLockedNumber = parseFloat(bigNumberString);
 
-            // Convert BigNumber to JavaScript number
-            setReward(bigNumber * price)
-            return Number(bigNumber)
+        // Set reward and return the number
+        setReward(dollarValueLockedNumber);
+        return dollarValueLockedNumber;
         } catch (err) {
             console.log(err)
+        }
+    }
+
+    const getTotalNumberOfValue = async() =>{
+        const contract = await getPsdContract();
+
+        try{
+            const totalValue = contract.getTotalValue();
+        }catch(error){
+            console.log(error)
         }
     }
     const getUserUsdValue = async (amount) => {
@@ -180,6 +204,19 @@ export default function Functions({ children }) {
         }
     }
 
+    const getOnlyProtocolFee = async (address)=>{
+        if(address){
+            try{
+                let contract = await getPsdContract();
+                let protocolFee = await contract.getProtocolFee(address)
+                let protocolAmount = await protocolFee?.protocolAmount
+                let formattedValue = await getFormatEther(protocolAmount)
+                return formattedValue;
+            }catch(error){
+                console.error('getProtocolFee error:', error);
+            }
+        }
+    }
     const handle_Claim_Protocol_Fee = async (address) => {
         if (address) {
             let contract = await getPsdContract()
@@ -312,7 +349,7 @@ export default function Functions({ children }) {
         try {
             if (accountAddress) {
                 let contract = await getPsdContract()
-                let userBucketBalance = await contract.userBucketBalances(accountAddress)
+                let userBucketBalance = await contract.depositAmount(accountAddress)
                 let BucketInStr = await userBucketBalance.toString()
                 return BucketInStr
             }
@@ -332,6 +369,16 @@ export default function Functions({ children }) {
             return getTotalPsdShareInStr
         } catch (error) {
             console.error('getTotalValueLockedInDollar error:', error);
+        }
+    }
+
+    const contractBalance = async()=>{
+        try{
+            let contract = await getPsdContract();
+            let contractBalance = await contract.getContractBalance();
+            return contractBalance;
+        }catch(error){
+            console.error('ContractBalance error:', error);
         }
     }
     const getParityDollardeposits = async (address) => {
@@ -869,6 +916,7 @@ export default function Functions({ children }) {
                 handle_Claim_Parity_Tokens,
                 handle_Claim_All_Reward_Amount,
                 getPrice,
+                onlyPSDclaimed,
                 getToBeClaimed,
                 getTotalValueLockedInDollar,
                 getParityDollardeposits,
@@ -881,6 +929,7 @@ export default function Functions({ children }) {
                 getRatioPriceTargets,
                 getIncrementPriceTargets,
                 getProtocolFee,
+                getOnlyProtocolFee,
                 getDepositors,
                 // handle_Buy_State_Token,
                 // getUsdcSpendOnInscription,
@@ -888,6 +937,7 @@ export default function Functions({ children }) {
                 addTokenToMetaMask,
                 getUserUsdValue,
                 getTotalTokenValueInVaults,
+                contractBalance,
                 getTotalNumberOfReward,
                 reward,
                 getTimeStampForCreateValut,

@@ -66,15 +66,18 @@ export default function TrackingPage() {
     getTotalSupply,
     getCeateVaultTime,
     getX1allocationClaimableBucket,
-    getRefundRewardClaimableBucket,
+    // getRefundRewardClaimableBucket,
     fetchEtherToUsdRate,
     getStateTokenPrice,
     getInscriptionContractAddress,
     getClaimAllReward,
+    onlyPSDclaimed,
     getwithdrawX1allocationReward,
     getWithdrawRefundReward,
     getTotalNumberOfReward,
     getTotalTokenValueInVaults,
+    getOnlyProtocolFee,
+    contractBalance,
     getNumberOfStateProtocolUsers,
     // getLastStateTokenPriceUpdateTimestamp
   } = useContext(functionsContext);
@@ -138,39 +141,35 @@ export default function TrackingPage() {
   // Done
   const ToBeClaimed = async () => {
     try {
-      let toBeClaimed = await getToBeClaimed(accountAddress);
-      let formattedToBeClaimed = ethers.utils.formatEther(
-        toBeClaimed ? toBeClaimed : "0"
-      );
-      // let fixed = Number(formattedToBeClaimed).toFixed(4) + ' ' + currencyName
-      // setToBeClaimed(fixed)
+        // Get the IPT and RPT rewards
+        let iptAndRptReward = await getToBeClaimed(accountAddress);
+        let formattedIptAndRptReward = ethers.utils.formatEther(iptAndRptReward || "0");
 
-      // let userBucketBalance = await getToBeClaimed(accountAddress)
-      // let formattedToBeClaimed = await getFormatEther(userBucketBalance || '0')
+        // Get the parity share tokens claimable amount
+        let parityShareTokensDetail = await getParityDollarClaimed(accountAddress);
+        let parityClaimableAmount = parityShareTokensDetail?.parityClaimableAmount;
+        let formattedParityClaimableAmount = ethers.utils.formatEther(parityClaimableAmount || "0");
 
-      let ParityShareTokensDetail = await getParityDollarClaimed(
-        accountAddress
-      );
-      let parityClaimableAmount =
-        ParityShareTokensDetail?.parityClaimableAmount;
-      let parityClaimableAmountFormatted = await getFormatEther(
-        parityClaimableAmount
-      );
+        // Get the protocol fee
+        let protocolFeeDetail = await getProtocolFee(accountAddress);
+        let protocolAmount = protocolFeeDetail?.protocolAmount;
 
-      let protocolFee = await getProtocolFee(accountAddress);
-      let protocolFeeInDollar = await getProtocolFee(accountAddress);
-      let protocolAmount = await protocolFee?.protocolAmount;
+        // Calculate the total amount to be claimed
+        let totalToBeClaimed = parseFloat(formattedIptAndRptReward) +
+            parseFloat(formattedParityClaimableAmount) +
+            parseFloat(protocolAmount || 0);
 
-      let AllFee =
-        Number(formattedToBeClaimed) +
-        Number(parityClaimableAmountFormatted) +
-        Number(protocolAmount);
-      let fixed = AllFee.toFixed(4) === "NaN" ? "0" : AllFee.toFixed(4);
-      setToBeClaimed(fixed);
+        // Format the total amount
+        let formattedTotalToBeClaimed = totalToBeClaimed.toFixed(4);
+
+        // Update the state with the total amount to be claimed
+        setToBeClaimed(formattedTotalToBeClaimed);
     } catch (error) {
-      console.log("error:", error);
+        console.log("Error:", error);
+        // Handle error gracefully, e.g., display an error message to the user
     }
-  };
+};
+
   // Done
   const TotalValueLockedInDollar = async () => {
     try {
@@ -179,6 +178,7 @@ export default function TrackingPage() {
         totalPsdShare || "0"
       );
       let fixed = Number(formattedTotalPsdShare).toFixed(2);
+      console.log("getTotalValueLockedInDollar", fixed)
       setTotalValueLocked(fixed);
     } catch (error) {
       console.log("error:", error);
@@ -213,23 +213,37 @@ export default function TrackingPage() {
   };
   const PSDClaimed = async () => {
     try {
-      let PSDClaimed = await get_PSD_Claimed(accountAddress);
-      let price = await getPrice();
-
-      let TotalTokenClaim = PSDClaimed * price;
-
-      let formatted_PSD_Claimed = ethers.utils.formatEther(TotalTokenClaim || "0");
+      let PSDClaimed = await onlyPSDclaimed(accountAddress);
+   
+      let formatted_PSD_Claimed = ethers.utils.formatEther(PSDClaimed || "0");
       
       let fixed = Number(formatted_PSD_Claimed).toFixed(2);
       // let PSTClaimed = await get_PST_Claimed(accountAddress)
       // let formatted_PST_Claimed = ethers.utils.formatEther(PSTClaimed || '0')
       // let PST_Claimed_InDollar = await getUserUsdValue(formatted_PST_Claimed || '0')
       // let fixed = Number(PST_Claimed_InDollar).toFixed(2)
-      setParityDollarClaimed(fixed);
+      // setParityDollarClaimed(fixed);
     } catch (error) {
       console.error("error:", error);
     }
   };
+
+  const mathPSD = async ()=>{
+    try{
+      let PSTClaimed = await get_PST_Claimed(accountAddress);
+      let formatted_PST_Claimed = ethers.utils.formatEther(PSTClaimed || "0");
+
+      let Price = await getPrice();
+      let formattedPrice = Number(ethers.utils.formatEther(Price || "0"));
+
+      let total_amount = formattedPrice * formatted_PST_Claimed;
+        let fixed2 = Number(total_amount).toFixed(2)
+
+        setParityDollarClaimed(fixed2)
+    }catch(error){
+      console.error("error",error);
+    }
+  }
   const PSTClaimed = async () => {
     try {
       let PSTClaimed = await get_PST_Claimed(accountAddress);
@@ -341,12 +355,12 @@ export default function TrackingPage() {
 
   const ProtocolFee = async () => {
     try {
-      let protocolFee = await getProtocolFee(accountAddress);
-      let protocolAmount = await protocolFee?.protocolAmount;
-      let price = await getPrice();
-      let feeDollar = protocolAmount * price;
-      let fixed = Number(feeDollar).toFixed(4);
-      setProtocolFee(fixed);
+      let protocolFee = await getOnlyProtocolFee(accountAddress);
+
+      // let price = await getPrice();
+      // let feeDollar = protocolFee * price;
+      // let fixed = Number(feeDollar).toFixed(4);
+      setProtocolFee(protocolFee);
     } catch (error) {
       console.error("error:", error);
     }
@@ -370,7 +384,7 @@ export default function TrackingPage() {
         let protocolFee =await getProtocolFee(accountAddress);
         let protocolAmount = await protocolFee?.protocolAmount;
         let price = await getPrice();
-        let feeDollar = protocolAmount * price;
+        let feeDollar = protocolAmount.mul(price);
         let fixed = Number(feeDollar).toFixed(4) + " " + currencyName;
         setProtocolFeeInDollar(fixed);
     }catch(error){
@@ -410,48 +424,48 @@ export default function TrackingPage() {
     }
   };
 
-  const getClaimX1 = async (accountAddress) => {
-    try {
-      const claim = await getX1allocationClaimableBucket(accountAddress);
-      const claimInEth = ethers.utils.formatEther(claim);
-      setClaimX1(claimInEth);
+  // const getClaimX1 = async (accountAddress) => {
+  //   try {
+  //     const claim = await getX1allocationClaimableBucket(accountAddress);
+  //     const claimInEth = ethers.utils.formatEther(claim);
+  //     setClaimX1(claimInEth);
 
-      // Check if the claimable amount is greater than the total amount staked
-      if (claimInEth && parseFloat(claimInEth) > parseFloat(toBeClaimed)) {
-        console.log("User cannot claim more money than they have staked");
-        return errors; // Handle the situation where the user cannot claim more money than they have staked
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  //     // Check if the claimable amount is greater than the total amount staked
+  //     if (claimInEth && parseFloat(claimInEth) > parseFloat(toBeClaimed)) {
+  //       console.log("User cannot claim more money than they have staked");
+  //       return errors; // Handle the situation where the user cannot claim more money than they have staked
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
-  const getClaimRefund = async (accountAddress) => {
-    try {
-      const refundClaim = await getRefundRewardClaimableBucket(accountAddress);
-      const refundClaimInEth = ethers.utils.formatEther(refundClaim);
+  // const getClaimRefund = async (accountAddress) => {
+  //   try {
+  //     const refundClaim = await getRefundRewardClaimableBucket(accountAddress);
+  //     const refundClaimInEth = ethers.utils.formatEther(refundClaim);
 
-      // Dynamically fetch the current USD price from an external API
-      // const etherToUsdRate = await fetchEtherToUsdRate(); // Example function to fetch the current ETH to USD rate
+  //     // Dynamically fetch the current USD price from an external API
+  //     // const etherToUsdRate = await fetchEtherToUsdRate(); // Example function to fetch the current ETH to USD rate
 
-      // Convert refund claim from ether to dollars
-      const refundClaimInDollars = refundClaimInEth;
-      setClaimInscriptionRefund(refundClaimInDollars);
+  //     // Convert refund claim from ether to dollars
+  //     const refundClaimInDollars = refundClaimInEth;
+  //     setClaimInscriptionRefund(refundClaimInDollars);
 
-      // Check if the refundable amount is greater than the total amount spent on inscription
-      if (
-        refundClaimInDollars &&
-        parseFloat(refundClaimInDollars) > parseFloat(amountInscription)
-      ) {
-        console.log(
-          "User cannot refund more money than they have spent on inscription"
-        );
-        // Handle the situation where the user cannot refund more money than they have spent on inscription
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  //     // Check if the refundable amount is greater than the total amount spent on inscription
+  //     if (
+  //       refundClaimInDollars &&
+  //       parseFloat(refundClaimInDollars) > parseFloat(amountInscription)
+  //     ) {
+  //       console.log(
+  //         "User cannot refund more money than they have spent on inscription"
+  //       );
+  //       // Handle the situation where the user cannot refund more money than they have spent on inscription
+  //     }
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   Number.prototype.noExponents = function () {
     let data = String(this).split(/[eE]/);
@@ -473,16 +487,16 @@ export default function TrackingPage() {
   };
   let n = 2e-7;
 
-  const getInscriptionPrice = async () => {
-    try {
-      const inscrPrice = await getStateTokenPrice();
-      const pureInscriptionPrice = HexNumberToIntegerNum(inscrPrice);
-      const inEthValue = ethers.utils.formatEther(pureInscriptionPrice);
-      setInscriptionPrice(inEthValue);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  // const getInscriptionPrice = async () => {
+  //   try {
+  //     const inscrPrice = await getStateTokenPrice();
+  //     const pureInscriptionPrice = HexNumberToIntegerNum(inscrPrice);
+  //     const inEthValue = ethers.utils.formatEther(pureInscriptionPrice);
+  //     setInscriptionPrice(inEthValue);
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
   const claimAllReward = async () => {
     console.log("Number(toBeClaimed):", Number(toBeClaimed));
@@ -610,6 +624,7 @@ export default function TrackingPage() {
       ParityDollardeposits();
       ParityTokensDeposits();
       PSDClaimed();
+      mathPSD();
       PSTClaimed();
       ParityAmountDistributed();
       PERPETUAL_YIELD_LOCKED();
@@ -620,9 +635,9 @@ export default function TrackingPage() {
       getDay();
       getCurrentStateTokenSupply();
       getVaultDays();
-      getClaimX1(accountAddress);
-      getClaimRefund(accountAddress);
-      getInscriptionPrice();
+      // getClaimX1(accountAddress);
+      // getClaimRefund(accountAddress);
+      // getInscriptionPrice();
       getRewardPerc();
       getStateTokenUserInNumber();
       // getRemainingTimeForStateTokenPriceUpdate()
@@ -978,6 +993,7 @@ export default function TrackingPage() {
                         <span className={`spanText ${spanDarkDim} fs-5`}>
                           {" "}
                           {Math.round(reward)}
+                          {/* here need to update the reward with totalTokens in vault * price */}
                         </span>
                       </div>
                     </div>

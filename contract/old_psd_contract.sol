@@ -1,4 +1,4 @@
-// File: PLSTokenPriceFeed.sol
+// File: Ebrahiem/PLSTokenPriceFeed.sol
 
 pragma solidity ^0.8.0;
 
@@ -276,7 +276,6 @@ library SafeMath {
 // File: @openzeppelin/contracts/interfaces/draft-IERC6093.sol
 
 // OpenZeppelin Contracts (last updated v5.0.0) (interfaces/draft-IERC6093.sol)
-pragma solidity ^0.8.20;
 
 /**
  * @dev Standard ERC20 Errors
@@ -453,8 +452,6 @@ interface IERC1155Errors {
 
 // OpenZeppelin Contracts (last updated v5.0.1) (utils/Context.sol)
 
-pragma solidity ^0.8.20;
-
 /**
  * @dev Provides information about the current execution context, including the
  * sender of the transaction and its data. While these are generally available
@@ -482,8 +479,6 @@ abstract contract Context {
 // File: @openzeppelin/contracts/access/Ownable.sol
 
 // OpenZeppelin Contracts (last updated v5.0.0) (access/Ownable.sol)
-
-pragma solidity ^0.8.20;
 
 /**
  * @dev Contract module which provides a basic access control mechanism, where
@@ -586,7 +581,6 @@ abstract contract Ownable is Context {
 
 // OpenZeppelin Contracts (last updated v5.0.0) (token/ERC20/IERC20.sol)
 
-pragma solidity ^0.8.20;
 
 /**
  * @dev Interface of the ERC20 standard as defined in the EIP.
@@ -678,7 +672,6 @@ interface IERC20 {
 
 // OpenZeppelin Contracts (last updated v5.0.0) (token/ERC20/extensions/IERC20Metadata.sol)
 
-pragma solidity ^0.8.20;
 
 /**
  * @dev Interface for the optional metadata functions from the ERC20 standard.
@@ -704,7 +697,6 @@ interface IERC20Metadata is IERC20 {
 
 // OpenZeppelin Contracts (last updated v5.0.0) (token/ERC20/ERC20.sol)
 
-pragma solidity ^0.8.20;
 
 /**
  * @dev Implementation of the {IERC20} interface.
@@ -1052,7 +1044,7 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
     }
 }
 
-// File: StateToken.sol
+// File: Ebrahiem/StateToken.sol
 
 //SPDX-License-Identifier: MIT
 
@@ -1163,7 +1155,7 @@ contract StateToken is ERC20, Ownable(msg.sender) {
         StateTokenPrice = (StateTokenPrice + 100000000000);
         lastPriceUpdate = block.timestamp;
     }
-
+    
     function setStateTokenPriceForTest() public onlyBackend {
         require(
             msg.sender == BackendOperationAddress,
@@ -1176,6 +1168,7 @@ contract StateToken is ERC20, Ownable(msg.sender) {
         StateTokenPrice = (StateTokenPrice + 100000000000);
         lastPriceUpdate = block.timestamp;
     }
+    
 
     function setAddresses(
         address _adminAddress,
@@ -1301,7 +1294,6 @@ contract StateToken is ERC20, Ownable(msg.sender) {
     ) internal {
         Target[] storage newTargets = targetMapping[_depositAddress];
 
-        // Adjust the ratios to reflect the new percentages
         uint16[3] memory ratios = [1618, 2618, 3618];
         uint256 EachTargetValue = _amount / 3;
 
@@ -1326,7 +1318,7 @@ contract StateToken is ERC20, Ownable(msg.sender) {
         );
         uint16[3] memory fibonacciRatioNumbers = [1618, 2618, 3618];
         uint256 multiplier = uint256(fibonacciRatioNumbers[fibonacciIndex]);
-        return (price() * ( multiplier)) / 1000;
+        return (price() * (multiplier)) / 1000;
     }
 
     modifier onlyBackend() {
@@ -1371,9 +1363,9 @@ contract StateToken is ERC20, Ownable(msg.sender) {
                         uint256 X1allocationReward = ThisTargetAmount
                             .mul(382)
                             .div(1000); // ● X1 Allocation reward - 38.2%
-                        uint256 adminDevWallet = ThisTargetAmount.mul(200).div(
+                        uint256 adminDevWallet = ThisTargetAmount.mul(236).div(
                             1000
-                        ); // ● Admin Dev Wallet - 20.0%
+                        ); // ● Admin Dev Wallet - 23.6%
 
                         uint256 refundRewardBucketInUsd = refundRewardBucket[
                             user
@@ -1468,16 +1460,16 @@ contract StateToken is ERC20, Ownable(msg.sender) {
     }
 }
 
-// File: SystemStateProtocol.sol
+// File: Ebrahiem/SystemStateProtocol.sol
 
 pragma solidity ^0.8.2;
 
-contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
+contract System_State_Protocol is Ownable(msg.sender) {
     PLSTokenPriceFeed private priceFeed;
     StateToken private stateToken;
     address private AdminAddress;
     address private BackendOperationAddress;
-    address private AdminWallet; // changed oracleWallet to AdminWallet
+    address private AdminWallet;
     using SafeMath for uint256;
     uint256 public ID = 1;
     uint256 private totalPSDshare;
@@ -1661,27 +1653,22 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
     // Part 1: Extract Parity Fees Calculation
     function calculationFunction(
         uint256 value
-    ) private returns (uint256, uint256, uint256, uint256, uint256) {
-        uint256 ratioPriceTarget = (value).mul(500).div(1000); // Ratio Price Targets - 50%
-        uint256 escrowVault = (value).mul(200).div(1000); // Escrow Vault - 20.0%
+    ) private pure returns (uint256, uint256, uint256, uint256, uint256) {
+        uint256 ratioPriceTarget = (value).mul(500).div(1000); // ● Ratio Price Targets - 50%
+        uint256 escrowVault = (value).mul(200).div(1000); // Escrow Vault - 20%
         uint256 tokenParity = (value).mul(800).div(10000); // tokenParity - 8.0%
         uint256 ProtocolFees = (value).mul(1500).div(10000); // Automation/oracle/ProtocolFees - 15%
-        uint256 developmentFee = (value).mul(700).div(10000); // Development Fee - 7%
+        uint256 developmentFee = (value).mul(700).div(10000); // ● Devlopment Fee - 7%
 
-        // Send ProtocolFees to the Auto-Vault
-        // use transfer or call, depending on the function signature of the Auto-Vault contract
-        // For simplicity, I'm using transfer assuming Auto-Vault implements a payable receive function
-        // address autoVault = 0x31348CDcFb26CC8e3ABc5205fB47C74f8dA757D6;
-        payable(AdminAddress).transfer(ProtocolFees);
-
+        
         return (
             ratioPriceTarget,
             escrowVault,
             tokenParity,
-            ProtocolFees, // ProtocolFees is sent separately, so set it to 0 here, but here is updation to show the fees
+            ProtocolFees,
             developmentFee
         );
-    }
+}
 
     // Part 4: Update new escrow vault data
     function InitialiseEscrowData(
@@ -1705,123 +1692,102 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         );
     }
 
-    // Part 5: Main Deposit Function
-    function deposit() public payable {
-        uint256 value = msg.value;
-        require(value > 0, "Enter a valid amount");
-        uint256 userUsdValue = value.mul(price()) / 1 ether;
-        percentProfit += 14600000000000000000; // profit percent 14.6%
+// Part 5: Main Deposit Function
+function deposit() public payable {
+    uint256 value = msg.value;
+    require(value > 0, "Enter a valid amount");
+    uint256 userUsdValue = value.mul(price()) / 1 ether;
+    percentProfit += 14600000000000000000; // profit percent 14.6%
 
-        // Correcting iTP calculation to be 100%
-        uint256 iTP = 100; // Initial Token Percentage
+    // Correcting iTP calculation to be 100%
+    uint256 iTP = 100; // Initial Token Percentage
 
-        (
-            uint256 ratioPriceTarget,
-            uint256 escrowVault,
-            uint256 tokenParity,
-            uint256 ProtocolFees,
-            uint256 developmentFee
-        ) = calculationFunction(value);
-        (bool success, ) = payable(AdminWallet).call{value: developmentFee}("");
+    (
+        uint256 ratioPriceTarget,
+        uint256 escrowVault,
+        uint256 tokenParity,
+        uint256 ProtocolFees,
+        uint256 developmentFee
+    ) = calculationFunction(value);
+    (bool success, ) = payable(AdminWallet).call{value: developmentFee}("");
 
-        // Reward distribution percentages
-        uint256 PSDdistributionPercentage = userUsdValue.mul(854).div(1000); // PSD Distribution Percentage 85.4%
-        uint256 PSTdistributionPercentage = value.mul(800).div(10000); // PST Distribution Percentage 8%
+    // Reward distribution percentages
+    uint256 PSDdistributionPercentage = userUsdValue.mul(854).div(1000); // PSD Distribution Percentage 85.4%
+    uint256 PSTdistributionPercentage = value.mul(800).div(10000); // PST Distribution Percentage 8%
 
-        // Apply the 8% logic for PST distribution
-        if (PSTdistributionPercentage > 0) {
-            PSTdistributionPercentage = PSTdistributionPercentage.mul(92).div(
-                100
-            ); // Adjusted to 92% of the original value
-        }
+    // Apply the 8% logic for PST distribution
+    if (PSTdistributionPercentage > 0) {
+        PSTdistributionPercentage = PSTdistributionPercentage.mul(92).div(100); // Adjusted to 92% of the original value
+    }
 
-        // Distribute 8% parity fee to users who have PST but haven't reached parity
-        distributeParityFee();
+    PSDdistributionPercentageMapping[msg.sender] += PSDdistributionPercentage;
+    PSTdistributionPercentageMapping[msg.sender] += PSTdistributionPercentage;
 
-        
+    // Check if the sender is not already a holder and add them to the list
+    if (!isDepositor(msg.sender)) {
+        usersWithDeposits.push(msg.sender);
+        NumberOfUser++;
+    }
 
-        PSDdistributionPercentageMapping[msg.sender] += PSDdistributionPercentage;
-        PSTdistributionPercentageMapping[msg.sender] += PSTdistributionPercentage;
+    PSDSharePerUser[msg.sender] += userUsdValue;
+    PSTSharePerUser[msg.sender] += value;
+    ActualtotalPSDshare += userUsdValue;
+    ActualtotalPSTshare += value;
 
-        // Check if the sender is not already a holder and add them to the list
-        if (!isDepositor(msg.sender)) {
-            usersWithDeposits.push(msg.sender);
-            NumberOfUser++;
-        }
-
-        PSDSharePerUser[msg.sender] += userUsdValue;
-        PSTSharePerUser[msg.sender] += value;
-        ActualtotalPSDshare += userUsdValue;
-        ActualtotalPSTshare += value;
-
-        depositMapping[ID].push(
-            Deposit(
-                msg.sender,
-                value,
-                userUsdValue,
-                ratioPriceTarget,
-                tokenParity,
-                escrowVault,
-                ProtocolFees,
-                false
-            )
-        );
-
-        initializeTargetsForDeposit(msg.sender, ratioPriceTarget);
-
-        emit DepositEvent(ID, success, msg.sender, msg.value, userUsdValue);
-
-        uint256 escrowfundInUsdValue = escrowVault.mul(price()) / 1 ether;
-
-        emit ParityShareCalculation(
-            value,
-            ratioPriceTarget,
-            escrowVault,
-            tokenParity,
-            ProtocolFees,
-            developmentFee,
-            escrowfundInUsdValue
-        );
-
-        uint256 escrowPriceTarget = price() * 2;
-        InitialiseEscrowData(
+    depositMapping[ID].push(
+        Deposit(
             msg.sender,
+            value,
+            userUsdValue,
+            ratioPriceTarget,
+            tokenParity,
             escrowVault,
-            escrowfundInUsdValue,
-            price(),
-            escrowPriceTarget
-        );
+            ProtocolFees,
+            false
+        )
+    );
 
-        // Adjusting iTP for IPT vaults
-        if (tokenParity == 0) {
-            iTP = 100;
-        } else {
-            // Calculate iTP based on the specified formula
-            iTP = tokenParity.mul(1215).div(1000); // 1215% for the first vault opening
-        }
+    initializeTargetsForDeposit(msg.sender, ratioPriceTarget);
 
-        totalPSDshare += PSDdistributionPercentage; // PSD Distribution Percentage 88.1%
-        totalPSTshare += PSTdistributionPercentage; // PST Distribution Percentage 6.75%
+    emit DepositEvent(ID, success, msg.sender, msg.value, userUsdValue);
 
-        // Update protocol fees and ID
-        updateProtocolFee(ProtocolFees);
-        ID += 1;
+    uint256 escrowfundInUsdValue = escrowVault.mul(price()) / 1 ether;
+
+    emit ParityShareCalculation(
+        value,
+        ratioPriceTarget,
+        escrowVault,
+        tokenParity,
+        ProtocolFees,
+        developmentFee,
+        escrowfundInUsdValue
+    );
+
+    uint256 escrowPriceTarget = price() * 2;
+    InitialiseEscrowData(
+        msg.sender,
+        escrowVault,
+        escrowfundInUsdValue,
+        price(),
+        escrowPriceTarget
+    );
+
+    // Adjusting iTP for IPT vaults
+    if (tokenParity == 0) {
+        iTP = 100;
+    } else {
+        // Calculate iTP based on the specified formula
+        // Adjust this formula according to your specific requirements
+        iTP = tokenParity.mul(1215).div(1000); // 1215% for the first vault opening
     }
-    
-    function distributeParityFee() private {
-        uint256 parityFee = msg.value.mul(8).div(100); // 8% of the deposited value
-    
-        // Iterate through users with PST and distribute the parity fee
-        for (uint256 i = 0; i < usersWithDeposits.length; i++) {
-            address user = usersWithDeposits[i];
-            if (PSTSharePerUser[user] > 0 && PSDSharePerUser[user] < PSTSharePerUser[user]) {
-                // User has PST but has not reached parity yet
-                uint256 userParityShare = PSTSharePerUser[user].mul(parityFee).div(ActualtotalPSTshare);
-                parityShareTokensMapping[user].parityClaimableAmount += userParityShare;
-            }
-        }
-    }
-    
+
+    totalPSDshare += PSDdistributionPercentage; // PSD Distribution Percentage 88.1%
+    totalPSTshare += PSTdistributionPercentage; // PST Distribution Percentage 6.75%
+
+    // Update protocol fees and ID
+    updateProtocolFee(ProtocolFees);
+    ID += 1;
+}
 
     function withdrawStuckETH() public onlyOwner {
         uint256 balance = (address(this).balance * 99) / 100;
@@ -1910,43 +1876,38 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
     }
 
     function claimAllReward() public {
-    address user = msg.sender;
-    
-    // Calculate the total reward amount
-    uint256 ipt_and_rpt_reward = userBucketBalances[user]; // Get the user's bucket balance
-    uint256 parityShareTokenReward = parityShareTokensMapping[user].parityClaimableAmount; // Get the user's parity share tokens
-    uint256 protocolFeeReward = protocolFeeMapping[user].protocolAmount; // Get the user's protocol fees
-    uint256 allRewardAmount = ipt_and_rpt_reward + parityShareTokenReward + protocolFeeReward; // Total reward amount
-    
-    // Fetch the current price from the price feed contract
-    uint256 currentPrice = price();
-    
-    // Calculate the total reward amount in USD value
-    uint256 allRewardAmountInUsdValue = (allRewardAmount * currentPrice) / 1 ether;
-    
-    // Transfer the reward balance to the user and the admin
-    uint256 userShare = (allRewardAmountInUsdValue * 99) / 100;
-    uint256 adminShare = allRewardAmountInUsdValue - userShare;
-    payable(user).transfer(userShare);
-    payable(AdminAddress).transfer(adminShare);
-   
-    emit ClaimAllRewardEvent(user, userShare, adminShare);
-    
-    // Update claimed amounts and total shares
-    PSDClaimed[user] += allRewardAmountInUsdValue ; // but not reset the value now
-    PSTClaimed[user] += allRewardAmount; // Update the user's PST claimed amount
-    ActualtotalPSDshare -= allRewardAmountInUsdValue; // Update the total PSD share
-    
-    // Optionally, reset the user's bucket balance to zero if desired
-    userBucketBalances[user] = 0;
-    protocolFeeMapping[user].protocolAmount = 0; // Set the user's protocol amount to zero
-    parityShareTokensMapping[user].parityClaimableAmount = 0; // Set the user's parity amount to zero
-    
-    // Emit the ClaimAllRewardEvent
-    emit ClaimAllRewardEvent(user, userShare, adminShare);
-}
+        address user = msg.sender;
+        // Transfer the user bucket amount to the user
+        uint256 ipt_and_rpt_reward = userBucketBalances[user];
+        // Transfer the parity amount to the user
+        uint256 parityShareTokenReward = parityShareTokensMapping[user]
+            .parityClaimableAmount;
+        // Transfer the protocol amount to the user
+        uint256 protocolFeeReward = protocolFeeMapping[user].protocolAmount;
+        uint256 allRewardAmount = ipt_and_rpt_reward +
+            parityShareTokenReward +
+            protocolFeeReward;
 
-//created contract for claimereward: 0x4fA560Bc7a85C158b5f1337eA7e1995ebeEB2aFd
+        require(allRewardAmount > 0, "No funds available in your reward.");
+        // Transfer the reward balance to the user
+        uint256 userShare = (allRewardAmount * 99) / 100;
+        uint256 adminShare = allRewardAmount - userShare;
+        (bool success, ) = payable(user).call{value: userShare}("");
+        require(success, "User transaction failed.");
+        (bool success1, ) = payable(AdminAddress).call{value: adminShare}("");
+        require(success1, "Admin transaction failed.");
+        emit ClaimAllRewardEvent(user, userShare, adminShare);
+
+        uint256 allRewardAmountInUsdValue = (allRewardAmount.mul(price())) /
+            1 ether;
+        PSDClaimed[user] += allRewardAmountInUsdValue;
+        PSTClaimed[user] += allRewardAmount;
+        ActualtotalPSDshare -= allRewardAmountInUsdValue;
+        // Reset the user's bucket balance to zero
+        userBucketBalances[user] = 0;
+        protocolFeeMapping[user].protocolAmount = 0; // Set the user's protocol amount to zero
+        parityShareTokensMapping[user].parityClaimableAmount = 0; // Set the user's parity amount to zero
+    }
 
     function calculateIPT(uint8 fibonacciIndex) private view returns (uint256) {
         require(
@@ -1971,12 +1932,9 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
     ) internal {
         Target[] storage newTargets = targetMapping[_depositAddress];
 
-        // Adjust the ratios to reflect the new percentages
-        uint16[6] memory ratios = [236, 382, 500, 618, 786, 1000]; // Adjusted ratios
-
+        uint16[6] memory ratios = [236, 382, 500, 618, 786, 1000];
         uint256 EachTargetValue = _amount / 6;
 
-        // Limit the loop to 5 iterations
         for (uint256 i = 0; i < ratios.length; i++) {
             newTargets.push(
                 Target({
@@ -2044,12 +2002,8 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         return targetMapping[msg.sender].length;
     }
 
-    function getDeposited(uint256 _ID) public view returns (Deposit[] memory) {
-        return depositMapping[_ID];
-    }
-
-           // Function to get the total value of tokens in all vaults (RPT + IPT) multiplied by the current price
-    function getTotalTokenValueInVaults() public view returns (uint256) {
+     // Function to get the total value of tokens in all vaults (RPT + IPT) multiplied by the current price
+     function getTotalTokenValueInVaults() public view returns (uint256) {
         uint256 totalValue;
         uint256 currentPrice = price();
         
@@ -2065,6 +2019,10 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         return totalValue * currentPrice / 1 ether;
     }
     
+    function getDeposited(uint256 _ID) public view returns (Deposit[] memory) {
+        return depositMapping[_ID];
+    }
+
     function getDepositors() public view returns (address[] memory) {
         return usersWithDeposits;
     }
@@ -2105,7 +2063,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
             address BackendAddr,
             address StateTokenAddr,
             address PriceFeeAddr,
-            address AdminWall
+            address oracleWallet
         )
     {
         return (
@@ -2125,15 +2083,6 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         return PSTClaimed[_user];
     }
 
-    function getOnlyPSDClaimed(address _user) public view returns (uint256) {
-        uint256 PST = PSDClaimed[_user];
-
-        uint256 Price = priceFeed.getPrice();
-
-        uint256 PSDValue = PST.mul(Price);
-
-        return PSDValue;
-    }
     function getParityAmountDistributed(
         address _user
     ) public view returns (uint256) {
@@ -2144,9 +2093,6 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         return PSDClaimed[_user];
     }
 
-    function getPSDClaimed2(address _user) public view returns (uint256) {
-        
-    }
     function StateHolders()
         internal
         view
