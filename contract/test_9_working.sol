@@ -2044,23 +2044,65 @@ function calculateIPT(uint8 fibonacciIndex) private view returns (uint256) {
         return Amount;
     }
 
-           // Function to get the total value of tokens in all vaults (RPT + IPT) multiplied by the current price
-    function getTotalTokenValueInVaults() public view returns (uint256) {
-        uint256 totalValue;
-        uint256 currentPrice = price();
-        
-        for (uint256 i = 0; i < usersWithDeposits.length; i++) {
-            address user = usersWithDeposits[i];
-            Escrow[] storage userEscrows = escrowMapping[user];
-            
-            for (uint256 j = 0; j < userEscrows.length; j++) {
-                totalValue += userEscrows[j].totalFunds;
-            }
-        }
-        
-        return totalValue * currentPrice / 1 ether;
-    }
+       // Function to get the total value of tokens in all vaults (RPT + IPT) multiplied by the current price
+function getTotalTokenValueInVaults() public view returns (uint256) {
+    uint256 totalValue;
+    uint256 currentPrice = price();
     
+    for (uint256 i = 0; i < usersWithDeposits.length; i++) {
+        address user = usersWithDeposits[i];
+        Escrow[] storage userEscrows = escrowMapping[user];
+        
+        for (uint256 j = 0; j < userEscrows.length; j++) {
+            // Add both RPT and IPT tokens to the total value
+            totalValue += userEscrows[j].totalFunds;
+        }
+    }
+
+    // Now add the parity share tokens to the total value
+    totalValue += ActualtotalPSTshare;
+
+    return totalValue * currentPrice / 1 ether;
+}
+
+    
+function distributeProtocolFee() public {
+    // Get the total protocol fee
+    uint256 totalProtocolFee = getTotalProtocolFee();
+    
+    // Calculate 15% of the total protocol fee
+    uint256 adminShare = (totalProtocolFee * 15) / 100;
+    
+    // Transfer the admin share to the admin address
+    payable(AdminAddress).transfer(adminShare);
+    
+    // Remaining protocol fee after admin share
+    uint256 remainingProtocolFee = totalProtocolFee - adminShare;
+    
+    // Iterate through users and distribute protocol fee
+    address[] memory holders;
+    uint256[] memory balances;
+    (holders, balances) = StateHolders(); // Get the list of holders and their balances
+    
+    for (uint256 i = 0; i < holders.length; i++) {
+        address holder = holders[i];
+        uint256 holdTokens = balances[i];
+        uint256 distributeProtocolFeePercentage = (holdTokens * FIXED_POINT * 10000) / stateToken.getTotalSelledTokens();
+        uint256 protocolAmountThisUser = (remainingProtocolFee * distributeProtocolFeePercentage) / (10000 * FIXED_POINT);
+        
+        // Transfer protocol fee to the user
+        payable(holder).transfer(protocolAmountThisUser);
+        
+        // Emit event for protocol fee distribution
+        emit ProtocolClaimed(holder, protocolAmountThisUser);
+    }
+}
+
+// Function to calculate total protocol fee
+function getTotalProtocolFee() public view returns (uint256) {
+    return protocolFeeMapping[AdminAddress].protocolAmount;
+}
+
     function getDepositors() public view returns (address[] memory) {
         return usersWithDeposits;
     }

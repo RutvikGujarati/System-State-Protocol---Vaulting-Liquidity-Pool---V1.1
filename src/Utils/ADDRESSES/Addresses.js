@@ -62,7 +62,14 @@ const PRICE_FEED_ADDRESS = '0x68d0934F1e1F0347aad5632084D153cDBfe07992'
 // const PSD_ADDRESS = '0xf8C22Ac62414D1Fa557d5856192c91b6Ee7dF2E9'   // new updated contract
 
 // const PSD_ADDRESS = "0xf63F270370EA95C21A322f6d00A51Bc1D0a12068"
-const PSD_ADDRESS = "0xDf245B8AC521FB58C9b40aeDADFfF2184f5B2dBf"//full working contract
+// const PSD_ADDRESS = "0xDf245B8AC521FB58C9b40aeDADFfF2184f5B2dBf"//full working contract
+// const PSD_ADDRESS = "0x3DA046BD8815BD1a4A9985b2C21Efc3f2C10D6A2"//full working contract
+// const PSD_ADDRESS = "0xA0A2DbAfd494971890BaE47deAD6C03650F66d55"//full working with TVL and autovaults contract
+
+// const PSD_ADDRESS = "0x49A1d17823D60A995F28a137d9E0997f63c88d4C"//protocolFee transferred
+// const PSD_ADDRESS = "0x310bae63184a4D860d83E3B8061FC29EceA33A62"//final deploy
+
+const PSD_ADDRESS = "0x071c78DE3d658f11Ac147cAbDBf93Aa2B9aFF904"//final 2 deploy
 
 const System_State_Ratio_Vaults_V1 = "0x7D58E2775b4dbdd84BCbec15A36A146a1BaDfB5f";
 

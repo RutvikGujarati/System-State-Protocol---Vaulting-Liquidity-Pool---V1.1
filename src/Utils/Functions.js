@@ -188,6 +188,8 @@ export default function Functions({ children }) {
             }
         }
     }
+
+    
     const getProtocolFee = async (address) => {
         if (address) {
             try {
@@ -201,6 +203,19 @@ export default function Functions({ children }) {
             } catch (error) {
                 console.error('getProtocolFee error:', error);
             }
+        }
+    }
+
+    const getTotalProtocolFeesTransferred= async() =>{
+        try{
+            let contract = await getPsdContract();
+            let FeeTransferred = await contract.getTotalProtocolFeesTransferred();
+
+            let FormattedFee = await getFormatEther(FeeTransferred)
+
+            return FormattedFee
+        }catch(error){
+            console.log(error);
         }
     }
 
@@ -961,6 +976,7 @@ export default function Functions({ children }) {
                 // getStateTokenHolders,
                 // getUpdateStateTokenPriceForTest,
                 getNumberOfStateProtocolUsers,
+                getTotalProtocolFeesTransferred
                 // getLastStateTokenPriceUpdateTimestamp,
             }}>
                 {children}

@@ -79,6 +79,7 @@ export default function TrackingPage() {
     getOnlyProtocolFee,
     contractBalance,
     getNumberOfStateProtocolUsers,
+    getTotalProtocolFeesTransferred
     // getLastStateTokenPriceUpdateTimestamp
   } = useContext(functionsContext);
   const {
@@ -115,6 +116,7 @@ export default function TrackingPage() {
   const [balance, setBalance] = useState("Enter Amount");
   const [NumberOfStateProtocolUsers, setNumberOfStateProtocolUsers] =
     useState(0);
+    const [totalVaultValue,setTotalVaultSum] = useState("0")
   const [
     remainingTimeForStateTokenPriceUpdate,
     setRemainingTimeForStateTokenPriceUpdate,
@@ -355,12 +357,14 @@ export default function TrackingPage() {
 
   const ProtocolFee = async () => {
     try {
-      let protocolFee = await getOnlyProtocolFee(accountAddress);
+      let protocolFee = await getTotalProtocolFeesTransferred();
 
-      // let price = await getPrice();
-      // let feeDollar = protocolFee * price;
-      // let fixed = Number(feeDollar).toFixed(4);
-      setProtocolFee(protocolFee);
+      let price = await getPrice();
+      let formattedPrice = Number(ethers.utils.formatEther(price || "0"));
+
+      let feeDollar = protocolFee * formattedPrice;
+      let fixed = Number(feeDollar).toFixed(4);
+      setProtocolFee(fixed);
     } catch (error) {
       console.error("error:", error);
     }
@@ -555,19 +559,33 @@ export default function TrackingPage() {
   //     setPriceUpdateDate(day)
   // }, [setPriceUpdateDate])
 
-  useEffect(() => {
+
+  const FetchBalance = async ()=>{
     try {
       navToExplorer()
         .then((res) => {
           setNavigateToExplorer(res);
         })
         .catch((error) => {});
-      if (!userConnected) {
+      if (userConnected) {
         let fixedBalance =
-          Number(WalletBalance || "0").toFixed(4) + " " + currencyName;
-        setBalance(fixedBalance);
+          Number(WalletBalance || "0").toFixed(4);
+
+         
+      let Price = await getPrice();
+      let formattedPrice = Number(ethers.utils.formatEther(Price || "0"));
+
+      let total_amount = formattedPrice * fixedBalance;
+        let fixed2 = Number(total_amount).toFixed(4)
+
+        setBalance(fixed2);
       }
     } catch (error) {}
+  }
+
+  
+  useEffect(() => {
+    FetchBalance()
   }, [accountAddress, networkName]);
 
   const getStateTokenUserInNumber = async () => {
@@ -611,11 +629,214 @@ export default function TrackingPage() {
     return remainingTime;
   }
 
-  // const getRemainingTimeForStateTokenPriceUpdate = async () => {
-  //     const timeStamp = await getLastStateTokenPriceUpdateTimestamp();
-  //     const remainTime = await getRemainingTime(timeStamp, 36,9 ); // Convert 36.9 days to seconds
-  //     setRemainingTimeForStateTokenPriceUpdate(remainTime);
-  // }
+  const [price, setPrice] = useState("0");
+  const [totalSUm, setTotalSum] = useState("0");
+const [escrowVaultTargets, setEscrowVaultTargets] = useState([]);
+const [currentPage, setCurrentPage] = useState(1);
+
+const IncrementPriceTarget = async () => {
+  if (accountAddress && currencyName) {
+    try {
+      let price = await getPrice();
+      let formattedPrice = await ethers.utils.formatEther(price || "0");
+      setPrice(formattedPrice);
+
+      let All_USERS_TARGETS = [];
+
+      let allDepositorsAddress = await getDepositors();
+
+      for (let index = 0; index < allDepositorsAddress.length; index++) {
+        const address = allDepositorsAddress[index];
+        let incrementPriceTarget = await getIncrementPriceTargets(address);
+        All_USERS_TARGETS.push(...(incrementPriceTarget || []));
+      }
+
+      // Sort the targets
+      const sortedArray = [...(All_USERS_TARGETS || [])].sort((a, b) => {
+        const formattedRatioTargetA = ethers.utils.formatEther(
+          a?.priceTarget.toString()
+        );
+        const formattedRatioTargetB = ethers.utils.formatEther(
+          b?.priceTarget.toString()
+        );
+
+        const numericValueA = Number(formattedRatioTargetA);
+        const numericValueB = Number(formattedRatioTargetB);
+
+        return numericValueA - numericValueB;
+      });
+
+      // Process and display targets for the current page
+      const itemsPerPage = 2500;
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const itemsForCurrentPage = sortedArray.slice(startIndex, endIndex);
+
+      try {
+        let items = await Promise.all(
+          itemsForCurrentPage.map((target, index) =>
+            processTargets(target, index, currencyName)
+          )
+        );
+        setEscrowVaultTargets(items.filter(Boolean));
+      } catch (error) {
+        console.error("Error processing targets:", error);
+      }
+    } catch (error) {
+      console.error("error:", error);
+    }
+  }
+};
+
+  let totalSum =0;
+
+const processTargets = async (target, index, currencyName) => {
+  try {
+    const formattedPriceTarget = ethers.utils.formatEther(
+      target?.priceTarget.toString()
+    );
+    const formattedTargetAmount = ethers.utils.formatEther(
+      target?.totalFunds.toString()
+    );
+
+       // Add the formattedTargetAmount to the total sum
+       
+       console.log("from tracking page",totalSum);
+       
+       const PriceTarget = Number(formattedPriceTarget).toFixed(6);
+       const targetAmount =
+       Number(formattedTargetAmount).toFixed(6) + " " + (await currencyName);
+
+       console.log("from tracking page targetAmount",parseFloat(targetAmount));
+
+       totalSum += parseFloat(formattedTargetAmount);
+       setTotalSum(totalSum.toString());
+
+    // Return processed target
+    return {
+      index,
+      PriceTarget,
+      targetAmount,
+    };
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+const IPTmultiplySumWithPrice =async () => {
+  // Convert the price to a floating-point number
+  // Multiply the total sum with the current price
+  const totalPrice = totalSUm * price;
+
+  console.log("price IPT",totalPrice)
+
+  return totalPrice;
+};
+
+
+useEffect(() => {
+  if (userConnected) {
+    IncrementPriceTarget();
+    IPTmultiplySumWithPrice();
+  }
+}, [accountAddress, currencyName, theme, socket, currentPage]);
+
+const [ratioPriceTargets, setRatioPriceTargets] = useState([])
+const [noOfPage, setNoOfPage] = useState(0)
+const [TotalSum, setTotalSummation] = useState("0")
+
+
+const RatioPriceTargets = async () => {
+  if (accountAddress) {
+     try {
+    
+       let All_USERS_TARGETS = [];
+ 
+       let allDepositorsAddress = await getDepositors();
+       
+       for (let index = 0; index < allDepositorsAddress.length; index++) {
+         const address = allDepositorsAddress[index];
+         let targets = await getRatioPriceTargets(address);
+         All_USERS_TARGETS.push(...targets || []);
+       }
+ 
+       // Calculate total pages
+       const itemsPerPage = 2500;
+       const totalPages = Math.ceil(All_USERS_TARGETS.length / itemsPerPage);
+       setNoOfPage(totalPages); // Update the total number of pages
+ 
+       // Sort the targets
+       const sortedArray = [...All_USERS_TARGETS || []].sort((a, b) => {
+         const formattedRatioTargetA = ethers.utils.formatEther(a?.ratioPriceTarget.toString());
+         const formattedRatioTargetB = ethers.utils.formatEther(b?.ratioPriceTarget.toString());
+ 
+         const numericValueA = Number(formattedRatioTargetA);
+         const numericValueB = Number(formattedRatioTargetB);
+ 
+         return numericValueA - numericValueB;
+       });
+ 
+       // Process and display targets for the current page
+       const startIndex = (currentPage - 1) * itemsPerPage;
+       const endIndex = startIndex + itemsPerPage;
+       const itemsForCurrentPage = sortedArray.slice(startIndex, endIndex);
+ 
+       try {
+         let items = await Promise.all(itemsForCurrentPage.map((target, index) =>
+           processTargetsRPT(target, index, currencyName))
+         );
+         setRatioPriceTargets(items.filter(Boolean));
+       } catch (error) {
+         console.error('Error processing targets:', error);
+       }
+     } catch (error) {
+       console.error('error:', error);
+     }
+  }
+ }
+ 
+ let totalSummation = 0;
+const processTargetsRPT = async (target, index, currencyName) => {
+  try {
+    const formattedRatioTarget = ethers.utils.formatEther(target?.ratioPriceTarget.toString())
+    const ratioPriceTarget = Number(formattedRatioTarget).toFixed(6);
+    const formattedTargetAmount = ethers.utils.formatEther(target?.TargetAmount.toString())
+    const targetAmount = Number(formattedTargetAmount).toFixed(4) + ' ' + currencyName ?? currencyName;
+
+    totalSummation += parseFloat(targetAmount)
+    setTotalSummation(totalSummation)
+    console.log("from tracking summation",parseFloat(targetAmount))
+
+  } catch (error) {
+    console.log('error:', error)
+  }
+}
+
+const RTPpmultiplySumWithPrice =async () => {
+  // Convert the price to a floating-point number
+  // Multiply the total sum with the current price
+  const totalRTPPrice = TotalSum * price;
+
+  console.log("price RTP",totalRTPPrice)
+
+  return totalRTPPrice;
+};
+
+const TotalVaultValueLocked = ()=>{
+  const totalvalue = (totalSUm * price) + (TotalSum * price);
+  const roundedTotal = Number(totalvalue.toFixed(5));
+  setTotalVaultSum(roundedTotal);
+  console.log("total value locked",roundedTotal);
+  return roundedTotal;
+}
+useEffect(() => {
+  if (userConnected) {
+    RatioPriceTargets()
+    RTPpmultiplySumWithPrice()
+    TotalVaultValueLocked()
+  }
+}, [accountAddress, currencyName, theme, socket])
 
   useEffect(() => {
     if (userConnected) {
@@ -992,7 +1213,7 @@ export default function TrackingPage() {
                       <div className={`varSize ${spanDarkDim}`}>
                         <span className={`spanText ${spanDarkDim} fs-5`}>
                           {" "}
-                          {Math.round(reward)}
+                          $ {totalVaultValue}
                           {/* here need to update the reward with totalTokens in vault * price */}
                         </span>
                       </div>
@@ -1023,7 +1244,7 @@ export default function TrackingPage() {
                       <div className={`varSize ${spanDarkDim}`}>
                         <span className={`spanText ${spanDarkDim} fs-5`}>
                           {" "}
-                          {protocolFee}
+                          $ {protocolFee}
                         </span>
                       </div>
                     </div>

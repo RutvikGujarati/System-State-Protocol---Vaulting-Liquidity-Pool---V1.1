@@ -74,6 +74,7 @@ export default function RatioPriceTargets() {
     }
    }
    
+   
   const processTargets = async (target, index, currencyName) => {
     try {
       const formattedRatioTarget = ethers.utils.formatEther(target?.ratioPriceTarget.toString())

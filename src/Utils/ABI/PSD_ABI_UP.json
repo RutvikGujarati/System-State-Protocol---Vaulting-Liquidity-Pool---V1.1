@@ -328,6 +328,25 @@
 		"anonymous": false,
 		"inputs": [
 			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "recipient",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "ProtocolFeeTransferred",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
 				"indexed": false,
 				"internalType": "address",
 				"name": "User",
@@ -666,11 +685,6 @@
 			},
 			{
 				"internalType": "address",
-				"name": "StateTokenAddr",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
 				"name": "PriceFeeAddr",
 				"type": "address"
 			},
@@ -885,6 +899,25 @@
 				"type": "address"
 			}
 		],
+		"name": "getPSDClaimed2",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_user",
+				"type": "address"
+			}
+		],
 		"name": "getPSTClaimed",
 		"outputs": [
 			{
@@ -1026,6 +1059,19 @@
 	},
 	{
 		"inputs": [],
+		"name": "getTotalProtocolFeesTransferred",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "getTotalPsdShare",
 		"outputs": [
 			{
@@ -1147,11 +1193,6 @@
 			},
 			{
 				"internalType": "address",
-				"name": "_stateTokenAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
 				"name": "_priceFeedAddress",
 				"type": "address"
 			}
@@ -1159,6 +1200,19 @@
 		"name": "setAddresses",
 		"outputs": [],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "totalProtocolFeesTransferred",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{

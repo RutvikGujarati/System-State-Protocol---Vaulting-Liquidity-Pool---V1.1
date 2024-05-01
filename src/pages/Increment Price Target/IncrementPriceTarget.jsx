@@ -108,6 +108,7 @@ export default function IncrementPriceTarget() {
       const formattedTargetAmount = ethers.utils.formatEther(
         target?.totalFunds.toString()
       );
+      console.log("formattedTargetAmount",formattedTargetAmount)
       const givenTimestamp = target?.Time.toString();
       const currentTimestamp = Math.floor(Date.now() / 1000);
       const timeDifferenceInSeconds = currentTimestamp - Number(givenTimestamp);
@@ -117,6 +118,7 @@ export default function IncrementPriceTarget() {
       const PriceTarget = Number(formattedPriceTarget).toFixed(6);
       const targetAmount =
         Number(formattedTargetAmount).toFixed(6) + " " + (await currencyName);
+
 
       return (
         <div
