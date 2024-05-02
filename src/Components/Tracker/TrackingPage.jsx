@@ -79,7 +79,7 @@ export default function TrackingPage() {
     getOnlyProtocolFee,
     contractBalance,
     getNumberOfStateProtocolUsers,
-    getTotalProtocolFeesTransferred
+    getTotalProtocolFeesTransferred,
     // getLastStateTokenPriceUpdateTimestamp
   } = useContext(functionsContext);
   const {
@@ -116,7 +116,7 @@ export default function TrackingPage() {
   const [balance, setBalance] = useState("Enter Amount");
   const [NumberOfStateProtocolUsers, setNumberOfStateProtocolUsers] =
     useState(0);
-    const [totalVaultValue,setTotalVaultSum] = useState("0")
+  const [totalVaultValue, setTotalVaultSum] = useState("0");
   const [
     remainingTimeForStateTokenPriceUpdate,
     setRemainingTimeForStateTokenPriceUpdate,
@@ -143,34 +143,42 @@ export default function TrackingPage() {
   // Done
   const ToBeClaimed = async () => {
     try {
-        // Get the IPT and RPT rewards
-        let iptAndRptReward = await getToBeClaimed(accountAddress);
-        let formattedIptAndRptReward = ethers.utils.formatEther(iptAndRptReward || "0");
+      // Get the IPT and RPT rewards
+      let iptAndRptReward = await getToBeClaimed(accountAddress);
+      let formattedIptAndRptReward = ethers.utils.formatEther(
+        iptAndRptReward || "0"
+      );
 
-        // Get the parity share tokens claimable amount
-        let parityShareTokensDetail = await getParityDollarClaimed(accountAddress);
-        let parityClaimableAmount = parityShareTokensDetail?.parityClaimableAmount;
-        let formattedParityClaimableAmount = ethers.utils.formatEther(parityClaimableAmount || "0");
+      // Get the parity share tokens claimable amount
+      let parityShareTokensDetail = await getParityDollarClaimed(
+        accountAddress
+      );
+      let parityClaimableAmount =
+        parityShareTokensDetail?.parityClaimableAmount;
+      let formattedParityClaimableAmount = ethers.utils.formatEther(
+        parityClaimableAmount || "0"
+      );
 
-        // Get the protocol fee
-        let protocolFeeDetail = await getProtocolFee(accountAddress);
-        let protocolAmount = protocolFeeDetail?.protocolAmount;
+      // Get the protocol fee
+      let protocolFeeDetail = await getProtocolFee(accountAddress);
+      let protocolAmount = protocolFeeDetail?.protocolAmount;
 
-        // Calculate the total amount to be claimed
-        let totalToBeClaimed = parseFloat(formattedIptAndRptReward) +
-            parseFloat(formattedParityClaimableAmount) +
-            parseFloat(protocolAmount || 0);
+      // Calculate the total amount to be claimed
+      let totalToBeClaimed =
+        parseFloat(formattedIptAndRptReward) +
+        parseFloat(formattedParityClaimableAmount) +
+        parseFloat(protocolAmount || 0);
 
-        // Format the total amount
-        let formattedTotalToBeClaimed = totalToBeClaimed.toFixed(4);
+      // Format the total amount
+      let formattedTotalToBeClaimed = totalToBeClaimed.toFixed(4);
 
-        // Update the state with the total amount to be claimed
-        setToBeClaimed(formattedTotalToBeClaimed);
+      // Update the state with the total amount to be claimed
+      setToBeClaimed(formattedTotalToBeClaimed);
     } catch (error) {
-        console.log("Error:", error);
-        // Handle error gracefully, e.g., display an error message to the user
+      console.log("Error:", error);
+      // Handle error gracefully, e.g., display an error message to the user
     }
-};
+  };
 
   // Done
   const TotalValueLockedInDollar = async () => {
@@ -180,7 +188,7 @@ export default function TrackingPage() {
         totalPsdShare || "0"
       );
       let fixed = Number(formattedTotalPsdShare).toFixed(2);
-      console.log("getTotalValueLockedInDollar", fixed)
+      console.log("getTotalValueLockedInDollar", fixed);
       setTotalValueLocked(fixed);
     } catch (error) {
       console.log("error:", error);
@@ -216,9 +224,9 @@ export default function TrackingPage() {
   const PSDClaimed = async () => {
     try {
       let PSDClaimed = await onlyPSDclaimed(accountAddress);
-   
+
       let formatted_PSD_Claimed = ethers.utils.formatEther(PSDClaimed || "0");
-      
+
       let fixed = Number(formatted_PSD_Claimed).toFixed(2);
       // let PSTClaimed = await get_PST_Claimed(accountAddress)
       // let formatted_PST_Claimed = ethers.utils.formatEther(PSTClaimed || '0')
@@ -230,8 +238,8 @@ export default function TrackingPage() {
     }
   };
 
-  const mathPSD = async ()=>{
-    try{
+  const mathPSD = async () => {
+    try {
       let PSTClaimed = await get_PST_Claimed(accountAddress);
       let formatted_PST_Claimed = ethers.utils.formatEther(PSTClaimed || "0");
 
@@ -239,13 +247,13 @@ export default function TrackingPage() {
       let formattedPrice = Number(ethers.utils.formatEther(Price || "0"));
 
       let total_amount = formattedPrice * formatted_PST_Claimed;
-        let fixed2 = Number(total_amount).toFixed(2)
+      let fixed2 = Number(total_amount).toFixed(2);
 
-        setParityDollarClaimed(fixed2)
-    }catch(error){
-      console.error("error",error);
+      setParityDollarClaimed(fixed2);
+    } catch (error) {
+      console.error("error", error);
     }
-  }
+  };
   const PSTClaimed = async () => {
     try {
       let PSTClaimed = await get_PST_Claimed(accountAddress);
@@ -370,31 +378,33 @@ export default function TrackingPage() {
     }
   };
 
-  const TotalTokenValueInVaults = async ()=>{
-    try{
+  const TotalTokenValueInVaults = async () => {
+    try {
       let TotalTokenValue = await getTotalTokenValueInVaults();
-      let TotalTokenValueFloat= parseFloat(TotalTokenValue);
-      
-      if(!isNaN(TotalTokenValueFloat)){
-        setTotalTokenValueInVaults(TotalTokenValueFloat.toFixed(6));
-      }else{setTotalTokenValueInVaults(0)}
-    }catch(error){
-      console.log('Error in getting total token value in vaults', error);
-  }
-}
+      let TotalTokenValueFloat = parseFloat(TotalTokenValue);
 
-  const protocolFeeInDollar =async ()=>{
-    try{
-        let protocolFee =await getProtocolFee(accountAddress);
-        let protocolAmount = await protocolFee?.protocolAmount;
-        let price = await getPrice();
-        let feeDollar = protocolAmount.mul(price);
-        let fixed = Number(feeDollar).toFixed(4) + " " + currencyName;
-        setProtocolFeeInDollar(fixed);
-    }catch(error){
-        console.error("error:", error);
+      if (!isNaN(TotalTokenValueFloat)) {
+        setTotalTokenValueInVaults(TotalTokenValueFloat.toFixed(6));
+      } else {
+        setTotalTokenValueInVaults(0);
+      }
+    } catch (error) {
+      console.log("Error in getting total token value in vaults", error);
     }
-  }
+  };
+
+  const protocolFeeInDollar = async () => {
+    try {
+      let protocolFee = await getProtocolFee(accountAddress);
+      let protocolAmount = await protocolFee?.protocolAmount;
+      let price = await getPrice();
+      let feeDollar = protocolAmount.mul(price);
+      let fixed = Number(feeDollar).toFixed(4) + " " + currencyName;
+      setProtocolFeeInDollar(fixed);
+    } catch (error) {
+      console.error("error:", error);
+    }
+  };
   const getDay = async () => {
     const Day = await getTimeStampForCreateValut();
     setDayStamp(Day);
@@ -559,8 +569,7 @@ export default function TrackingPage() {
   //     setPriceUpdateDate(day)
   // }, [setPriceUpdateDate])
 
-
-  const FetchBalance = async ()=>{
+  const FetchBalance = async () => {
     try {
       navToExplorer()
         .then((res) => {
@@ -568,24 +577,21 @@ export default function TrackingPage() {
         })
         .catch((error) => {});
       if (userConnected) {
-        let fixedBalance =
-          Number(WalletBalance || "0").toFixed(4);
+        let fixedBalance = Number(WalletBalance || "0").toFixed(4);
 
-         
-      let Price = await getPrice();
-      let formattedPrice = Number(ethers.utils.formatEther(Price || "0"));
+        let Price = await getPrice();
+        let formattedPrice = Number(ethers.utils.formatEther(Price || "0"));
 
-      let total_amount = formattedPrice * fixedBalance;
-        let fixed2 = Number(total_amount).toFixed(4)
+        let total_amount = formattedPrice * fixedBalance;
+        let fixed2 = Number(total_amount).toFixed(4);
 
         setBalance(fixed2);
       }
     } catch (error) {}
-  }
+  };
 
-  
   useEffect(() => {
-    FetchBalance()
+    FetchBalance();
   }, [accountAddress, networkName]);
 
   const getStateTokenUserInNumber = async () => {
@@ -631,212 +637,220 @@ export default function TrackingPage() {
 
   const [price, setPrice] = useState("0");
   const [totalSUm, setTotalSum] = useState("0");
-const [escrowVaultTargets, setEscrowVaultTargets] = useState([]);
-const [currentPage, setCurrentPage] = useState(1);
+  const [escrowVaultTargets, setEscrowVaultTargets] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
 
-const IncrementPriceTarget = async () => {
-  if (accountAddress && currencyName) {
-    try {
-      let price = await getPrice();
-      let formattedPrice = await ethers.utils.formatEther(price || "0");
-      setPrice(formattedPrice);
-
-      let All_USERS_TARGETS = [];
-
-      let allDepositorsAddress = await getDepositors();
-
-      for (let index = 0; index < allDepositorsAddress.length; index++) {
-        const address = allDepositorsAddress[index];
-        let incrementPriceTarget = await getIncrementPriceTargets(address);
-        All_USERS_TARGETS.push(...(incrementPriceTarget || []));
-      }
-
-      // Sort the targets
-      const sortedArray = [...(All_USERS_TARGETS || [])].sort((a, b) => {
-        const formattedRatioTargetA = ethers.utils.formatEther(
-          a?.priceTarget.toString()
-        );
-        const formattedRatioTargetB = ethers.utils.formatEther(
-          b?.priceTarget.toString()
-        );
-
-        const numericValueA = Number(formattedRatioTargetA);
-        const numericValueB = Number(formattedRatioTargetB);
-
-        return numericValueA - numericValueB;
-      });
-
-      // Process and display targets for the current page
-      const itemsPerPage = 2500;
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      const itemsForCurrentPage = sortedArray.slice(startIndex, endIndex);
-
+  const IncrementPriceTarget = async () => {
+    if (accountAddress && currencyName) {
       try {
-        let items = await Promise.all(
-          itemsForCurrentPage.map((target, index) =>
-            processTargets(target, index, currencyName)
-          )
-        );
-        setEscrowVaultTargets(items.filter(Boolean));
+        let price = await getPrice();
+        let formattedPrice = await ethers.utils.formatEther(price || "0");
+        setPrice(formattedPrice);
+
+        let All_USERS_TARGETS = [];
+
+        let allDepositorsAddress = await getDepositors();
+
+        for (let index = 0; index < allDepositorsAddress.length; index++) {
+          const address = allDepositorsAddress[index];
+          let incrementPriceTarget = await getIncrementPriceTargets(address);
+          All_USERS_TARGETS.push(...(incrementPriceTarget || []));
+        }
+
+        // Sort the targets
+        const sortedArray = [...(All_USERS_TARGETS || [])].sort((a, b) => {
+          const formattedRatioTargetA = ethers.utils.formatEther(
+            a?.priceTarget.toString()
+          );
+          const formattedRatioTargetB = ethers.utils.formatEther(
+            b?.priceTarget.toString()
+          );
+
+          const numericValueA = Number(formattedRatioTargetA);
+          const numericValueB = Number(formattedRatioTargetB);
+
+          return numericValueA - numericValueB;
+        });
+
+        // Process and display targets for the current page
+        const itemsPerPage = 2500;
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const itemsForCurrentPage = sortedArray.slice(startIndex, endIndex);
+
+        try {
+          let items = await Promise.all(
+            itemsForCurrentPage.map((target, index) =>
+              processTargets(target, index, currencyName)
+            )
+          );
+          setEscrowVaultTargets(items.filter(Boolean));
+        } catch (error) {
+          console.error("Error processing targets:", error);
+        }
       } catch (error) {
-        console.error("Error processing targets:", error);
+        console.error("error:", error);
       }
-    } catch (error) {
-      console.error("error:", error);
     }
-  }
-};
+  };
 
-  let totalSum =0;
+  let totalSum = 0;
 
-const processTargets = async (target, index, currencyName) => {
-  try {
-    const formattedPriceTarget = ethers.utils.formatEther(
-      target?.priceTarget.toString()
-    );
-    const formattedTargetAmount = ethers.utils.formatEther(
-      target?.totalFunds.toString()
-    );
+  const processTargets = async (target, index, currencyName) => {
+    try {
+      const formattedPriceTarget = ethers.utils.formatEther(
+        target?.priceTarget.toString()
+      );
+      const formattedTargetAmount = ethers.utils.formatEther(
+        target?.totalFunds.toString()
+      );
 
-       // Add the formattedTargetAmount to the total sum
-       
-       console.log("from tracking page",totalSum);
-       
-       const PriceTarget = Number(formattedPriceTarget).toFixed(6);
-       const targetAmount =
-       Number(formattedTargetAmount).toFixed(6) + " " + (await currencyName);
+      // Add the formattedTargetAmount to the total sum
 
-       console.log("from tracking page targetAmount",parseFloat(targetAmount));
+      console.log("from tracking page", totalSum);
 
-       totalSum += parseFloat(formattedTargetAmount);
-       setTotalSum(totalSum.toString());
+      const PriceTarget = Number(formattedPriceTarget).toFixed(6);
+      const targetAmount =
+        Number(formattedTargetAmount).toFixed(6) + " " + (await currencyName);
 
-    // Return processed target
-    return {
-      index,
-      PriceTarget,
-      targetAmount,
-    };
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
+      console.log("from tracking page targetAmount", parseFloat(targetAmount));
 
-const IPTmultiplySumWithPrice =async () => {
-  // Convert the price to a floating-point number
-  // Multiply the total sum with the current price
-  const totalPrice = totalSUm * price;
+      totalSum += parseFloat(formattedTargetAmount);
+      setTotalSum(totalSum.toString());
 
-  console.log("price IPT",totalPrice)
+      // Return processed target
+      return {
+        index,
+        PriceTarget,
+        targetAmount,
+      };
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
 
-  return totalPrice;
-};
+  const IPTmultiplySumWithPrice = async () => {
+    // Convert the price to a floating-point number
+    // Multiply the total sum with the current price
+    const totalPrice = totalSUm * price;
 
+    console.log("price IPT", totalPrice);
 
-useEffect(() => {
-  if (userConnected) {
-    IncrementPriceTarget();
-    IPTmultiplySumWithPrice();
-  }
-}, [accountAddress, currencyName, theme, socket, currentPage]);
+    return totalPrice;
+  };
 
-const [ratioPriceTargets, setRatioPriceTargets] = useState([])
-const [noOfPage, setNoOfPage] = useState(0)
-const [TotalSum, setTotalSummation] = useState("0")
+  useEffect(() => {
+    if (userConnected) {
+      IncrementPriceTarget();
+      IPTmultiplySumWithPrice();
+    }
+  }, [accountAddress, currencyName, theme, socket, currentPage]);
 
+  const [ratioPriceTargets, setRatioPriceTargets] = useState([]);
+  const [noOfPage, setNoOfPage] = useState(0);
+  const [TotalSum, setTotalSummation] = useState("0");
 
-const RatioPriceTargets = async () => {
-  if (accountAddress) {
-     try {
-    
-       let All_USERS_TARGETS = [];
- 
-       let allDepositorsAddress = await getDepositors();
-       
-       for (let index = 0; index < allDepositorsAddress.length; index++) {
-         const address = allDepositorsAddress[index];
-         let targets = await getRatioPriceTargets(address);
-         All_USERS_TARGETS.push(...targets || []);
-       }
- 
-       // Calculate total pages
-       const itemsPerPage = 2500;
-       const totalPages = Math.ceil(All_USERS_TARGETS.length / itemsPerPage);
-       setNoOfPage(totalPages); // Update the total number of pages
- 
-       // Sort the targets
-       const sortedArray = [...All_USERS_TARGETS || []].sort((a, b) => {
-         const formattedRatioTargetA = ethers.utils.formatEther(a?.ratioPriceTarget.toString());
-         const formattedRatioTargetB = ethers.utils.formatEther(b?.ratioPriceTarget.toString());
- 
-         const numericValueA = Number(formattedRatioTargetA);
-         const numericValueB = Number(formattedRatioTargetB);
- 
-         return numericValueA - numericValueB;
-       });
- 
-       // Process and display targets for the current page
-       const startIndex = (currentPage - 1) * itemsPerPage;
-       const endIndex = startIndex + itemsPerPage;
-       const itemsForCurrentPage = sortedArray.slice(startIndex, endIndex);
- 
-       try {
-         let items = await Promise.all(itemsForCurrentPage.map((target, index) =>
-           processTargetsRPT(target, index, currencyName))
-         );
-         setRatioPriceTargets(items.filter(Boolean));
-       } catch (error) {
-         console.error('Error processing targets:', error);
-       }
-     } catch (error) {
-       console.error('error:', error);
-     }
-  }
- }
- 
- let totalSummation = 0;
-const processTargetsRPT = async (target, index, currencyName) => {
-  try {
-    const formattedRatioTarget = ethers.utils.formatEther(target?.ratioPriceTarget.toString())
-    const ratioPriceTarget = Number(formattedRatioTarget).toFixed(6);
-    const formattedTargetAmount = ethers.utils.formatEther(target?.TargetAmount.toString())
-    const targetAmount = Number(formattedTargetAmount).toFixed(4) + ' ' + currencyName ?? currencyName;
+  const RatioPriceTargets = async () => {
+    if (accountAddress) {
+      try {
+        let All_USERS_TARGETS = [];
 
-    totalSummation += parseFloat(targetAmount)
-    setTotalSummation(totalSummation)
-    console.log("from tracking summation",parseFloat(targetAmount))
+        let allDepositorsAddress = await getDepositors();
 
-  } catch (error) {
-    console.log('error:', error)
-  }
-}
+        for (let index = 0; index < allDepositorsAddress.length; index++) {
+          const address = allDepositorsAddress[index];
+          let targets = await getRatioPriceTargets(address);
+          All_USERS_TARGETS.push(...(targets || []));
+        }
 
-const RTPpmultiplySumWithPrice =async () => {
-  // Convert the price to a floating-point number
-  // Multiply the total sum with the current price
-  const totalRTPPrice = TotalSum * price;
+        // Calculate total pages
+        const itemsPerPage = 2500;
+        const totalPages = Math.ceil(All_USERS_TARGETS.length / itemsPerPage);
+        setNoOfPage(totalPages); // Update the total number of pages
 
-  console.log("price RTP",totalRTPPrice)
+        // Sort the targets
+        const sortedArray = [...(All_USERS_TARGETS || [])].sort((a, b) => {
+          const formattedRatioTargetA = ethers.utils.formatEther(
+            a?.ratioPriceTarget.toString()
+          );
+          const formattedRatioTargetB = ethers.utils.formatEther(
+            b?.ratioPriceTarget.toString()
+          );
 
-  return totalRTPPrice;
-};
+          const numericValueA = Number(formattedRatioTargetA);
+          const numericValueB = Number(formattedRatioTargetB);
 
-const TotalVaultValueLocked = ()=>{
-  const totalvalue = (totalSUm * price) + (TotalSum * price);
-  const roundedTotal = Number(totalvalue.toFixed(5));
-  setTotalVaultSum(roundedTotal);
-  console.log("total value locked",roundedTotal);
-  return roundedTotal;
-}
-useEffect(() => {
-  if (userConnected) {
-    RatioPriceTargets()
-    RTPpmultiplySumWithPrice()
-    TotalVaultValueLocked()
-  }
-}, [accountAddress, currencyName, theme, socket])
+          return numericValueA - numericValueB;
+        });
+
+        // Process and display targets for the current page
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const itemsForCurrentPage = sortedArray.slice(startIndex, endIndex);
+
+        try {
+          let items = await Promise.all(
+            itemsForCurrentPage.map((target, index) =>
+              processTargetsRPT(target, index, currencyName)
+            )
+          );
+          setRatioPriceTargets(items.filter(Boolean));
+        } catch (error) {
+          console.error("Error processing targets:", error);
+        }
+      } catch (error) {
+        console.error("error:", error);
+      }
+    }
+  };
+
+  let totalSummation = 0;
+  const processTargetsRPT = async (target, index, currencyName) => {
+    try {
+      const formattedRatioTarget = ethers.utils.formatEther(
+        target?.ratioPriceTarget.toString()
+      );
+      const ratioPriceTarget = Number(formattedRatioTarget).toFixed(6);
+      const formattedTargetAmount = ethers.utils.formatEther(
+        target?.TargetAmount.toString()
+      );
+      const targetAmount =
+        Number(formattedTargetAmount).toFixed(4) + " " + currencyName ??
+        currencyName;
+
+      totalSummation += parseFloat(targetAmount);
+      setTotalSummation(totalSummation);
+      console.log("from tracking summation", parseFloat(targetAmount));
+    } catch (error) {
+      console.log("error:", error);
+    }
+  };
+
+  const RTPpmultiplySumWithPrice = async () => {
+    // Convert the price to a floating-point number
+    // Multiply the total sum with the current price
+    const totalRTPPrice = TotalSum * price;
+
+    console.log("price RTP", totalRTPPrice);
+
+    return totalRTPPrice;
+  };
+
+  const TotalVaultValueLocked = () => {
+    const totalvalue = totalSUm * price + TotalSum * price;
+    const roundedTotal = Number(totalvalue.toFixed(5));
+    setTotalVaultSum(roundedTotal);
+    console.log("total value locked", roundedTotal);
+    return roundedTotal;
+  };
+  useEffect(() => {
+    if (userConnected) {
+      RatioPriceTargets();
+      RTPpmultiplySumWithPrice();
+      TotalVaultValueLocked();
+    }
+  }, [accountAddress, currencyName, theme, socket]);
 
   useEffect(() => {
     if (userConnected) {

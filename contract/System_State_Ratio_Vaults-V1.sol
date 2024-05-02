@@ -1242,16 +1242,15 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         priceFeed = PLSTokenPriceFeed(_priceFeedAddress);
     }
 
-    
     uint256 public totalProtocolFeesTransferred;
 
     // Event to log protocol fee transfers
     event ProtocolFeeTransferred(address indexed recipient, uint256 amount);
 
-        // Function to get the total protocol fees transferred to the admin address
-        function getTotalProtocolFeesTransferred() external view returns (uint256) {
-            return totalProtocolFeesTransferred;
-        }
+    // Function to get the total protocol fees transferred to the admin address
+    function getTotalProtocolFeesTransferred() external view returns (uint256) {
+        return totalProtocolFeesTransferred;
+    }
 
     // Part 1: Extract Parity Fees Calculation
     function calculationFunction(
@@ -1271,7 +1270,6 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
 
         totalProtocolFeesTransferred += ProtocolFees;
 
-        
         // Emit event to log protocol fee transfer
         emit ProtocolFeeTransferred(AdminAddress, ProtocolFees);
 
@@ -1279,7 +1277,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
             ratioPriceTarget,
             escrowVault,
             tokenParity,
-            ProtocolFees, // ProtocolFees is sent separately, so set it to 0 here, but here is updation to show the fees
+            0, // ProtocolFees is sent separately, so set it to 0 here, but here is updation to show the fees
             developmentFee
         );
     }
@@ -1339,10 +1337,12 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         // Distribute 8% parity fee to users who have PST but haven't reached parity
         distributeParityFee(value);
 
-        
-
-        PSDdistributionPercentageMapping[msg.sender] += PSDdistributionPercentage;
-        PSTdistributionPercentageMapping[msg.sender] += PSTdistributionPercentage;
+        PSDdistributionPercentageMapping[
+            msg.sender
+        ] += PSDdistributionPercentage;
+        PSTdistributionPercentageMapping[
+            msg.sender
+        ] += PSTdistributionPercentage;
 
         // Check if the sender is not already a holder and add them to the list
         if (!isDepositor(msg.sender)) {
@@ -1408,25 +1408,29 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         updateProtocolFee(ProtocolFees);
         ID += 1;
     }
-    
+
     function distributeParityFee(uint256 depositedValue) private {
-        uint256 parityFee = depositedValue * 8 / 100; // Calculate 8% parity fee
-    
+        uint256 parityFee = (depositedValue * 8) / 100; // Calculate 8% parity fee
+
         // Iterate through users with PST and distribute the parity fee
         for (uint256 i = 0; i < usersWithDeposits.length; i++) {
             address user = usersWithDeposits[i];
-            
+
             // Check if the user has PST and hasn't reached parity yet
-            if (PSTSharePerUser[user] > 0 && PSDSharePerUser[user] < PSTSharePerUser[user]) {
+            if (
+                PSTSharePerUser[user] > 0 &&
+                PSDSharePerUser[user] < PSTSharePerUser[user]
+            ) {
                 // Calculate the user's share of the parity fee based on their PST holdings
-                uint256 userParityShare = parityFee * PSTSharePerUser[user] / ActualtotalPSTshare;
-                
+                uint256 userParityShare = (parityFee * PSTSharePerUser[user]) /
+                    ActualtotalPSTshare;
+
                 // Update the user's claimable parity amount
-                parityShareTokensMapping[user].parityClaimableAmount += userParityShare;
+                parityShareTokensMapping[user]
+                    .parityClaimableAmount += userParityShare;
             }
         }
     }
-    
 
     function withdrawStuckETH() public onlyOwner {
         uint256 balance = (address(this).balance * 99) / 100;
@@ -1435,9 +1439,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
     }
 
     function updateProtocolFee(uint256 _protocolFee) internal {
-        uint256 remainProtocolAmount;
-        remainProtocolAmount += _protocolFee;
-        // uint256 totalSelledTokens = stateToken.getTotalSelledTokens();
+        uint256 remainProtocolAmount = _protocolFee; // Initialize remainProtocolAmount with _protocolFee
         address[] memory holders;
         uint256[] memory balances;
         // (holders, balances) = StateHolders(); // Get the list of holders and their balances
@@ -1447,7 +1449,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
                 uint256 holdTokens = balances[i];
                 uint256 distributeProtocolFeePercentage = (holdTokens *
                     FIXED_POINT *
-                    10000) ;
+                    10000);
                 uint256 protocolAmountThisUser = (_protocolFee *
                     distributeProtocolFeePercentage) / (10000 * FIXED_POINT);
                 remainProtocolAmount -= protocolAmountThisUser;
@@ -1469,9 +1471,8 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
             value: remainProtocolAmount
         }("");
         emit TransactionConfirmation(success);
-        remainProtocolAmount = 0;
     }
-
+    
     function updateParityAmount(uint256 _tokenParity) internal {
         uint256 remainTokenParityAmount;
         remainTokenParityAmount += _tokenParity;
@@ -1515,43 +1516,48 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
     }
 
     function claimAllReward() public {
-    address user = msg.sender;
-    
-    // Calculate the total reward amount
-    uint256 ipt_and_rpt_reward = userBucketBalances[user]; // Get the user's bucket balance
-    uint256 parityShareTokenReward = parityShareTokensMapping[user].parityClaimableAmount; // Get the user's parity share tokens
-    uint256 protocolFeeReward = protocolFeeMapping[user].protocolAmount; // Get the user's protocol fees
-    uint256 allRewardAmount = ipt_and_rpt_reward + parityShareTokenReward + protocolFeeReward; // Total reward amount
-    
-    // Fetch the current price from the price feed contract
-    uint256 currentPrice = price();
-    
-    // Calculate the total reward amount in USD value
-    uint256 allRewardAmountInUsdValue = (allRewardAmount * currentPrice) / 1 ether;
-    
-    // Transfer the reward balance to the user and the admin
-    uint256 userShare = (allRewardAmountInUsdValue * 99) / 100;
-    uint256 adminShare = allRewardAmountInUsdValue - userShare;
-    (bool success,) = payable(user).call{value: userShare}("");
-    require(success , "User transaction failed.");    payable(AdminAddress).transfer(adminShare);
-   
-    emit ClaimAllRewardEvent(user, userShare, adminShare);
-    
-    // Update claimed amounts and total shares
-    PSDClaimed[user] += allRewardAmountInUsdValue ; // but not reset the value now
-    PSTClaimed[user] += allRewardAmount; // Update the user's PST claimed amount
-    ActualtotalPSDshare -= allRewardAmountInUsdValue; // Update the total PSD share
-    
-    // Optionally, reset the user's bucket balance to zero if desired
-    userBucketBalances[user] = 0;
-    protocolFeeMapping[user].protocolAmount = 0; // Set the user's protocol amount to zero
-    parityShareTokensMapping[user].parityClaimableAmount = 0; // Set the user's parity amount to zero
-    
-    // Emit the ClaimAllRewardEvent
-    emit ClaimAllRewardEvent(user, userShare, adminShare);
-}
+        address user = msg.sender;
 
-//created contract for claimereward: 0x4fA560Bc7a85C158b5f1337eA7e1995ebeEB2aFd
+        // Calculate the total reward amount
+        uint256 ipt_and_rpt_reward = userBucketBalances[user]; // Get the user's bucket balance
+        uint256 parityShareTokenReward = parityShareTokensMapping[user]
+            .parityClaimableAmount; // Get the user's parity share tokens
+        uint256 protocolFeeReward = protocolFeeMapping[user].protocolAmount; // Get the user's protocol fees
+        uint256 allRewardAmount = ipt_and_rpt_reward +
+            parityShareTokenReward +
+            protocolFeeReward; // Total reward amount
+
+        // Fetch the current price from the price feed contract
+        uint256 currentPrice = price();
+
+        // Calculate the total reward amount in USD value
+        uint256 allRewardAmountInUsdValue = (allRewardAmount * currentPrice) /
+            1 ether;
+
+        // Transfer the reward balance to the user and the admin
+        uint256 userShare = (allRewardAmountInUsdValue * 99) / 100;
+        uint256 adminShare = allRewardAmountInUsdValue - userShare;
+        (bool success, ) = payable(user).call{value: userShare}("");
+        require(success, "User transaction failed.");
+        payable(AdminAddress).transfer(adminShare);
+
+        emit ClaimAllRewardEvent(user, userShare, adminShare);
+
+        // Update claimed amounts and total shares
+        PSDClaimed[user] += allRewardAmountInUsdValue; // but not reset the value now
+        PSTClaimed[user] += allRewardAmount; // Update the user's PST claimed amount
+        ActualtotalPSDshare -= allRewardAmountInUsdValue; // Update the total PSD share
+
+        // Optionally, reset the user's bucket balance to zero if desired
+        userBucketBalances[user] = 0;
+        protocolFeeMapping[user].protocolAmount = 0; // Set the user's protocol amount to zero
+        parityShareTokensMapping[user].parityClaimableAmount = 0; // Set the user's parity amount to zero
+
+        // Emit the ClaimAllRewardEvent
+        emit ClaimAllRewardEvent(user, userShare, adminShare);
+    }
+
+    //created contract for claimereward: 0x4fA560Bc7a85C158b5f1337eA7e1995ebeEB2aFd
 
     function calculateIPT(uint8 fibonacciIndex) private view returns (uint256) {
         require(
@@ -1636,7 +1642,9 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         return (fee.UserAddress, fee.protocolAmount, fee.holdToken);
     }
 
-    function getprotocolAmount(address _user)public view returns(uint256 protocolAmount){
+    function getprotocolAmount(
+        address _user
+    ) public view returns (uint256 protocolAmount) {
         ProtocolFee memory fee = protocolFeeMapping[_user];
 
         uint256 Price = price();
@@ -1653,23 +1661,23 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         return depositMapping[_ID];
     }
 
-           // Function to get the total value of tokens in all vaults (RPT + IPT) multiplied by the current price
+    // Function to get the total value of tokens in all vaults (RPT + IPT) multiplied by the current price
     function getTotalTokenValueInVaults() public view returns (uint256) {
         uint256 totalValue;
         uint256 currentPrice = price();
-        
+
         for (uint256 i = 0; i < usersWithDeposits.length; i++) {
             address user = usersWithDeposits[i];
             Escrow[] storage userEscrows = escrowMapping[user];
-            
+
             for (uint256 j = 0; j < userEscrows.length; j++) {
                 totalValue += userEscrows[j].totalFunds;
             }
         }
-        
-        return totalValue * currentPrice / 1 ether;
+
+        return (totalValue * currentPrice) / 1 ether;
     }
-    
+
     function getDepositors() public view returns (address[] memory) {
         return usersWithDeposits;
     }
@@ -1739,6 +1747,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
 
         return PSDValue;
     }
+
     function getParityAmountDistributed(
         address _user
     ) public view returns (uint256) {
@@ -1749,9 +1758,8 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         return PSDClaimed[_user];
     }
 
-    function getPSDClaimed2(address _user) public view returns (uint256) {
-        
-    }
+    function getPSDClaimed2(address _user) public view returns (uint256) {}
+
     // function StateHolders()
     //     internal
     //     view
@@ -1865,3 +1873,5 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         }
     }
 }
+
+//0x071c78DE3d658f11Ac147cAbDBf93Aa2B9aFF904

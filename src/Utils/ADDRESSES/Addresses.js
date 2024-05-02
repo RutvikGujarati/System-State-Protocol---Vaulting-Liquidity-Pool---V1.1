@@ -8,7 +8,7 @@ const PSD_ADDRESS = '0xACA67fB2e3f3B14ee50F90dDEA85A3AdCb777ef1'
 */
 
 // const PRICE_FEED_ADDRESS = '0xC513708544Ce538205951eC97Fd50c70c5BC1F96'
-// const STATE_TOKEN_ADDRES = '0x15a8BE487464F8D076D396dC8Ca0411bb3eeb18B'
+// const STATE_TOKEN_ADDREES = '0x15a8BE487464F8D076D396dC8Ca0411bb3eeb18B'
 // const PSD_ADDRESS = '0xb5b4b82f874B02056EFDC7AC8a8b4Bf28F8F2CfA'
 
 // const PRICE_FEED_ADDRESS = '0x71D531dff1Fe8f26C2e733e118f73Ad5eA6170Ba'
@@ -69,9 +69,13 @@ const PRICE_FEED_ADDRESS = '0x68d0934F1e1F0347aad5632084D153cDBfe07992'
 // const PSD_ADDRESS = "0x49A1d17823D60A995F28a137d9E0997f63c88d4C"//protocolFee transferred
 // const PSD_ADDRESS = "0x310bae63184a4D860d83E3B8061FC29EceA33A62"//final deploy
 
-const PSD_ADDRESS = "0x071c78DE3d658f11Ac147cAbDBf93Aa2B9aFF904"//final 2 deploy
+// const PSD_ADDRESS = "0x071c78DE3d658f11Ac147cAbDBf93Aa2B9aFF904"//final 2 deploy
 
-const System_State_Ratio_Vaults_V1 = "0x7D58E2775b4dbdd84BCbec15A36A146a1BaDfB5f";
+// const PSD_ADDRESS = "0x82de120bE40a2597029B08eba57Af62f47a00BdE"//final 3  deploy- with solved claim reward
+
+// const PSD_ADDRESS = "0x09F05F69e35D7312cb61b368d9C2cC967E4BA3FB"//final 3  deploy- with solved claim reward
+const PSD_ADDRESS = "0xDfe1ad60F29C5B29bE8d8298deb6f234DA124788"//solved with no sent amount to admin 
+// const System_State_Ratio_Vaults_V1 = "0x7D58E2775b4dbdd84BCbec15A36A146a1BaDfB5f";
 
 const allInOnePopup = (icon, title, text, button, confirmBtn, cancelBtn) => {
     return (
