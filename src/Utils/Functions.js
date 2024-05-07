@@ -263,36 +263,36 @@ export default function Functions({ children }) {
     const getParityReached = async (address) => {
         if (address) {
             try {
+                // Get the contract balance
                 // Get the user's deposited PST tokens
                 let PST_Deposit = await getParityTokensDeposits(accountAddress);
                 let PST_Deposit_formatted = ethers.utils.formatEther(PST_Deposit || '0');
                 let PST_DepositInNumber = Number(PST_Deposit_formatted);
-
+    
                 // Get the total amount of PST tokens distributed to the user
                 let ParityAmountDistributed = await getParityAmountDistributed(accountAddress);
                 let ParityAmountDistributed_formatted = await getFormatEther(ParityAmountDistributed || '0');
                 let ParityAmountDistributed_InNumer = Number(ParityAmountDistributed_formatted);
-
+    
                 // Check if token parity is reached
                 let isParityReached = PST_DepositInNumber === ParityAmountDistributed_InNumer;
-
+    
                 // If token parity is reached and the user has deposited some PST tokens,
                 // display a warning indicating that token parity has been reached
-                if (isParityReached && PST_DepositInNumber > 0) {
+                if (isParityReached  && PST_DepositInNumber > 0) {
                     allInOnePopup(null, 'Token Parity Reached', null, `OK`, null);
-                    // You can trigger a pop-up or display a message to the user here
-
                 }
-
+    
                 // Return whether token parity is reached
                 return isParityReached;
-
+    
             } catch (error) {
                 console.error('getParityReached error:', error);
                 // You can handle errors here as needed
             }
         }
     }
+    
 
 
     const handle_Claim_Parity_Tokens = async (address) => {
@@ -364,10 +364,68 @@ export default function Functions({ children }) {
                 let contract = await getPsdContract()
                 let userBucketBalance = await contract.depositAmount(accountAddress)
                 let BucketInStr = await userBucketBalance.toString()
-                return BucketInStr
+                return (BucketInStr)
             }
         } catch (error) {
             console.error('getToBeClaimed error:', error);
+        }
+    }
+    const isClaimed = async (accountAddress) => {
+        try {
+            let contract = await getPsdContract();
+            let isClaim = await contract.isClaimed(accountAddress);
+            return isClaim;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    const getReachedPriceTargets = async (accountAddress) => {
+        try {
+            let contract = await getPsdContract();
+            let getReachedPriceTargets = await contract.getReachedPriceTargets(accountAddress);
+            let formattedReachedPriceTargets = getReachedPriceTargets.map(target => ethers.utils.formatEther(target));
+
+            // Summarize the formatted reached price targets
+            let totalReachedPriceTargets = formattedReachedPriceTargets.reduce((acc, cur) => acc + parseFloat(cur), 0);
+
+            console.log("getCLoseValue,,...... ", totalReachedPriceTargets)
+
+            return getReachedPriceTargets;
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const getClaimedAmount = async (accountAddress) => {
+        try {
+            let contract = await getPsdContract();
+            let getClaimedAmount = await contract.getClaimedAmount(accountAddress);
+            let getClaimedAmountInstr = await getClaimedAmount.toString()
+            return getClaimedAmountInstr
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const getTargetTransferDetails = async (accountAddress) => {
+        try {
+            let contract = await getPsdContract();
+            let getTargetTransferDetails = await contract.getTargetTransferDetails(accountAddress);
+            let closeVaultsValues = await getTargetTransferDetails?.targetAmounts;
+            let formattedValue = await getFormatEther(closeVaultsValues);
+            return formattedValue;
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    const getClaimableAmount = async (accountAddress) => {
+        try {
+            let contract = await getPsdContract();
+            let getClaimableAmount = await contract.getClaimableAmount(accountAddress);
+            let fromateClaimAmount = await getFormatEther(getClaimableAmount);
+            return fromateClaimAmount;
+        } catch (error) {
+            console.log(error);
         }
     }
     const getTotalValueLockedInDollar = async () => {
@@ -533,7 +591,7 @@ export default function Functions({ children }) {
             allInOnePopup(null, `An error occurred. Please try again.`, null, `OK`, null)
         }
     };
- 
+
     const getDepositors = async () => {
         try {
             let contract = await getPsdContract()
@@ -544,7 +602,7 @@ export default function Functions({ children }) {
         }
     }
 
- 
+
     const fetch = require('node-fetch'); // Import the node-fetch library for making HTTP requests
 
     const fetchEtherToUsdRate = async () => {
@@ -572,6 +630,8 @@ export default function Functions({ children }) {
             const claimAllReward = await contract?.claimAllReward();
 
             await claimAllReward.wait();
+
+            console.log("claimAllReward",claimAllReward)
             setSocket(prevBool => !prevBool);
             return claimAllReward;
         } catch (err) {
@@ -615,6 +675,7 @@ export default function Functions({ children }) {
     }
 
     useEffect(() => {
+        getReachedPriceTargets()
         const intervalId = setInterval(() => {
             userConnected && setSocket((prevBool) => !prevBool);
         }, 5000);
@@ -637,18 +698,22 @@ export default function Functions({ children }) {
                 handle_Claim_All_Reward_Amount,
                 getPrice,
                 onlyPSDclaimed,
+                getPsdContract,
                 getToBeClaimed,
                 getTotalValueLockedInDollar,
                 getParityDollardeposits,
                 getParityTokensDeposits,
                 get_PSD_Claimed,
+                getClaimedAmount,
                 get_PST_Claimed,
+                getTargetTransferDetails,
                 getCurrentTokenPrice,
                 getParityDollarClaimed,
                 getParityAmountDistributed,
                 getRatioPriceTargets,
                 getIncrementPriceTargets,
                 getProtocolFee,
+                getClaimableAmount,
                 getOnlyProtocolFee,
                 getDepositors,
                 addTokenToMetaMask,
@@ -657,6 +722,8 @@ export default function Functions({ children }) {
                 contractBalance,
                 getTotalNumberOfReward,
                 reward,
+                isClaimed,
+                getReachedPriceTargets,
                 getTimeStampForCreateValut,
                 getClaimAllReward,
                 fetchEtherToUsdRate,

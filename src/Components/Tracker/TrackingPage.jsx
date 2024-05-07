@@ -47,6 +47,7 @@ export default function TrackingPage() {
     getDepositors,
     getParityDollarClaimed,
     getUserUsdValue,
+    getPsdContract,
     getTotalValueLockedInDollar,
     getParityDollardeposits,
     getParityTokensDeposits,
@@ -62,6 +63,10 @@ export default function TrackingPage() {
     contractAddress,
     NumberOfUser,
     reward,
+    isClaimed,
+    getReachedPriceTargets,
+    getClaimableAmount,
+    getTargetTransferDetails,
     getTimeStampForCreateValut,
     getTotalSupply,
     getCeateVaultTime,
@@ -89,7 +94,7 @@ export default function TrackingPage() {
     WalletBalance,
     currencyName,
   } = useContext(Web3WalletContext);
-  const [toBeClaimed, setToBeClaimed] = useState("0");
+  const [toBeClaimed, setToBeClaimed] = useState("0.0000");
   const [totalValueLocked, setTotalValueLocked] = useState("0");
   const [parityDollardeposits, setParityDollardeposits] = useState("0");
   const [parityTokensDeposits, setParityTokensDeposits] = useState("0");
@@ -97,8 +102,10 @@ export default function TrackingPage() {
   const [parityTokensClaimed, setParityTokensClaimed] = useState("0");
   const [IsParityReached, setIsParityReached] = useState(false);
   const [perpeptualYieldLocked, setPerpetualYieldLocked] = useState("0");
-
+  const [getReachedTarget, setReachedPriceTargets] = useState("0");
   const [amountInscription, setAmountInscription] = useState("0");
+  const [search, setSearch] = useState("");
+  const [depositAmount, setDepositAmount] = useState("");
   const [stateTokenHoldPercentage, setStateTokenHoldPercentage] = useState("0");
   const [stateTokenHold, setStateTokenHold] = useState("0");
   const [protocolFee, setProtocolFee] = useState("0");
@@ -141,6 +148,7 @@ export default function TrackingPage() {
   };
 
   // Done
+
   const ToBeClaimed = async () => {
     try {
       // Get the IPT and RPT rewards
@@ -149,6 +157,27 @@ export default function TrackingPage() {
         iptAndRptReward || "0"
       );
 
+      // Get the reached price targets
+      let reachedPriceTargets = await getReachedPriceTargets(accountAddress);
+
+      let remainingTargets = reachedPriceTargets.filter(target => !target.isClaimed);
+
+
+      // Format the reached price targets
+      let formattedReachedPriceTargets = remainingTargets.map((target) =>
+        ethers.utils.formatEther(target)
+      );
+
+      // Summarize the formatted reached price targets
+      let totalReachedPriceTargets = formattedReachedPriceTargets.reduce(
+        (acc, cur) => acc + parseFloat(cur),
+        0
+      );
+      let reach = totalReachedPriceTargets * price;
+      let tofixed = reach.toFixed(4);
+      console.log("reachiiiiiinggg", tofixed);
+      setReachedPriceTargets(tofixed);
+      console.log("closed value.......;;;;", totalReachedPriceTargets);
       // Get the parity share tokens claimable amount
       let parityShareTokensDetail = await getParityDollarClaimed(
         accountAddress
@@ -161,13 +190,14 @@ export default function TrackingPage() {
 
       // Get the protocol fee
       let protocolFeeDetail = await getProtocolFee(accountAddress);
-      let protocolAmount = protocolFeeDetail?.protocolAmount;
+      let protocolAmount = protocolFeeDetail?.protocolAmount || 0;
 
       // Calculate the total amount to be claimed
       let totalToBeClaimed =
         parseFloat(formattedIptAndRptReward) +
         parseFloat(formattedParityClaimableAmount) +
-        parseFloat(protocolAmount || 0);
+        parseFloat(totalReachedPriceTargets) + // Add the total reached price targets here
+        parseFloat(protocolAmount);
 
       // Format the total amount
       let formattedTotalToBeClaimed = totalToBeClaimed.toFixed(4);
@@ -178,6 +208,26 @@ export default function TrackingPage() {
       console.log("Error:", error);
       // Handle error gracefully, e.g., display an error message to the user
     }
+  };
+
+  // Assume targets is an array of Target objects retrieved from the contract
+  // Filter out targets where claimed is true
+  function filterUnclaimedTargets(targets) {
+    return targets.filter((target) => !target.claimed);
+  }
+  const totalReachedPriceTarget = async (accountAddress) => {
+    let totalReachedPriceTarget = await getReachedPriceTargets(accountAddress);
+
+    let formattedReachedPriceTargets = totalReachedPriceTarget.map((target) =>
+      ethers.utils.formatEther(target)
+    );
+
+    // Summarize the formatted reached price targets
+    let totalReachedPriceTargets = formattedReachedPriceTargets.reduce(
+      (acc, cur) => acc + parseFloat(cur),
+      0
+    );
+    console.log("reached price,,;;;;;;;;", totalReachedPriceTargets);
   };
 
   // Done
@@ -202,11 +252,22 @@ export default function TrackingPage() {
         ParityDollardeposits || "0"
       );
       let fixed = Number(formattedParityDollardeposits).toFixed(2);
-      setParityDollardeposits(fixed);
+
+      // setDepositAmount(inputValue);
+      if (/^[0-9,.]*$/.test(fixed)) {
+        const numericValue = fixed.replace(/,/g, "");
+        const formattedValue = numericValue.replace(
+          /\B(?=(\d{3})+(?!\d))/g,
+          ","
+        );
+        const formattedWithDecimals = `${formattedValue} .00`;
+        setParityDollardeposits(formattedValue);
+      }
     } catch (error) {
       console.error(error);
     }
   };
+
   // Done
   const ParityTokensDeposits = async () => {
     try {
@@ -249,7 +310,14 @@ export default function TrackingPage() {
       let total_amount = formattedPrice * formatted_PST_Claimed;
       let fixed2 = Number(total_amount).toFixed(2);
 
-      setParityDollarClaimed(fixed2);
+      if (/^[0-9,.]*$/.test(fixed2)) {
+        const numericValue = fixed2.replace(/,/g, "");
+        const formattedValue = numericValue.replace(
+          /\B(?=(\d{3})+(?!\d))/g,
+          ","
+        );
+        setParityDollarClaimed(formattedValue);
+      }
     } catch (error) {
       console.error("error", error);
     }
@@ -285,8 +353,18 @@ export default function TrackingPage() {
   const isParityReached = async () => {
     try {
       let isReached = await getParityReached(accountAddress);
+      let contract = await getPsdContract(accountAddress)
+      let contractBalance = await contract.getContractBalance();
+
+      // Check if the contract balance is zero
+      if (contractBalance === 0) {
+          return false; // Exit early if the contract balance is zero
+      }
       setIsParityReached(isReached);
-      // allInOnePopup("'Token Parity Reached'");
+      // if (isReached) {
+      //   allInOnePopup(null, "Token Parity Reached", null, `OK`, null);
+      // }
+      console.log("parity reached or not", isReached);
     } catch (error) {
       console.error("error: ", error);
     }
@@ -371,12 +449,39 @@ export default function TrackingPage() {
       let formattedPrice = Number(ethers.utils.formatEther(price || "0"));
 
       let feeDollar = protocolFee * formattedPrice;
-      let fixed = Number(feeDollar).toFixed(4);
-      setProtocolFee(fixed);
+      let fixed = Number(feeDollar).toFixed(2);
+      const inputValue = fixed;
+      // setDepositAmount(inputValue);
+      if (/^[0-9,.]*$/.test(fixed)) {
+        const numericValue = fixed.replace(/,/g, "");
+        const formattedValue = numericValue.replace(
+          /\B(?=(\d{3})+(?!\d))/g,
+          ","
+        );
+        const formattedWithDecimals = `${formattedValue} .00`;
+        setProtocolFee(formattedValue);
+      }
     } catch (error) {
       console.error("error:", error);
     }
   };
+  function addCommasForProtocolFee(e) {
+    try {
+      const inputValue = protocolFee;
+      // setDepositAmount(inputValue);
+      if (/^[0-9,.]*$/.test(inputValue)) {
+        const numericValue = inputValue.replace(/,/g, "");
+        const formattedValue = numericValue.replace(
+          /\B(?=(\d{3})+(?!\d))/g,
+          ","
+        );
+        const formattedWithDecimals = `${formattedValue} .00`;
+        setProtocolFee(formattedValue);
+      }
+    } catch (error) {
+      console.error("error:", error);
+    }
+  }
 
   const TotalTokenValueInVaults = async () => {
     try {
@@ -511,7 +616,6 @@ export default function TrackingPage() {
   //     console.log(err);
   //   }
   // };
-
   const claimAllReward = async () => {
     console.log("Number(toBeClaimed):", Number(toBeClaimed));
     console.log("Number(toBeClaimed):", toBeClaimed);
@@ -519,6 +623,9 @@ export default function TrackingPage() {
       try {
         const allReward = await getClaimAllReward(accountAddress);
         setToBeClaimedReward(allReward);
+
+        setToBeClaimed("0.000");
+
         allInOnePopup(null, "Successful Claimed", null, `OK`, null);
       } catch (err) {
         allInOnePopup(
@@ -592,6 +699,7 @@ export default function TrackingPage() {
 
   useEffect(() => {
     FetchBalance();
+    // totalReachedPriceTarget();
   }, [accountAddress, networkName]);
 
   const getStateTokenUserInNumber = async () => {
@@ -821,7 +929,7 @@ export default function TrackingPage() {
 
       totalSummation += parseFloat(targetAmount);
       setTotalSummation(totalSummation);
-      console.log("from tracking summation", parseFloat(targetAmount));
+      console.log("from tracking summation", totalSummation);
     } catch (error) {
       console.log("error:", error);
     }
@@ -838,12 +946,27 @@ export default function TrackingPage() {
   };
 
   const TotalVaultValueLocked = () => {
-    const totalvalue = totalSUm * price + TotalSum * price;
-    const roundedTotal = Number(totalvalue.toFixed(5));
-    setTotalVaultSum(roundedTotal);
-    console.log("total value locked", roundedTotal);
-    return roundedTotal;
+    const totalvalue = totalSUm * price + TotalSum * price - getReachedTarget;
+    const roundedTotal = Number(totalvalue.toFixed(2));
+
+    // Convert the rounded total to string
+    const stringValue = roundedTotal.toString();
+
+    // Check if the string matches the pattern /^[0-9,.]*$/
+    if (/^[0-9,.]*$/.test(stringValue)) {
+      // Remove commas and then add them back using the regex pattern
+      const formattedValue = stringValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      setTotalVaultSum(formattedValue);
+      console.log("total value locked", formattedValue);
+      return formattedValue;
+    } else {
+      // If the string doesn't match the pattern, set the total as it is
+      setTotalVaultSum(stringValue);
+      console.log("total value locked", stringValue);
+      return stringValue;
+    }
   };
+
   useEffect(() => {
     if (userConnected) {
       RatioPriceTargets();
@@ -1023,7 +1146,10 @@ export default function TrackingPage() {
                           DEPOSITS IN $ - PSD
                         </div>
                         <div className={`varSize `}>
-                          <span className={`spanText ${spanDarkDim}`}>
+                          <span
+                            className={`spanText ${spanDarkDim}`}
+                            // onChange={(e) => addCommasForParity(e)}
+                          >
                             {" "}
                             $ {parityDollardeposits}
                           </span>
@@ -1225,7 +1351,10 @@ export default function TrackingPage() {
                       <div className={`${textTitle} `}>$ TVL</div>
                       {/* <div className={`${textTitle} `}>ESCROW VAULTS</div> */}
                       <div className={`varSize ${spanDarkDim}`}>
-                        <span className={`spanText ${spanDarkDim} fs-5`}>
+                        <span
+                          className={`spanText ${spanDarkDim} fs-5`}
+                          // onChange={(e) => addCommasForVaultLocked(e)}
+                        >
                           {" "}
                           $ {totalVaultValue}
                           {/* here need to update the reward with totalTokens in vault * price */}
@@ -1256,7 +1385,10 @@ export default function TrackingPage() {
                       {/* <div className={`varSize ${spanDarkDim}`}><span className={`spanText ${spanDarkDim} fs-5`}>{perpeptualYieldLocked}</span></div> */}
                       {/* <div className={`varSize ${spanDarkDim}`}><span className={`spanText ${spanDarkDim} fs-5`}>{perpeptualYieldLocked}</span></div> */}
                       <div className={`varSize ${spanDarkDim}`}>
-                        <span className={`spanText ${spanDarkDim} fs-5`}>
+                        <span
+                          className={`spanText ${spanDarkDim} fs-5`}
+                          // onChange={(e) => addCommasForProtocolFee(e)}
+                        >
                           {" "}
                           $ {protocolFee}
                         </span>

@@ -74,7 +74,18 @@ const PRICE_FEED_ADDRESS = '0x68d0934F1e1F0347aad5632084D153cDBfe07992'
 // const PSD_ADDRESS = "0x82de120bE40a2597029B08eba57Af62f47a00BdE"//final 3  deploy- with solved claim reward
 
 // const PSD_ADDRESS = "0x09F05F69e35D7312cb61b368d9C2cC967E4BA3FB"//final 3  deploy- with solved claim reward
-const PSD_ADDRESS = "0xDfe1ad60F29C5B29bE8d8298deb6f234DA124788"//solved with no sent amount to admin 
+// const PSD_ADDRESS = "0xDfe1ad60F29C5B29bE8d8298deb6f234DA124788"//solved with no sent amount to admin 
+// const PSD_ADDRESS = "0x5A97849426FBdD94Da1c17f6c0afE9fbA6483BE9"//solved with no sent amount to admin 
+// const PSD_ADDRESS = "0x59b3dF79E1A88f3e2C1Ec8611aA537322D68F5F1"//solved with no sent amount to admin 
+// const PSD_ADDRESS = "0x4aE77Ee65d616Db24CDcCfeBe7716a6538080bdb"//half working with value is sending to the user but not showing.
+// const PSD_ADDRESS = "0xcc1238fE34817C4147661fE5a115678BE1df8726"//half-full working with value is sending to the user and also showing.
+// const PSD_ADDRESS = "0xDc31aB82AAE0f6DFAe2e3593b581f16D7455d844"//half-full working with value is sending to the user and also showing.
+// const PSD_ADDRESS = "0x03eAEc8b24211d772bdACfc30d133b418a732f67"//half-full working with value is sending to the user and also showing.
+// const PSD_ADDRESS = "0xaB90c15B9130D2a6821C86dfDF0dc1D279Ac11b7"//half-full working with value is sending to the user and also showing.
+// const PSD_ADDRESS = "0x5E721E04c3245281e284C7868aec1cFA3f18f12F"//full working with value is sending to the user and also showing.
+const PSD_ADDRESS = "0x0Fb808697BC735F2b57546b6bD86f8F2F8FF6eff"//full with claimed functions working with value is sending to the user and also showing.
+
+
 // const System_State_Ratio_Vaults_V1 = "0x7D58E2775b4dbdd84BCbec15A36A146a1BaDfB5f";
 
 const allInOnePopup = (icon, title, text, button, confirmBtn, cancelBtn) => {

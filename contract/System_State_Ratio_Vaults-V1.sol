@@ -1102,6 +1102,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         uint256 ratioPriceTarget;
         uint256 Time;
         bool isClosed;
+        bool claimed;
     }
 
     mapping(address => Target[]) private targetMapping;
@@ -1405,6 +1406,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         totalPSTshare += PSTdistributionPercentage; // PST Distribution Percentage 6.75%
 
         // Update protocol fees and ID
+        // updateParityAmount(tokenParity);
         updateProtocolFee(ProtocolFees);
         ID += 1;
     }
@@ -1472,7 +1474,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         }("");
         emit TransactionConfirmation(success);
     }
-    
+
     function updateParityAmount(uint256 _tokenParity) internal {
         uint256 remainTokenParityAmount;
         remainTokenParityAmount += _tokenParity;
@@ -1515,10 +1517,24 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         remainTokenParityAmount = 0;
     }
 
+    // Mapping to store claimed amounts for each user
+    mapping(address => uint256) public claimedAmountsf;
+    mapping(address => uint256 ) public claimedAmounts;
+    uint256 public totalClaimedPST;
+    // uint256 public PSTThreshold = 50000; // Set your threshold value here
+
+    mapping(address => uint256) public claimedPSTAmount;
+
+    // Event to emit warning when threshold is exceeded
+    event ThresholdExceededWarning(address user);
+
+    // Event to emit when rewards are successfully claimed
+    event RewardsClaimed(address user, uint256 amount);
+
     function claimAllReward() public {
         address user = msg.sender;
 
-        // Calculate the total reward amount
+        // Calculate the total reward a mount
         uint256 ipt_and_rpt_reward = userBucketBalances[user]; // Get the user's bucket balance
         uint256 parityShareTokenReward = parityShareTokensMapping[user]
             .parityClaimableAmount; // Get the user's parity share tokens
@@ -1527,13 +1543,24 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
             parityShareTokenReward +
             protocolFeeReward; // Total reward amount
 
-        // Fetch the current price from the price feed contract
-        uint256 currentPrice = price();
-
         // Calculate the total reward amount in USD value
-        uint256 allRewardAmountInUsdValue = (allRewardAmount * currentPrice) /
+        uint256 allRewardAmountInUsdValue = (allRewardAmount.mul(price())) /
             1 ether;
 
+        // Check if claiming will exceed threshold
+        // if (totalClaimedPST + calculateClaimedPST(user) > PSTThreshold) {
+        //     // Display warning message or take appropriate action
+        //     emit ThresholdExceededWarning(user);
+        //     return;
+        // }
+
+        claimedAmountsf[user] += allRewardAmount;
+
+        // uint256 rewardAmount = 100; // Example reward amount
+
+        // Update claimedPSTAmount and totalClaimedPST
+        // claimedPSTAmount[user] += rewardAmount;
+        // totalClaimedPST += rewardAmount;
         // Transfer the reward balance to the user and the admin
         uint256 userShare = (allRewardAmountInUsdValue * 99) / 100;
         uint256 adminShare = allRewardAmountInUsdValue - userShare;
@@ -1544,9 +1571,12 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         emit ClaimAllRewardEvent(user, userShare, adminShare);
 
         // Update claimed amounts and total shares
+        // @ audit - forget to set 0 here for PSDClaimed
         PSDClaimed[user] += allRewardAmountInUsdValue; // but not reset the value now
         PSTClaimed[user] += allRewardAmount; // Update the user's PST claimed amount
         ActualtotalPSDshare -= allRewardAmountInUsdValue; // Update the total PSD share
+
+        transferTokensWhenTargetReached(user);
 
         // Optionally, reset the user's bucket balance to zero if desired
         userBucketBalances[user] = 0;
@@ -1555,6 +1585,176 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
 
         // Emit the ClaimAllRewardEvent
         emit ClaimAllRewardEvent(user, userShare, adminShare);
+    }
+
+    // Function to calculate claimed PST amount for a user
+    // function calculateClaimedPST(address user) internal view returns (uint256) {
+    //     // Fetch the claimed PST amount for the user from storage
+    //     return claimedPSTAmount[user];
+    // }
+
+    // Assume you have a mapping to store token balances for each user
+    mapping(address => uint256) public tokenBalances;
+
+    event TokensTransferred(address, uint256);
+    event TargetClosed(address, uint256, uint256);
+
+    // / Function to transfer tokens to users or PSD shares when the target price is reached
+    function transferTokensWhenTargetReached(address user) public {
+        // Get the target details for the current user
+        Target[] storage userTargets = targetMapping[user];
+        for (uint256 i = 0; i < userTargets.length; i++) {
+            Target storage target = userTargets[i];
+            // Check if the target is not already closed and if the current price is equal to or greater than the target price
+            if (!target.isClosed && price() >= target.ratioPriceTarget) {
+                // Transfer tokens to users or PSD shares
+                uint256 tokensToTransfer = target.TargetAmount;
+
+                // Check if there are enough tokens available in the contract
+                require(
+                    tokensToTransfer <= tokenBalances[address(this)],
+                    "Insufficient tokens in contract"
+                );
+
+                // Transfer tokens from contract to the user
+                tokenBalances[user] += tokensToTransfer;
+                tokenBalances[address(this)] -= tokensToTransfer;
+
+                // Mark the target as closed
+                target.isClosed = true;
+                target.claimed = true;
+
+                // Emit an event indicating the token transfer
+                emit TokensTransferred(user, tokensToTransfer);
+                emit TargetClosed(
+                    user,
+                    target.ratioPriceTarget,
+                    tokensToTransfer
+                );
+                // Update claimed amount for the target
+                claimedAmounts[user] += tokensToTransfer;
+
+                // Update the claimed PST amount for the user
+               
+            }
+        }
+    }
+
+    // Function to get the details of token transfers when the target price is reached
+    function getTargetTransferDetails(
+        address user
+    ) public view returns (uint256[] memory, uint256[] memory) {
+        // Get the target details for the user
+        Target[] storage userTargets = targetMapping[user];
+        uint256[] memory targetAmounts = new uint256[](userTargets.length);
+        uint256[] memory targetPrices = new uint256[](userTargets.length);
+
+        // Iterate through each target and collect the transfer details
+        for (uint256 i = 0; i < userTargets.length; i++) {
+            Target storage target = userTargets[i];
+            // Check if the target was closed and the tokens were transferred
+            if (target.isClosed && price() >= target.ratioPriceTarget) {
+                targetAmounts[i] = target.TargetAmount;
+                targetPrices[i] = target.ratioPriceTarget;
+            }
+        }
+
+        return (targetAmounts, targetPrices);
+    }
+
+    function getReachedPriceTargets(
+        address user
+    ) public view returns (uint256[] memory) {
+        Target[] storage userTargets = targetMapping[user];
+        uint256[] memory reachedTargets = new uint256[](userTargets.length);
+        uint256 count = 0;
+
+        for (uint256 i = 0; i < userTargets.length; i++) {
+            Target storage target = userTargets[i];
+            // Check if the target is closed (reached) and not claimed
+            if (target.isClosed && !isTargetClaimed(user)) {
+                reachedTargets[count] = target.TargetAmount;
+                count++;
+            }
+        }
+
+        // Trim the array to remove any empty elements
+        uint256[] memory trimmedTargets = new uint256[](count);
+        for (uint256 i = 0; i < count; i++) {
+            trimmedTargets[i] = reachedTargets[i];
+        }
+
+        return trimmedTargets;
+    }
+// Function to return claimed targets
+function getClaimedTargets(address user) public view returns (uint256[] memory) {
+    Target[] storage userTargets = targetMapping[user];
+    uint256[] memory claimedTargets;
+    uint256 claimedCount = 0;
+    for (uint256 i = 0; i < userTargets.length; i++) {
+        if (userTargets[i].isClosed) {
+            claimedTargets[claimedCount++] = i;
+        }
+    }
+    return claimedTargets;
+}
+    // Function to check if the target is claimed by the user
+    function isTargetClaimed(address user) public view returns (bool) {
+        Target[] storage userTargets = targetMapping[user];
+        for (uint256 i = 0; i < userTargets.length; i++) {
+            if (userTargets[i].claimed) {
+                return true; // If any target is already claimed, return true
+            }
+        }
+        return false; // If no target is claimed, return false
+    }
+
+    // Function to get the total reward amount for the user
+    function getTotalRewardAmount(
+        address user
+    ) internal view returns (uint256) {
+        return
+            userBucketBalances[user] +
+            parityShareTokensMapping[user].parityClaimableAmount +
+            protocolFeeMapping[user].protocolAmount;
+    }
+
+    // Function to get the claimed amount for a specific user
+    function getClaimedAmount(address user) public view returns (uint256) {
+        return claimedAmountsf[user];
+    }
+
+    function calculateClaimedTarget(
+        address user
+    ) public view returns (uint256) {
+        uint256 claimedAmount = 0;
+        Target[] storage userTargets = targetMapping[user];
+        for (uint256 i = 0; i < userTargets.length; i++) {
+            if (userTargets[i].isClosed) {
+                claimedAmount += userTargets[i].TargetAmount;
+            }
+        }
+        return claimedAmount;
+    }
+
+    function calculateRemainingReachedTarget(
+        address user
+    ) public view returns (uint256) {
+        uint256 remainingAmount = 0;
+
+        // Get all targets for the user
+        Target[] storage userTargets = targetMapping[user];
+        for (uint256 i = 0; i < userTargets.length; i++) {
+            // Check if the target is not closed and its price target has been reached
+            if (
+                !userTargets[i].isClosed &&
+                price() >= userTargets[i].ratioPriceTarget
+            ) {
+                remainingAmount += userTargets[i].TargetAmount;
+            }
+        }
+
+        return remainingAmount;
     }
 
     //created contract for claimereward: 0x4fA560Bc7a85C158b5f1337eA7e1995ebeEB2aFd
@@ -1596,7 +1796,8 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
                     ratio: ratios[i],
                     ratioPriceTarget: calculateIPT(uint8(i)),
                     Time: block.timestamp,
-                    isClosed: false
+                    isClosed: false,
+                    claimed: false
                 })
             );
         }
@@ -1655,6 +1856,40 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
 
     function getMaxTargetLength() public view returns (uint256 _maxLength) {
         return targetMapping[msg.sender].length;
+    }
+
+    // Function to retrieve TargetAmount and priceTarget for IPT and RPT
+    function getIPTandRPTDetails(
+        address _depositAddress
+    ) public view returns (uint256[] memory) {
+        uint256[] memory details = new uint256[](4);
+
+        // Retrieve TargetAmount and priceTarget for IPT
+        Target[] storage iptTargets = targetMapping[_depositAddress];
+        uint256 iptTargetAmount;
+        uint256 iptPriceTarget;
+        for (uint256 i = 0; i < iptTargets.length; i++) {
+            Target storage target = iptTargets[i];
+            iptTargetAmount += target.TargetAmount;
+            iptPriceTarget = target.ratioPriceTarget;
+        }
+
+        // Retrieve TargetAmount and priceTarget for RPT
+        Escrow[] storage escrows = escrowMapping[_depositAddress];
+        uint256 rptTargetAmount;
+        uint256 rptPriceTarget;
+        for (uint256 j = 0; j < escrows.length; j++) {
+            Escrow storage escrow = escrows[j];
+            rptTargetAmount += escrow.totalFunds;
+            rptPriceTarget = escrow.priceTarget;
+        }
+
+        details[0] = iptTargetAmount;
+        details[1] = iptPriceTarget;
+        details[2] = rptTargetAmount;
+        details[3] = rptPriceTarget;
+
+        return details;
     }
 
     function getDeposited(uint256 _ID) public view returns (Deposit[] memory) {

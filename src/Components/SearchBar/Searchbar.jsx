@@ -371,6 +371,9 @@ export default function Searchbar() {
           <div className="d-flex w-100 my-auto">
             <div className="d-flex flex-wrap justify-content-between w-100 searchBar">
               <div className=" input-search firstSeach_small col-md-7 py-3">
+              <div style={{ fontSize: '14px', color: '#ffffff' ,marginBottom: "15px", marginLeft:"10px", marginTop:"-20px"}}>
+            Vaulting - Use ratio vaults to create multiple copies of your crypto assets over cycles.
+          </div>
                 {isHome ? (
                   <div
                     className={` search ${theme} ${

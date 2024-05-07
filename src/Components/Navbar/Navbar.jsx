@@ -112,8 +112,9 @@ export default function Index() {
           <div
             id="ethPrice"
             className="d-flex my-auto w-100 justify-content-between align-items-sm-center gap-3 sm-font"
+            style={{ fontSize: "14px" }} // Set font size here
           >
-            <div className={`${theme}`}>
+            <div className={`  docs  ${theme}`}>
               <span className="">{currencyName} Price:</span>
               <span className=" mx-1">$ {price}</span>
               <span data-bs-toggle="tooltip" data-bs-placement="top"></span>
@@ -141,14 +142,14 @@ export default function Index() {
                 Documentation
               </Link>
               <div className={`${theme}`}>
-                <span className="connected-wallet-text">
+                <span className="connected-wallet-text docs ">
                   {userConnected
-                    ? `${accountAddress.substring(
+                    ? `[${accountAddress.substring(
                         0,
                         4
                       )}...${accountAddress.substring(
                         accountAddress.length - 4
-                      )}`
+                      )}]`
                     : "Not Connected"}
                 </span>
                 <span data-bs-toggle="tooltip" data-bs-placement="top"></span>

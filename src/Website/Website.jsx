@@ -6,42 +6,66 @@ import SystemStateLogo from "../Assets/High-Resolutions-Svg/Updated/logo.svg";
 import TwitterXIcon from "../Assets/High-Resolutions-Svg/Updated/twitterx.svg";
 import TelegramIcon from "../Assets/High-Resolutions-Svg/Updated/telegram.svg";
 import { themeContext } from "../App";
-import Quick_Guide from '../Assets/Docs/Quick Guide - System State.pdf'
+import Quick_Guide from "../Assets/Docs/Quick Guide - System State V1.3.pdf";
 import { Helmet } from "react-helmet";
 export default function Website() {
   const { navigateToDEX } = useContext(themeContext);
 
   return (
     <>
-   
       <div className="mainBg">
         <div>
           <div className="section1 section-padding SectionBg">
             <div className="container-fluid">
               <div className="web">
-                <nav className="d-flex justify-content-lg-between justify-content-md-between justify-content-between align-items-sm-center flex-wrap main " id="media-query">
+                <nav
+                  className="d-flex justify-content-lg-between justify-content-md-between justify-content-between align-items-sm-center flex-wrap main "
+                  id="media-query"
+                >
                   <div className="information">
                     <i className="fa-solid fa-circle-info"></i>
                     <div className="px-2">
-                      <Link target="_blank" to={'https://system-state-documentation.gitbook.io/'}>Documentation</Link>
+                      <Link
+                        target="_blank"
+                        to={"https://system-state-documentation.gitbook.io/"}
+                      >
+                        Documentation
+                      </Link>
                     </div>
                     <div className="quick-desk px-1">
-                      <Link target="_blank" to={Quick_Guide}>Quick Guide</Link>
+                      <Link target="_blank" to={Quick_Guide}>
+                        Quick Guide
+                      </Link>
                     </div>
                   </div>
                   <div className="quick-mob">
-                    <Link target="_blank" to={Quick_Guide}>Quick Guide</Link>
+                    <Link target="_blank" to={Quick_Guide}>
+                      Quick Guide
+                    </Link>
                   </div>
-                  <div className="enter " onClick={async () => await navigateToDEX()} >Enter</div>
+                  <div
+                    className="enter "
+                    onClick={async () => await navigateToDEX()}
+                  >
+                    Enter
+                  </div>
                 </nav>
               </div>
               <div className="DarkWaves my-5">
-                <img src={SystemStateBackground} alt="DarkWaves images" className="" />
+                <img
+                  src={SystemStateBackground}
+                  alt="DarkWaves images"
+                  className=""
+                />
               </div>
               <div className="paddingBottomS1 res-2">
                 <div className="State d-flex flex-wrap justify-content-center justify-content-sm-start">
                   <div className="under-state">
-                    <img src={SystemStateLogo} alt="SystemStateLogo " className="SystemStateLogo" />
+                    <img
+                      src={SystemStateLogo}
+                      alt="SystemStateLogo "
+                      className="SystemStateLogo"
+                    />
                   </div>
                   <p className="state-text">System State</p>
                 </div>
@@ -52,27 +76,41 @@ export default function Website() {
                     employ incremental strategies and precise ratios to generate
                     gains with every deposit. They also securely lock up tokens
                     in escrow, ensuring consistent, long-term gains. */}
-                    Our protocol employs meticulous incremental strategies and precise ratios to ensure that every deposit results in gains. By
-                    securely locking up tokens in our smart escrow vaults, we guarantee consistent, long-term profits for our users. Leveraging
-                    the power of natural market forces and entropy, our protocol generates sustainable and reliable yields, enabling you to grow
-                    your crypto assets for years to come. The yield originates from blockchain inflation driven by node operators or miners, with
-                    our escrow vaults effectively capturing and maximizing this inflation.
+                    Vaulting deploys ratio vaults to slow down the erosion of
+                    inflation created by the liquidity pool formula, resulting
+                    in the creation of multiple copies of the user's crypto
+                    assets. By securely locking up tokens in smart escrow vaults
+                    (iPT), and leveraging the power of natural market forces,
+                    the protocol generates sustainable and reliable yields over
+                    multiple crypto cycles.
                   </div>
                   <div className="icons d-flex justify-content-between width-icons">
                     <div className="TwitterXIcon-main">
                       <div className="TwitterXIcon">
                         <div className="imageIcon">
-                          <Link target="_blank" to={'https://twitter.com/thestate_x'}>  <img src={TwitterXIcon} alt="TwitterXIcon" /></Link>
+                          <Link
+                            target="_blank"
+                            to={"https://twitter.com/thestate_x"}
+                          >
+                            {" "}
+                            <img src={TwitterXIcon} alt="TwitterXIcon" />
+                          </Link>
                         </div>
                       </div>
                     </div>
                     <div className="TelegramIcon">
-                      <Link target="_blank" to={'https://t.me/pSystemstate'}>  <img src={TelegramIcon} alt="TelegramIcon" /></Link>
+                      <Link target="_blank" to={"https://t.me/pSystemstate"}>
+                        {" "}
+                        <img src={TelegramIcon} alt="TelegramIcon" />
+                      </Link>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="footer text-center text-lg-start pb-2">Copyright © 2024 System State - - All rights reserved - - Swap impermanent loss for perpetual gain.</div>
+              <div className="footer text-center text-lg-start pb-2">
+                Copyright © 2024 System State - - All rights reserved - - Swap
+                impermanent loss for perpetual gain.
+              </div>
             </div>
           </div>
 
