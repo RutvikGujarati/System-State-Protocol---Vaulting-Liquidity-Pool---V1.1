@@ -47,7 +47,6 @@ export default function TrackingPage() {
     getDepositors,
     getParityDollarClaimed,
     getUserUsdValue,
-    getPsdContract,
     getTotalValueLockedInDollar,
     getParityDollardeposits,
     getParityTokensDeposits,
@@ -160,11 +159,8 @@ export default function TrackingPage() {
       // Get the reached price targets
       let reachedPriceTargets = await getReachedPriceTargets(accountAddress);
 
-      let remainingTargets = reachedPriceTargets.filter(target => !target.isClaimed);
-
-
       // Format the reached price targets
-      let formattedReachedPriceTargets = remainingTargets.map((target) =>
+      let formattedReachedPriceTargets = reachedPriceTargets.map((target) =>
         ethers.utils.formatEther(target)
       );
 
@@ -352,23 +348,18 @@ export default function TrackingPage() {
 
   const isParityReached = async () => {
     try {
-      let isReached = await getParityReached(accountAddress);
-      let contract = await getPsdContract(accountAddress)
-      let contractBalance = await contract.getContractBalance();
-
-      // Check if the contract balance is zero
-      if (contractBalance === 0) {
-          return false; // Exit early if the contract balance is zero
-      }
-      setIsParityReached(isReached);
-      // if (isReached) {
-      //   allInOnePopup(null, "Token Parity Reached", null, `OK`, null);
-      // }
-      console.log("parity reached or not", isReached);
+        let isReached = await getParityReached(accountAddress);
+        setIsParityReached(isReached);
+        console.log("is parity reached", isReached);
+        if (isReached && isReached === '0') {
+            // Display the message only if isReached is truthy and not '0'
+            allInOnePopup(null, 'Token Parity Reached', null, `OK`, null);
+          }
     } catch (error) {
-      console.error("error: ", error);
+        console.error("error: ", error);
     }
-  };
+};
+
 
   const PERPETUAL_YIELD_LOCKED = async () => {
     // if (accountAddress && currencyName) {
@@ -924,12 +915,17 @@ export default function TrackingPage() {
         target?.TargetAmount.toString()
       );
       const targetAmount =
-        Number(formattedTargetAmount).toFixed(4) + " " + currencyName ??
+        Number(formattedTargetAmount).toFixed(2) + " " + currencyName ??
         currencyName;
 
       totalSummation += parseFloat(targetAmount);
       setTotalSummation(totalSummation);
-      console.log("from tracking summation", totalSummation);
+      console.log("from tracking RTP summation", totalSummation);
+      return {
+        index,
+        ratioPriceTarget,
+        targetAmount,
+      };
     } catch (error) {
       console.log("error:", error);
     }
@@ -946,7 +942,7 @@ export default function TrackingPage() {
   };
 
   const TotalVaultValueLocked = () => {
-    const totalvalue = totalSUm * price + TotalSum * price - getReachedTarget;
+    const totalvalue =( totalSUm * price + TotalSum * price )- getReachedTarget;
     const roundedTotal = Number(totalvalue.toFixed(2));
 
     // Convert the rounded total to string

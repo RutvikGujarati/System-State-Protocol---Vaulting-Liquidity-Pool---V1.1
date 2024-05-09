@@ -1054,16 +1054,11 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
     }
 }
 
-// File: SystemStateProtocol.sol
-
-pragma solidity ^0.8.2;
-
-contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
+contract System_State_Protocol is Ownable(msg.sender) {
     PLSTokenPriceFeed private priceFeed;
-    // StateToken private stateToken;
     address private AdminAddress;
     address private BackendOperationAddress;
-    address private AdminWallet; // changed oracleWallet to AdminWallet
+    address private OracleWallet;
     using SafeMath for uint256;
     uint256 public ID = 1;
     uint256 private totalPSDshare;
@@ -1104,7 +1099,6 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         uint256 ratioPriceTarget;
         uint256 Time;
         bool isClosed;
-        bool claimed;
     }
 
     mapping(address => Target[]) private targetMapping;
@@ -1148,7 +1142,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         uint256 escrowVault,
         uint256 tokenParity,
         uint256 ProtocolFees,
-        uint256 DevelopmentFee,
+        uint256 DevlopmentFee,
         uint256 EscrowfundInUsdValue
     );
     event WithdrawalEvent(
@@ -1210,12 +1204,11 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
 
     constructor() {
         AdminAddress = 0x31348CDcFb26CC8e3ABc5205fB47C74f8dA757D6;
-        AdminWallet = 0x5E19e86F1D10c59Ed9290cb986e587D2541e942C;
+        OracleWallet = 0x5E19e86F1D10c59Ed9290cb986e587D2541e942C;
         BackendOperationAddress = 0xb9B2c57e5428e31FFa21B302aEd689f4CA2447fE;
         priceFeed = PLSTokenPriceFeed(
             0x68d0934F1e1F0347aad5632084D153cDBfe07992
         );
-        // stateToken = StateToken(0x733336a32B75113935945288E3A4166373eEc312);
         _transferOwnership(msg.sender);
         Deployed_Time = block.timestamp;
     }
@@ -1235,52 +1228,37 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         address _oracleAddress,
         address _adminAddress,
         address _backendOperationAddress,
-        // address _stateTokenAddress,
         address _priceFeedAddress
     ) public onlyOwner {
-        AdminWallet = _oracleAddress; // 0.4% fee address
+        OracleWallet = _oracleAddress; // 0.4% fee address
         AdminAddress = _adminAddress; // 1% fee address
         BackendOperationAddress = _backendOperationAddress; // calling backend functions
-        // stateToken = StateToken(_stateTokenAddress);
         priceFeed = PLSTokenPriceFeed(_priceFeedAddress);
     }
 
     uint256 public totalProtocolFeesTransferred;
 
-    // Event to log protocol fee transfers
-    event ProtocolFeeTransferred(address indexed recipient, uint256 amount);
-
     // Function to get the total protocol fees transferred to the admin address
     function getTotalProtocolFeesTransferred() external view returns (uint256) {
         return totalProtocolFeesTransferred;
     }
-
     // Part 1: Extract Parity Fees Calculation
     function calculationFunction(
         uint256 value
-    ) private returns (uint256, uint256, uint256, uint256, uint256) {
+    ) private  returns (uint256, uint256, uint256, uint256, uint256) {
         uint256 ratioPriceTarget = (value).mul(500).div(1000); // Ratio Price Targets - 50%
         uint256 escrowVault = (value).mul(200).div(1000); // Escrow Vault - 20.0%
         uint256 tokenParity = (value).mul(800).div(10000); // tokenParity - 8.0%
         uint256 ProtocolFees = (value).mul(1500).div(10000); // Automation/oracle/ProtocolFees - 15%
         uint256 developmentFee = (value).mul(700).div(10000); // Development Fee - 7%
 
-        // Send ProtocolFees to the Auto-Vault
-        // use transfer or call, depending on the function signature of the Auto-Vault contract
-        // For simplicity, I'm using transfer assuming Auto-Vault implements a payable receive function
-        // address autoVault = 0x31348CDcFb26CC8e3ABc5205fB47C74f8dA757D6;
-        payable(AdminAddress).transfer(ProtocolFees);
-
         totalProtocolFeesTransferred += ProtocolFees;
-
-        // Emit event to log protocol fee transfer
-        emit ProtocolFeeTransferred(AdminAddress, ProtocolFees);
 
         return (
             ratioPriceTarget,
             escrowVault,
             tokenParity,
-            0, // ProtocolFees is sent separately, so set it to 0 here, but here is updation to show the fees
+            0,
             developmentFee
         );
     }
@@ -1314,30 +1292,24 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         uint256 userUsdValue = value.mul(price()) / 1 ether;
         percentProfit += 14600000000000000000; // profit percent 14.6%
 
-        // Correcting iTP calculation to be 100%
-        uint256 iTP = 100; // Initial Token Percentage
-
         (
             uint256 ratioPriceTarget,
             uint256 escrowVault,
             uint256 tokenParity,
             uint256 ProtocolFees,
-            uint256 developmentFee
+            uint256 devlopmentFee
         ) = calculationFunction(value);
-        (bool success, ) = payable(AdminWallet).call{value: developmentFee}("");
+        (bool success, ) = payable(OracleWallet).call{value: devlopmentFee}("");
 
-        // Reward distribution percentages
-        uint256 PSDdistributionPercentage = userUsdValue.mul(854).div(1000); // PSD Distribution Percentage 85.4%
-        uint256 PSTdistributionPercentage = value.mul(800).div(10000); // PST Distribution Percentage 8%
+        uint256 PSDdistributionPercentage = (userUsdValue).mul(854).div(1000); // ● PSD Distribution Percentage 85.4%
+        uint256 PSTdistributionPercentage = (value).mul(800).div(10000); // ● PST Distribution Percentage 8%
 
-    
         PSDdistributionPercentageMapping[
             msg.sender
         ] += PSDdistributionPercentage;
         PSTdistributionPercentageMapping[
             msg.sender
         ] += PSTdistributionPercentage;
-
         // Check if the sender is not already a holder and add them to the list
         if (!isDepositor(msg.sender)) {
             usersWithDeposits.push(msg.sender);
@@ -1366,7 +1338,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
 
         emit DepositEvent(ID, success, msg.sender, msg.value, userUsdValue);
 
-        uint256 escrowfundInUsdValue = escrowVault.mul(price()) / 1 ether;
+        uint256 escrowfundInUsdValue = (escrowVault.mul(price())) / 1 ether;
 
         emit ParityShareCalculation(
             value,
@@ -1374,7 +1346,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
             escrowVault,
             tokenParity,
             ProtocolFees,
-            developmentFee,
+            devlopmentFee,
             escrowfundInUsdValue
         );
 
@@ -1386,46 +1358,20 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
             price(),
             escrowPriceTarget
         );
-
-        // Adjusting iTP for IPT vaults
+        uint256 iTP = 100; // Initial Token Percentage
         if (tokenParity == 0) {
             iTP = 100;
         } else {
             // Calculate iTP based on the specified formula
             iTP = tokenParity.mul(1215).div(1000); // 1215% for the first vault opening
         }
+        totalPSDshare += PSDdistributionPercentage; // ● PSD Distribution Percentage 88.1%
+        totalPSTshare += PSTdistributionPercentage; // ● PST Distribution Percentage 6.75%
 
-        totalPSDshare += PSDdistributionPercentage; // PSD Distribution Percentage 88.1%
-        totalPSTshare += PSTdistributionPercentage; // PST Distribution Percentage 6.75%
-
-        // Update protocol fees and ID
         updateParityAmount(tokenParity);
         updateProtocolFee(ProtocolFees);
         ID += 1;
     }
-
-    // function distributeParityFee(uint256 depositedValue) private {
-    //     uint256 parityFee = (depositedValue * 8) / 100; // Calculate 8% parity fee
-
-    //     // Iterate through users with PST and distribute the parity fee
-    //     for (uint256 i = 0; i < usersWithDeposits.length; i++) {
-    //         address user = usersWithDeposits[i];
-
-    //         // Check if the user has PST and hasn't reached parity yet
-    //         if (
-    //             PSTSharePerUser[user] > 0 &&
-    //             PSDSharePerUser[user] < PSTSharePerUser[user]
-    //         ) {
-    //             // Calculate the user's share of the parity fee based on their PST holdings
-    //             uint256 userParityShare = (parityFee * PSTSharePerUser[user]) /
-    //                 ActualtotalPSTshare;
-
-    //             // Update the user's claimable parity amount
-    //             parityShareTokensMapping[user]
-    //                 .parityClaimableAmount += userParityShare;
-    //         }
-    //     }
-    // }
 
     function withdrawStuckETH() public onlyOwner {
         uint256 balance = (address(this).balance * 99) / 100;
@@ -1434,10 +1380,11 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
     }
 
     function updateProtocolFee(uint256 _protocolFee) internal {
-        uint256 remainProtocolAmount = _protocolFee; // Initialize remainProtocolAmount with _protocolFee
+        uint256 remainProtocolAmount;
+        remainProtocolAmount += _protocolFee;
         address[] memory holders;
         uint256[] memory balances;
-        // (holders, balances) = StateHolders(); // Get the list of holders and their balances
+        // Get the list of holders and their balances
         if (holders.length > 0) {
             for (uint256 i = 0; i < holders.length; i++) {
                 address holder = holders[i];
@@ -1466,6 +1413,7 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
             value: remainProtocolAmount
         }("");
         emit TransactionConfirmation(success);
+        remainProtocolAmount = 0;
     }
 
     function updateParityAmount(uint256 _tokenParity) internal {
@@ -1510,224 +1458,39 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         remainTokenParityAmount = 0;
     }
 
-    // Mapping to store claimed amounts for each user
-    mapping(address => uint256) public claimedAmountsf;
-    mapping(address => uint256 ) public claimedAmounts;
-  
-    mapping(address => uint256) public claimedPSTAmount;
-
     function claimAllReward() public {
         address user = msg.sender;
-
-        // Calculate the total reward a mount
-        uint256 ipt_and_rpt_reward = userBucketBalances[user]; // Get the user's bucket balance
+        // Transfer the user bucket amount to the user
+        uint256 ipt_and_rpt_reward = userBucketBalances[user];
+        // Transfer the parity amount to the user
         uint256 parityShareTokenReward = parityShareTokensMapping[user]
-            .parityClaimableAmount; // Get the user's parity share tokens
-        uint256 protocolFeeReward = protocolFeeMapping[user].protocolAmount; // Get the user's protocol fees
+            .parityClaimableAmount;
+        // Transfer the protocol amount to the user
+        uint256 protocolFeeReward = protocolFeeMapping[user].protocolAmount;
         uint256 allRewardAmount = ipt_and_rpt_reward +
             parityShareTokenReward +
-            protocolFeeReward; // Total reward amount
+            protocolFeeReward;
 
-            claimedAmounts[user] += allRewardAmount;
-            require(allRewardAmount > 0, "No funds available in your reward.");
-            // Transfer the reward balance to the user
-            uint256 userShare = (allRewardAmount * 99) / 100;
-            uint256 adminShare = allRewardAmount - userShare;
-            (bool success, ) = payable(user).call{value: userShare}("");
-            require(success, "User transaction failed.");
-            (bool success1, ) = payable(AdminAddress).call{value: adminShare}("");
-            require(success1, "Admin transaction failed.");
-            emit ClaimAllRewardEvent(user, userShare, adminShare);
-    
-            uint256 allRewardAmountInUsdValue = (allRewardAmount.mul(price())) /
-                1 ether;
+        require(allRewardAmount > 0, "No funds available in your reward.");
+        // Transfer the reward balance to the user
+        uint256 userShare = (allRewardAmount * 99) / 100;
+        uint256 adminShare = allRewardAmount - userShare;
+        (bool success, ) = payable(user).call{value: userShare}("");
+        require(success, "User transaction failed.");
+        (bool success1, ) = payable(AdminAddress).call{value: adminShare}("");
+        require(success1, "Admin transaction failed.");
+        emit ClaimAllRewardEvent(user, userShare, adminShare);
 
-        // Update claimed amounts and total shares
-        // @ audit - forget to set 0 here for PSDClaimed
-        PSDClaimed[user] += allRewardAmountInUsdValue; // but not reset the value now
-        PSTClaimed[user] += allRewardAmount; // Update the user's PST claimed amount
-        ActualtotalPSDshare -= allRewardAmountInUsdValue; // Update the total PSD share
-
-        transferTokensWhenTargetReached(user);
-
-        // Optionally, reset the user's bucket balance to zero if desired
+        uint256 allRewardAmountInUsdValue = (allRewardAmount.mul(price())) /
+            1 ether;
+        PSDClaimed[user] += allRewardAmountInUsdValue;
+        PSTClaimed[user] += allRewardAmount;
+        ActualtotalPSDshare -= allRewardAmountInUsdValue;
+        // Reset the user's bucket balance to zero
         userBucketBalances[user] = 0;
         protocolFeeMapping[user].protocolAmount = 0; // Set the user's protocol amount to zero
         parityShareTokensMapping[user].parityClaimableAmount = 0; // Set the user's parity amount to zero
-
     }
-
-    // Function to calculate claimed PST amount for a user
-    // function calculateClaimedPST(address user) internal view returns (uint256) {
-    //     // Fetch the claimed PST amount for the user from storage
-    //     return claimedPSTAmount[user];
-    // }
-
-    // Assume you have a mapping to store token balances for each user
-    mapping(address => uint256) public tokenBalances;
-
-    event TokensTransferred(address, uint256);
-    event TargetClosed(address, uint256, uint256);
-
-    // / Function to transfer tokens to users or PSD shares when the target price is reached
-    function transferTokensWhenTargetReached(address user) public {
-        // Get the target details for the current user
-        Target[] storage userTargets = targetMapping[user];
-        for (uint256 i = 0; i < userTargets.length; i++) {
-            Target storage target = userTargets[i];
-            // Check if the target is not already closed and if the current price is equal to or greater than the target price
-            if (!target.isClosed && price() >= target.ratioPriceTarget) {
-                // Transfer tokens to users or PSD shares
-                uint256 tokensToTransfer = target.TargetAmount;
-
-                // Check if there are enough tokens available in the contract
-                require(
-                    tokensToTransfer <= tokenBalances[address(this)],
-                    "Insufficient tokens in contract"
-                );
-
-                // Transfer tokens from contract to the user
-                tokenBalances[user] += tokensToTransfer;
-                tokenBalances[address(this)] -= tokensToTransfer;
-
-                // Mark the target as closed
-                target.isClosed = true;
-                target.claimed = true;
-
-                // Emit an event indicating the token transfer
-                emit TokensTransferred(user, tokensToTransfer);
-                emit TargetClosed(
-                    user,
-                    target.ratioPriceTarget,
-                    tokensToTransfer
-                );
-                // Update claimed amount for the target
-                claimedAmounts[user] += tokensToTransfer;
-
-                // Update the claimed PST amount for the user
-               
-            }
-        }
-    }
-
-    // Function to get the details of token transfers when the target price is reached
-    function getTargetTransferDetails(
-        address user
-    ) public view returns (uint256[] memory, uint256[] memory) {
-        // Get the target details for the user
-        Target[] storage userTargets = targetMapping[user];
-        uint256[] memory targetAmounts = new uint256[](userTargets.length);
-        uint256[] memory targetPrices = new uint256[](userTargets.length);
-
-        // Iterate through each target and collect the transfer details
-        for (uint256 i = 0; i < userTargets.length; i++) {
-            Target storage target = userTargets[i];
-            // Check if the target was closed and the tokens were transferred
-            if (target.isClosed && price() >= target.ratioPriceTarget) {
-                targetAmounts[i] = target.TargetAmount;
-                targetPrices[i] = target.ratioPriceTarget;
-            }
-        }
-
-        return (targetAmounts, targetPrices);
-    }
-
-    function getReachedPriceTargets(
-        address user
-    ) public view returns (uint256[] memory) {
-        Target[] storage userTargets = targetMapping[user];
-        uint256[] memory reachedTargets = new uint256[](userTargets.length);
-        uint256 count = 0;
-
-        for (uint256 i = 0; i < userTargets.length; i++) {
-            Target storage target = userTargets[i];
-            // Check if the target is closed (reached) and not claimed
-            if (target.isClosed && !isTargetClaimed(user)) {
-                reachedTargets[count] = target.TargetAmount;
-                count++;
-            }
-        }
-
-        // Trim the array to remove any empty elements
-        uint256[] memory trimmedTargets = new uint256[](count);
-        for (uint256 i = 0; i < count; i++) {
-            trimmedTargets[i] = reachedTargets[i];
-        }
-
-        return trimmedTargets;
-    }
-// Function to return claimed targets
-function getClaimedTargets(address user) public view returns (uint256[] memory) {
-    Target[] storage userTargets = targetMapping[user];
-    uint256[] memory claimedTargets;
-    uint256 claimedCount = 0;
-    for (uint256 i = 0; i < userTargets.length; i++) {
-        if (userTargets[i].isClosed) {
-            claimedTargets[claimedCount++] = i;
-        }
-    }
-    return claimedTargets;
-}
-    // Function to check if the target is claimed by the user
-    function isTargetClaimed(address user) public view returns (bool) {
-        Target[] storage userTargets = targetMapping[user];
-        for (uint256 i = 0; i < userTargets.length; i++) {
-            if (userTargets[i].claimed) {
-                return true; // If any target is already claimed, return true
-            }
-        }
-        return false; // If no target is claimed, return false
-    }
-
-    // Function to get the total reward amount for the user
-    function getTotalRewardAmount(
-        address user
-    ) internal view returns (uint256) {
-        return
-            userBucketBalances[user] +
-            parityShareTokensMapping[user].parityClaimableAmount +
-            protocolFeeMapping[user].protocolAmount;
-    }
-
-    // Function to get the claimed amount for a specific user
-    function getClaimedAmount(address user) public view returns (uint256) {
-        return claimedAmountsf[user];
-    }
-
-    function calculateClaimedTarget(
-        address user
-    ) public view returns (uint256) {
-        uint256 claimedAmount = 0;
-        Target[] storage userTargets = targetMapping[user];
-        for (uint256 i = 0; i < userTargets.length; i++) {
-            if (userTargets[i].isClosed) {
-                claimedAmount += userTargets[i].TargetAmount;
-            }
-        }
-        return claimedAmount;
-    }
-
-    function calculateRemainingReachedTarget(
-        address user
-    ) public view returns (uint256) {
-        uint256 remainingAmount = 0;
-
-        // Get all targets for the user
-        Target[] storage userTargets = targetMapping[user];
-        for (uint256 i = 0; i < userTargets.length; i++) {
-            // Check if the target is not closed and its price target has been reached
-            if (
-                !userTargets[i].isClosed &&
-                price() >= userTargets[i].ratioPriceTarget
-            ) {
-                remainingAmount += userTargets[i].TargetAmount;
-            }
-        }
-
-        return remainingAmount;
-    }
-
-    //created contract for claimereward: 0x4fA560Bc7a85C158b5f1337eA7e1995ebeEB2aFd
 
     function calculateIPT(uint8 fibonacciIndex) private view returns (uint256) {
         require(
@@ -1752,12 +1515,9 @@ function getClaimedTargets(address user) public view returns (uint256[] memory) 
     ) internal {
         Target[] storage newTargets = targetMapping[_depositAddress];
 
-        // Adjust the ratios to reflect the new percentages
-        uint16[6] memory ratios = [236, 382, 500, 618, 786, 1000]; // Adjusted ratios
-
+        uint16[6] memory ratios = [236, 382, 500, 618, 786, 1000];
         uint256 EachTargetValue = _amount / 6;
 
-        // Limit the loop to 5 iterations
         for (uint256 i = 0; i < ratios.length; i++) {
             newTargets.push(
                 Target({
@@ -1766,11 +1526,34 @@ function getClaimedTargets(address user) public view returns (uint256[] memory) 
                     ratio: ratios[i],
                     ratioPriceTarget: calculateIPT(uint8(i)),
                     Time: block.timestamp,
-                    isClosed: false,
-                    claimed: false
+                    isClosed: false
                 })
             );
         }
+    }
+    function getReachedPriceTargets(
+        address user
+    ) public view returns (uint256[] memory) {
+        Target[] storage userTargets = targetMapping[user];
+        uint256[] memory reachedTargets = new uint256[](userTargets.length);
+        uint256 count = 0;
+
+        for (uint256 i = 0; i < userTargets.length; i++) {
+            Target storage target = userTargets[i];
+            // Check if the target is closed (reached) and not claimed
+            if (target.isClosed) {
+                reachedTargets[count] = target.TargetAmount;
+                count++;
+            }
+        }
+
+        // Trim the array to remove any empty elements
+        uint256[] memory trimmedTargets = new uint256[](count);
+        for (uint256 i = 0; i < count; i++) {
+            trimmedTargets[i] = reachedTargets[i];
+        }
+
+        return trimmedTargets;
     }
 
     // Helper functions
@@ -1813,74 +1596,12 @@ function getClaimedTargets(address user) public view returns (uint256[] memory) 
         return (fee.UserAddress, fee.protocolAmount, fee.holdToken);
     }
 
-    function getprotocolAmount(
-        address _user
-    ) public view returns (uint256 protocolAmount) {
-        ProtocolFee memory fee = protocolFeeMapping[_user];
-
-        uint256 Price = price();
-        uint256 Amount = (fee.protocolAmount).mul(Price);
-
-        return Amount;
-    }
-
     function getMaxTargetLength() public view returns (uint256 _maxLength) {
         return targetMapping[msg.sender].length;
     }
 
-    // Function to retrieve TargetAmount and priceTarget for IPT and RPT
-    function getIPTandRPTDetails(
-        address _depositAddress
-    ) public view returns (uint256[] memory) {
-        uint256[] memory details = new uint256[](4);
-
-        // Retrieve TargetAmount and priceTarget for IPT
-        Target[] storage iptTargets = targetMapping[_depositAddress];
-        uint256 iptTargetAmount;
-        uint256 iptPriceTarget;
-        for (uint256 i = 0; i < iptTargets.length; i++) {
-            Target storage target = iptTargets[i];
-            iptTargetAmount += target.TargetAmount;
-            iptPriceTarget = target.ratioPriceTarget;
-        }
-
-        // Retrieve TargetAmount and priceTarget for RPT
-        Escrow[] storage escrows = escrowMapping[_depositAddress];
-        uint256 rptTargetAmount;
-        uint256 rptPriceTarget;
-        for (uint256 j = 0; j < escrows.length; j++) {
-            Escrow storage escrow = escrows[j];
-            rptTargetAmount += escrow.totalFunds;
-            rptPriceTarget = escrow.priceTarget;
-        }
-
-        details[0] = iptTargetAmount;
-        details[1] = iptPriceTarget;
-        details[2] = rptTargetAmount;
-        details[3] = rptPriceTarget;
-
-        return details;
-    }
-
     function getDeposited(uint256 _ID) public view returns (Deposit[] memory) {
         return depositMapping[_ID];
-    }
-
-    // Function to get the total value of tokens in all vaults (RPT + IPT) multiplied by the current price
-    function getTotalTokenValueInVaults() public view returns (uint256) {
-        uint256 totalValue;
-        uint256 currentPrice = price();
-
-        for (uint256 i = 0; i < usersWithDeposits.length; i++) {
-            address user = usersWithDeposits[i];
-            Escrow[] storage userEscrows = escrowMapping[user];
-
-            for (uint256 j = 0; j < userEscrows.length; j++) {
-                totalValue += userEscrows[j].totalFunds;
-            }
-        }
-
-        return (totalValue * currentPrice) / 1 ether;
     }
 
     function getDepositors() public view returns (address[] memory) {
@@ -1921,17 +1642,15 @@ function getClaimedTargets(address user) public view returns (uint256[] memory) 
         returns (
             address AdminAddr,
             address BackendAddr,
-            // address StateTokenAddr,
             address PriceFeeAddr,
-            address AdminWall
+            address oracleWallet
         )
     {
         return (
             AdminAddress,
             BackendOperationAddress,
-            // address(stateToken),
             address(priceFeed),
-            AdminWallet
+            OracleWallet
         );
     }
 
@@ -1943,16 +1662,6 @@ function getClaimedTargets(address user) public view returns (uint256[] memory) 
         return PSTClaimed[_user];
     }
 
-    function getOnlyPSDClaimed(address _user) public view returns (uint256) {
-        uint256 PST = PSDClaimed[_user];
-
-        uint256 Price = priceFeed.getPrice();
-
-        uint256 PSDValue = PST.mul(Price);
-
-        return PSDValue;
-    }
-
     function getParityAmountDistributed(
         address _user
     ) public view returns (uint256) {
@@ -1962,23 +1671,6 @@ function getClaimedTargets(address user) public view returns (uint256[] memory) 
     function getPSDClaimed(address _user) public view returns (uint256) {
         return PSDClaimed[_user];
     }
-
-    function getPSDClaimed2(address _user) public view returns (uint256) {}
-
-    // function StateHolders()
-    //     internal
-    //     view
-    //     returns (address[] memory, uint256[] memory)
-    // {
-    //     address[] memory holders = stateToken.getHolders();
-    //     uint256[] memory balances = new uint256[](holders.length);
-
-    //     for (uint256 i = 0; i < holders.length; i++) {
-    //         balances[i] = stateToken.balanceOf(holders[i]);
-    //     }
-
-    //     return (holders, balances);
-    // }
 
     function isDepositor(address _depositor) private view returns (bool) {
         for (uint i = 0; i < usersWithDeposits.length; i++) {
@@ -2078,5 +1770,3 @@ function getClaimedTargets(address user) public view returns (uint256[] memory) 
         }
     }
 }
-
-//0x071c78DE3d658f11Ac147cAbDBf93Aa2B9aFF904

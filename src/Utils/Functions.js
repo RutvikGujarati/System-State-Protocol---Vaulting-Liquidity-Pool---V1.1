@@ -263,7 +263,6 @@ export default function Functions({ children }) {
     const getParityReached = async (address) => {
         if (address) {
             try {
-                // Get the contract balance
                 // Get the user's deposited PST tokens
                 let PST_Deposit = await getParityTokensDeposits(accountAddress);
                 let PST_Deposit_formatted = ethers.utils.formatEther(PST_Deposit || '0');
@@ -279,8 +278,9 @@ export default function Functions({ children }) {
     
                 // If token parity is reached and the user has deposited some PST tokens,
                 // display a warning indicating that token parity has been reached
-                if (isParityReached  && PST_DepositInNumber > 0) {
+                if (isParityReached && PST_DepositInNumber > 0) {
                     allInOnePopup(null, 'Token Parity Reached', null, `OK`, null);
+                    // You can trigger a pop-up or display a message to the user here
                 }
     
                 // Return whether token parity is reached
@@ -291,7 +291,7 @@ export default function Functions({ children }) {
                 // You can handle errors here as needed
             }
         }
-    }
+    };
     
 
 
@@ -630,8 +630,6 @@ export default function Functions({ children }) {
             const claimAllReward = await contract?.claimAllReward();
 
             await claimAllReward.wait();
-
-            console.log("claimAllReward",claimAllReward)
             setSocket(prevBool => !prevBool);
             return claimAllReward;
         } catch (err) {
@@ -698,7 +696,6 @@ export default function Functions({ children }) {
                 handle_Claim_All_Reward_Amount,
                 getPrice,
                 onlyPSDclaimed,
-                getPsdContract,
                 getToBeClaimed,
                 getTotalValueLockedInDollar,
                 getParityDollardeposits,

@@ -1,13 +1,6 @@
 [
 	{
 		"inputs": [],
-		"name": "claimAllReward",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
 	},
@@ -63,6 +56,13 @@
 		],
 		"name": "Calculate",
 		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "claimAllReward",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -132,6 +132,13 @@
 		"name": "claimTargetsByBackend",
 		"outputs": [],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "deposit",
+		"outputs": [],
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
@@ -282,7 +289,7 @@
 			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "DevelopmentFee",
+				"name": "DevlopmentFee",
 				"type": "uint256"
 			},
 			{
@@ -349,25 +356,6 @@
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "recipient",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "ProtocolFeeTransferred",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
 				"indexed": false,
 				"internalType": "address",
 				"name": "User",
@@ -415,80 +403,39 @@
 		"type": "event"
 	},
 	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "user",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "RewardsClaimed",
-		"type": "event"
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
-		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": false,
 				"internalType": "address",
-				"name": "",
+				"name": "_oracleAddress",
 				"type": "address"
 			},
 			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "TargetClosed",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
 				"internalType": "address",
-				"name": "user",
-				"type": "address"
-			}
-		],
-		"name": "ThresholdExceededWarning",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "",
+				"name": "_adminAddress",
 				"type": "address"
 			},
 			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
+				"internalType": "address",
+				"name": "_backendOperationAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_priceFeedAddress",
+				"type": "address"
 			}
 		],
-		"name": "TokensTransferred",
-		"type": "event"
+		"name": "setAddresses",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -585,48 +532,6 @@
 		"type": "event"
 	},
 	{
-		"inputs": [],
-		"name": "deposit",
-		"outputs": [],
-		"stateMutability": "payable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "renounceOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_oracleAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_adminAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_backendOperationAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_priceFeedAddress",
-				"type": "address"
-			}
-		],
-		"name": "setAddresses",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -635,19 +540,6 @@
 			}
 		],
 		"name": "transferOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "user",
-				"type": "address"
-			}
-		],
-		"name": "transferTokensWhenTargetReached",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -662,106 +554,6 @@
 	{
 		"stateMutability": "payable",
 		"type": "receive"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "user",
-				"type": "address"
-			}
-		],
-		"name": "calculateClaimedTarget",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "user",
-				"type": "address"
-			}
-		],
-		"name": "calculateRemainingReachedTarget",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "claimedAmounts",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "claimedAmountsf",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "claimedPSTAmount",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
 	},
 	{
 		"inputs": [],
@@ -836,46 +628,8 @@
 			},
 			{
 				"internalType": "address",
-				"name": "AdminWall",
+				"name": "oracleWallet",
 				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "user",
-				"type": "address"
-			}
-		],
-		"name": "getClaimedAmount",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "user",
-				"type": "address"
-			}
-		],
-		"name": "getClaimedTargets",
-		"outputs": [
-			{
-				"internalType": "uint256[]",
-				"name": "",
-				"type": "uint256[]"
 			}
 		],
 		"stateMutability": "view",
@@ -947,7 +701,7 @@
 						"type": "bool"
 					}
 				],
-				"internalType": "struct System_state_Ratio_Vaults_V1.Deposit[]",
+				"internalType": "struct System_State_Protocol.Deposit[]",
 				"name": "",
 				"type": "tuple[]"
 			}
@@ -1016,28 +770,9 @@
 						"type": "uint256"
 					}
 				],
-				"internalType": "struct System_state_Ratio_Vaults_V1.Escrow[]",
+				"internalType": "struct System_State_Protocol.Escrow[]",
 				"name": "",
 				"type": "tuple[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_depositAddress",
-				"type": "address"
-			}
-		],
-		"name": "getIPTandRPTDetails",
-		"outputs": [
-			{
-				"internalType": "uint256[]",
-				"name": "",
-				"type": "uint256[]"
 			}
 		],
 		"stateMutability": "view",
@@ -1050,25 +785,6 @@
 			{
 				"internalType": "uint256",
 				"name": "_maxLength",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_user",
-				"type": "address"
-			}
-		],
-		"name": "getOnlyPSDClaimed",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
 				"type": "uint256"
 			}
 		],
@@ -1131,25 +847,6 @@
 				"type": "address"
 			}
 		],
-		"name": "getprotocolAmount",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "protocolAmount",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_user",
-				"type": "address"
-			}
-		],
 		"name": "getProtocolFee",
 		"outputs": [
 			{
@@ -1180,25 +877,6 @@
 			}
 		],
 		"name": "getPSDClaimed",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_user",
-				"type": "address"
-			}
-		],
-		"name": "getPSDClaimed2",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -1288,14 +966,9 @@
 						"internalType": "bool",
 						"name": "isClosed",
 						"type": "bool"
-					},
-					{
-						"internalType": "bool",
-						"name": "claimed",
-						"type": "bool"
 					}
 				],
-				"internalType": "struct System_state_Ratio_Vaults_V1.Target[]",
+				"internalType": "struct System_State_Protocol.Target[]",
 				"name": "",
 				"type": "tuple[]"
 			}
@@ -1344,44 +1017,12 @@
 	},
 	{
 		"inputs": [],
-		"name": "getTotalTokenValueInVaults",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
 		"name": "ID",
 		"outputs": [
 			{
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "user",
-				"type": "address"
-			}
-		],
-		"name": "isTargetClaimed",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -1505,38 +1146,6 @@
 			}
 		],
 		"name": "PSTSharePerUser",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "tokenBalances",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "totalClaimedPST",
 		"outputs": [
 			{
 				"internalType": "uint256",
