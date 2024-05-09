@@ -274,7 +274,15 @@ export default function TrackingPage() {
       );
       let fixed =
         Number(formattedParityTokensDeposits).toFixed(4) + " " + currencyName;
-      setParityTokensDeposits(fixed);
+      if (/^[0-9,.]*$/.test(fixed)) {
+        const numericValue = fixed.replace(/,/g, "");
+        const formattedValue = numericValue.replace(
+          /\B(?=(\d{3})+(?!\d))/g,
+          ","
+        );
+        const formattedWithDecimals = `${formattedValue} .00`;
+        setParityTokensDeposits(formattedValue);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -324,7 +332,15 @@ export default function TrackingPage() {
       let PSTClaimed = await get_PST_Claimed(accountAddress);
       let formatted_PST_Claimed = ethers.utils.formatEther(PSTClaimed || "0");
       let fixed = Number(formatted_PST_Claimed).toFixed(4) + " " + currencyName;
-      setParityTokensClaimed(fixed);
+      if (/^[0-9,.]*$/.test(fixed)) {
+        const numericValue = fixed.replace(/,/g, "");
+        const formattedValue = numericValue.replace(
+          /\B(?=(\d{3})+(?!\d))/g,
+          ","
+        );
+        const formattedWithDecimals = `${formattedValue} .00`;
+        setParityTokensClaimed(formattedValue);
+      }
     } catch (error) {
       console.error("error:", error);
     }
@@ -349,18 +365,38 @@ export default function TrackingPage() {
 
   const isParityReached = async () => {
     try {
-        let isReached = await getParityReached(accountAddress);
-        setIsParityReached(isReached);
-        console.log("is parity reached", isReached);
-        if (isReached && isReached === '0') {
-            // Display the message only if isReached is truthy and not '0'
-            allInOnePopup(null, 'Token Parity Reached', null, `OK`, null);
-          }
-    } catch (error) {
-        console.error("error: ", error);
-    }
-};
+      let isReached = await getParityReached(accountAddress);
+      setIsParityReached(isReached);
+      console.log("is parity reached", isReached);
+      console.log(
+        "is parity reached for account",
+        accountAddress,
+        ":",
+        isReached
+      );
 
+      if (isReached && isReached === "0") {
+        // Check if the popup has been shown before
+        const popupShownBefore = sessionStorage.getItem(
+          `parityPopupShown_${accountAddress}`
+        );
+        if (!popupShownBefore) {
+          // Display the message only if isReached is truthy and not '0', and the popup hasn't been shown before for this account
+          allInOnePopup(
+            null,
+            "The 8% parity fee will stop once the user reaches token parity",
+            null,
+            `OK`,
+            null
+          );
+          // Set the flag to indicate that the popup has been shown for this account
+          sessionStorage.setItem(`parityPopupShown_${accountAddress}`, "true");
+        }
+      }
+    } catch (error) {
+      console.error("error: ", error);
+    }
+  };
 
   const PERPETUAL_YIELD_LOCKED = async () => {
     // if (accountAddress && currencyName) {
@@ -616,7 +652,6 @@ export default function TrackingPage() {
         const allReward = await getClaimAllReward(accountAddress);
         setToBeClaimedReward(allReward);
 
-
         allInOnePopup(null, "Successful Claimed", null, `OK`, null);
       } catch (err) {
         allInOnePopup(
@@ -740,61 +775,66 @@ export default function TrackingPage() {
   const [currentPage, setCurrentPage] = useState(1);
 
   const IncrementPriceTarget = async () => {
-  if (accountAddress && currencyName) {
-    try {
-      let price = await getPrice();
-      let formattedPrice = await ethers.utils.formatEther(price || "0");
-      setPrice(formattedPrice);
-
-      let All_USERS_TARGETS = [];
-
-      let allDepositorsAddress = await getDepositors();
-
-      for (let index = 0; index < allDepositorsAddress.length; index++) {
-        const address = allDepositorsAddress[index];
-        let incrementPriceTarget = await getIncrementPriceTargets(address);
-        All_USERS_TARGETS.push(...(incrementPriceTarget || []));
-      }
-
-      // Filter out targets that have already been reached and passed away from the current price
-      const filteredTargets = All_USERS_TARGETS.filter(target => {
-        const formattedPriceTarget = ethers.utils.formatEther(target?.priceTarget.toString());
-        return Number(formattedPriceTarget) >= Number(formattedPrice);
-      });
-
-      // Sort the filtered targets
-      const sortedArray = [...(filteredTargets || [])].sort((a, b) => {
-        const formattedRatioTargetA = ethers.utils.formatEther(a?.priceTarget.toString());
-        const formattedRatioTargetB = ethers.utils.formatEther(b?.priceTarget.toString());
-
-        const numericValueA = Number(formattedRatioTargetA);
-        const numericValueB = Number(formattedRatioTargetB);
-
-        return numericValueA - numericValueB;
-      });
-
-      // Process and display targets for the current page
-      const itemsPerPage = 2500;
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      const itemsForCurrentPage = sortedArray.slice(startIndex, endIndex);
-
+    if (accountAddress && currencyName) {
       try {
-        let items = await Promise.all(
-          itemsForCurrentPage.map((target, index) =>
-            processTargets(target, index, currencyName)
-          )
-        );
-        setEscrowVaultTargets(items.filter(Boolean));
-      } catch (error) {
-        console.error("Error processing targets:", error);
-      }
-    } catch (error) {
-      console.error("error:", error);
-    }
-  }
-};
+        let price = await getPrice();
+        let formattedPrice = await ethers.utils.formatEther(price || "0");
+        setPrice(formattedPrice);
 
+        let All_USERS_TARGETS = [];
+
+        let allDepositorsAddress = await getDepositors();
+
+        for (let index = 0; index < allDepositorsAddress.length; index++) {
+          const address = allDepositorsAddress[index];
+          let incrementPriceTarget = await getIncrementPriceTargets(address);
+          All_USERS_TARGETS.push(...(incrementPriceTarget || []));
+        }
+
+        // Filter out targets that have already been reached and passed away from the current price
+        const filteredTargets = All_USERS_TARGETS.filter((target) => {
+          const formattedPriceTarget = ethers.utils.formatEther(
+            target?.priceTarget.toString()
+          );
+          return Number(formattedPriceTarget) >= Number(formattedPrice);
+        });
+
+        // Sort the filtered targets
+        const sortedArray = [...(filteredTargets || [])].sort((a, b) => {
+          const formattedRatioTargetA = ethers.utils.formatEther(
+            a?.priceTarget.toString()
+          );
+          const formattedRatioTargetB = ethers.utils.formatEther(
+            b?.priceTarget.toString()
+          );
+
+          const numericValueA = Number(formattedRatioTargetA);
+          const numericValueB = Number(formattedRatioTargetB);
+
+          return numericValueA - numericValueB;
+        });
+
+        // Process and display targets for the current page
+        const itemsPerPage = 2500;
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const itemsForCurrentPage = sortedArray.slice(startIndex, endIndex);
+
+        try {
+          let items = await Promise.all(
+            itemsForCurrentPage.map((target, index) =>
+              processTargets(target, index, currencyName)
+            )
+          );
+          setEscrowVaultTargets(items.filter(Boolean));
+        } catch (error) {
+          console.error("Error processing targets:", error);
+        }
+      } catch (error) {
+        console.error("error:", error);
+      }
+    }
+  };
 
   let totalSum = 0;
 
@@ -856,42 +896,48 @@ export default function TrackingPage() {
     if (accountAddress) {
       try {
         let All_USERS_TARGETS = [];
-  
+
         let allDepositorsAddress = await getDepositors();
-  
+
         for (let index = 0; index < allDepositorsAddress.length; index++) {
           const address = allDepositorsAddress[index];
           let targets = await getRatioPriceTargets(address);
           All_USERS_TARGETS.push(...(targets || []));
         }
-  
+
         // Filter out targets that have already been reached and passed away from the current price
-        const filteredTargets = All_USERS_TARGETS.filter(target => {
-          const formattedRatioPriceTarget = ethers.utils.formatEther(target?.ratioPriceTarget.toString());
+        const filteredTargets = All_USERS_TARGETS.filter((target) => {
+          const formattedRatioPriceTarget = ethers.utils.formatEther(
+            target?.ratioPriceTarget.toString()
+          );
           return Number(formattedRatioPriceTarget) >= Number(price);
         });
-  
+
         // Calculate total pages
         const itemsPerPage = 2500;
         const totalPages = Math.ceil(filteredTargets.length / itemsPerPage);
         setNoOfPage(totalPages); // Update the total number of pages
-  
+
         // Sort the filtered targets
         const sortedArray = [...(filteredTargets || [])].sort((a, b) => {
-          const formattedRatioTargetA = ethers.utils.formatEther(a?.ratioPriceTarget.toString());
-          const formattedRatioTargetB = ethers.utils.formatEther(b?.ratioPriceTarget.toString());
-  
+          const formattedRatioTargetA = ethers.utils.formatEther(
+            a?.ratioPriceTarget.toString()
+          );
+          const formattedRatioTargetB = ethers.utils.formatEther(
+            b?.ratioPriceTarget.toString()
+          );
+
           const numericValueA = Number(formattedRatioTargetA);
           const numericValueB = Number(formattedRatioTargetB);
-  
+
           return numericValueA - numericValueB;
         });
-  
+
         // Process and display targets for the current page
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
         const itemsForCurrentPage = sortedArray.slice(startIndex, endIndex);
-  
+
         try {
           let items = await Promise.all(
             itemsForCurrentPage.map((target, index) =>
@@ -907,7 +953,6 @@ export default function TrackingPage() {
       }
     }
   };
-  
 
   let totalSummation = 0;
   const processTargetsRPT = async (target, index, currencyName) => {
@@ -947,7 +992,7 @@ export default function TrackingPage() {
   };
 
   const TotalVaultValueLocked = () => {
-    const totalvalue =( totalSUm * price + TotalSum * price );
+    const totalvalue = totalSUm * price + TotalSum * price;
     const roundedTotal = Number(totalvalue.toFixed(2));
 
     // Convert the rounded total to string
@@ -1267,7 +1312,7 @@ export default function TrackingPage() {
                           <span className={`spanText ${spanDarkDim}`}>
                             {parityTokensClaimed}
 
-                            {IsParityReached && (
+                            {IsParityReached && IsParityReached === "0" && (
                               <span
                                 className={`${tooltip} hoverText hoverText`}
                                 data-tooltip="You reached maximum claim for parity tokens. Deposit more tokens to get parity token reward again."
