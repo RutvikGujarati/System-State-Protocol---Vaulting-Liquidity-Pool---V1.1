@@ -97,6 +97,19 @@
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "targetIndex",
+				"type": "uint256"
+			}
+		],
+		"name": "claimTarget",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -410,34 +423,6 @@
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_oracleAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_adminAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_backendOperationAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_priceFeedAddress",
-				"type": "address"
-			}
-		],
-		"name": "setAddresses",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -530,6 +515,34 @@
 		],
 		"name": "claimOwnEscrowEvent",
 		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_oracleAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_adminAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_backendOperationAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_priceFeedAddress",
+				"type": "address"
+			}
+		],
+		"name": "setAddresses",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"inputs": [
@@ -1023,6 +1036,30 @@
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "targetIndex",
+				"type": "uint256"
+			}
+		],
+		"name": "isTargetClaimed",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",

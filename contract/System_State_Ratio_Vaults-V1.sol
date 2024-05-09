@@ -1330,7 +1330,6 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         uint256 PSDdistributionPercentage = userUsdValue.mul(854).div(1000); // PSD Distribution Percentage 85.4%
         uint256 PSTdistributionPercentage = value.mul(800).div(10000); // PST Distribution Percentage 8%
 
-    
         PSDdistributionPercentageMapping[
             msg.sender
         ] += PSDdistributionPercentage;
@@ -1512,8 +1511,8 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
 
     // Mapping to store claimed amounts for each user
     mapping(address => uint256) public claimedAmountsf;
-    mapping(address => uint256 ) public claimedAmounts;
-  
+    mapping(address => uint256) public claimedAmounts;
+
     mapping(address => uint256) public claimedPSTAmount;
 
     function claimAllReward() public {
@@ -1528,19 +1527,19 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
             parityShareTokenReward +
             protocolFeeReward; // Total reward amount
 
-            claimedAmounts[user] += allRewardAmount;
-            require(allRewardAmount > 0, "No funds available in your reward.");
-            // Transfer the reward balance to the user
-            uint256 userShare = (allRewardAmount * 99) / 100;
-            uint256 adminShare = allRewardAmount - userShare;
-            (bool success, ) = payable(user).call{value: userShare}("");
-            require(success, "User transaction failed.");
-            (bool success1, ) = payable(AdminAddress).call{value: adminShare}("");
-            require(success1, "Admin transaction failed.");
-            emit ClaimAllRewardEvent(user, userShare, adminShare);
-    
-            uint256 allRewardAmountInUsdValue = (allRewardAmount.mul(price())) /
-                1 ether;
+        claimedAmounts[user] += allRewardAmount;
+        require(allRewardAmount > 0, "No funds available in your reward.");
+        // Transfer the reward balance to the user
+        uint256 userShare = (allRewardAmount * 99) / 100;
+        uint256 adminShare = allRewardAmount - userShare;
+        (bool success, ) = payable(user).call{value: userShare}("");
+        require(success, "User transaction failed.");
+        (bool success1, ) = payable(AdminAddress).call{value: adminShare}("");
+        require(success1, "Admin transaction failed.");
+        emit ClaimAllRewardEvent(user, userShare, adminShare);
+
+        uint256 allRewardAmountInUsdValue = (allRewardAmount.mul(price())) /
+            1 ether;
 
         // Update claimed amounts and total shares
         // @ audit - forget to set 0 here for PSDClaimed
@@ -1554,7 +1553,6 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
         userBucketBalances[user] = 0;
         protocolFeeMapping[user].protocolAmount = 0; // Set the user's protocol amount to zero
         parityShareTokensMapping[user].parityClaimableAmount = 0; // Set the user's parity amount to zero
-
     }
 
     // Function to calculate claimed PST amount for a user
@@ -1605,7 +1603,6 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
                 claimedAmounts[user] += tokensToTransfer;
 
                 // Update the claimed PST amount for the user
-               
             }
         }
     }
@@ -1656,18 +1653,22 @@ contract System_state_Ratio_Vaults_V1 is Ownable(msg.sender) {
 
         return trimmedTargets;
     }
-// Function to return claimed targets
-function getClaimedTargets(address user) public view returns (uint256[] memory) {
-    Target[] storage userTargets = targetMapping[user];
-    uint256[] memory claimedTargets;
-    uint256 claimedCount = 0;
-    for (uint256 i = 0; i < userTargets.length; i++) {
-        if (userTargets[i].isClosed) {
-            claimedTargets[claimedCount++] = i;
+
+    // Function to return claimed targets
+    function getClaimedTargets(
+        address user
+    ) public view returns (uint256[] memory) {
+        Target[] storage userTargets = targetMapping[user];
+        uint256[] memory claimedTargets;
+        uint256 claimedCount = 0;
+        for (uint256 i = 0; i < userTargets.length; i++) {
+            if (userTargets[i].isClosed) {
+                claimedTargets[claimedCount++] = i;
+            }
         }
+        return claimedTargets;
     }
-    return claimedTargets;
-}
+
     // Function to check if the target is claimed by the user
     function isTargetClaimed(address user) public view returns (bool) {
         Target[] storage userTargets = targetMapping[user];
@@ -1867,21 +1868,39 @@ function getClaimedTargets(address user) public view returns (uint256[] memory) 
     }
 
     // Function to get the total value of tokens in all vaults (RPT + IPT) multiplied by the current price
-    function getTotalTokenValueInVaults() public view returns (uint256) {
+    function getTotalTokenValueInVaults(
+        address user
+    ) public view returns (uint256) {
         uint256 totalValue;
         uint256 currentPrice = price();
+        Target[] storage userTargets = targetMapping[user];
+        uint256[] memory reachedTargets = new uint256[](userTargets.length);
 
         for (uint256 i = 0; i < usersWithDeposits.length; i++) {
-            address user = usersWithDeposits[i];
-            Escrow[] storage userEscrows = escrowMapping[user];
-
-            for (uint256 j = 0; j < userEscrows.length; j++) {
-                totalValue += userEscrows[j].totalFunds;
+            for (uint256 j = 0; j < reachedTargets.length; j++) {
+                uint256 targetAmount = reachedTargets[j];
+                totalValue += targetAmount;
             }
         }
 
         return (totalValue * currentPrice) / 1 ether;
     }
+
+    // function getReachedPriceTargets(
+    //     address user
+    // ) public view returns (uint256[] memory) {
+    //     Target[] storage userTargets = targetMapping[user];
+    //     uint256[] memory reachedTargets = new uint256[](userTargets.length);
+    //     uint256 count = 0;
+
+    //     for (uint256 i = 0; i < userTargets.length; i++) {
+    //         Target storage target = userTargets[i];
+    //         // Check if the target is closed (reached) and not claimed
+    //         if (target.isClosed && !isTargetClaimed(user)) {
+    //             reachedTargets[count] = target.TargetAmount;
+    //             count++;
+    //         }
+    //     }
 
     function getDepositors() public view returns (address[] memory) {
         return usersWithDeposits;

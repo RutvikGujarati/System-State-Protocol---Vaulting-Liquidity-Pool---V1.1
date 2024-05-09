@@ -170,6 +170,7 @@ export default function TrackingPage() {
         0
       );
       let reach = totalReachedPriceTargets * price;
+
       let tofixed = reach.toFixed(4);
       console.log("reachiiiiiinggg", tofixed);
       setReachedPriceTargets(tofixed);
@@ -615,7 +616,6 @@ export default function TrackingPage() {
         const allReward = await getClaimAllReward(accountAddress);
         setToBeClaimedReward(allReward);
 
-        setToBeClaimed("0.000");
 
         allInOnePopup(null, "Successful Claimed", null, `OK`, null);
       } catch (err) {
@@ -740,58 +740,61 @@ export default function TrackingPage() {
   const [currentPage, setCurrentPage] = useState(1);
 
   const IncrementPriceTarget = async () => {
-    if (accountAddress && currencyName) {
-      try {
-        let price = await getPrice();
-        let formattedPrice = await ethers.utils.formatEther(price || "0");
-        setPrice(formattedPrice);
+  if (accountAddress && currencyName) {
+    try {
+      let price = await getPrice();
+      let formattedPrice = await ethers.utils.formatEther(price || "0");
+      setPrice(formattedPrice);
 
-        let All_USERS_TARGETS = [];
+      let All_USERS_TARGETS = [];
 
-        let allDepositorsAddress = await getDepositors();
+      let allDepositorsAddress = await getDepositors();
 
-        for (let index = 0; index < allDepositorsAddress.length; index++) {
-          const address = allDepositorsAddress[index];
-          let incrementPriceTarget = await getIncrementPriceTargets(address);
-          All_USERS_TARGETS.push(...(incrementPriceTarget || []));
-        }
-
-        // Sort the targets
-        const sortedArray = [...(All_USERS_TARGETS || [])].sort((a, b) => {
-          const formattedRatioTargetA = ethers.utils.formatEther(
-            a?.priceTarget.toString()
-          );
-          const formattedRatioTargetB = ethers.utils.formatEther(
-            b?.priceTarget.toString()
-          );
-
-          const numericValueA = Number(formattedRatioTargetA);
-          const numericValueB = Number(formattedRatioTargetB);
-
-          return numericValueA - numericValueB;
-        });
-
-        // Process and display targets for the current page
-        const itemsPerPage = 2500;
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        const itemsForCurrentPage = sortedArray.slice(startIndex, endIndex);
-
-        try {
-          let items = await Promise.all(
-            itemsForCurrentPage.map((target, index) =>
-              processTargets(target, index, currencyName)
-            )
-          );
-          setEscrowVaultTargets(items.filter(Boolean));
-        } catch (error) {
-          console.error("Error processing targets:", error);
-        }
-      } catch (error) {
-        console.error("error:", error);
+      for (let index = 0; index < allDepositorsAddress.length; index++) {
+        const address = allDepositorsAddress[index];
+        let incrementPriceTarget = await getIncrementPriceTargets(address);
+        All_USERS_TARGETS.push(...(incrementPriceTarget || []));
       }
+
+      // Filter out targets that have already been reached and passed away from the current price
+      const filteredTargets = All_USERS_TARGETS.filter(target => {
+        const formattedPriceTarget = ethers.utils.formatEther(target?.priceTarget.toString());
+        return Number(formattedPriceTarget) >= Number(formattedPrice);
+      });
+
+      // Sort the filtered targets
+      const sortedArray = [...(filteredTargets || [])].sort((a, b) => {
+        const formattedRatioTargetA = ethers.utils.formatEther(a?.priceTarget.toString());
+        const formattedRatioTargetB = ethers.utils.formatEther(b?.priceTarget.toString());
+
+        const numericValueA = Number(formattedRatioTargetA);
+        const numericValueB = Number(formattedRatioTargetB);
+
+        return numericValueA - numericValueB;
+      });
+
+      // Process and display targets for the current page
+      const itemsPerPage = 2500;
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const itemsForCurrentPage = sortedArray.slice(startIndex, endIndex);
+
+      try {
+        let items = await Promise.all(
+          itemsForCurrentPage.map((target, index) =>
+            processTargets(target, index, currencyName)
+          )
+        );
+        setEscrowVaultTargets(items.filter(Boolean));
+      } catch (error) {
+        console.error("Error processing targets:", error);
+      }
+    } catch (error) {
+      console.error("error:", error);
     }
-  };
+  }
+};
+
 
   let totalSum = 0;
 
@@ -849,45 +852,46 @@ export default function TrackingPage() {
   const [ratioPriceTargets, setRatioPriceTargets] = useState([]);
   const [noOfPage, setNoOfPage] = useState(0);
   const [TotalSum, setTotalSummation] = useState("0");
-
   const RatioPriceTargets = async () => {
     if (accountAddress) {
       try {
         let All_USERS_TARGETS = [];
-
+  
         let allDepositorsAddress = await getDepositors();
-
+  
         for (let index = 0; index < allDepositorsAddress.length; index++) {
           const address = allDepositorsAddress[index];
           let targets = await getRatioPriceTargets(address);
           All_USERS_TARGETS.push(...(targets || []));
         }
-
+  
+        // Filter out targets that have already been reached and passed away from the current price
+        const filteredTargets = All_USERS_TARGETS.filter(target => {
+          const formattedRatioPriceTarget = ethers.utils.formatEther(target?.ratioPriceTarget.toString());
+          return Number(formattedRatioPriceTarget) >= Number(price);
+        });
+  
         // Calculate total pages
         const itemsPerPage = 2500;
-        const totalPages = Math.ceil(All_USERS_TARGETS.length / itemsPerPage);
+        const totalPages = Math.ceil(filteredTargets.length / itemsPerPage);
         setNoOfPage(totalPages); // Update the total number of pages
-
-        // Sort the targets
-        const sortedArray = [...(All_USERS_TARGETS || [])].sort((a, b) => {
-          const formattedRatioTargetA = ethers.utils.formatEther(
-            a?.ratioPriceTarget.toString()
-          );
-          const formattedRatioTargetB = ethers.utils.formatEther(
-            b?.ratioPriceTarget.toString()
-          );
-
+  
+        // Sort the filtered targets
+        const sortedArray = [...(filteredTargets || [])].sort((a, b) => {
+          const formattedRatioTargetA = ethers.utils.formatEther(a?.ratioPriceTarget.toString());
+          const formattedRatioTargetB = ethers.utils.formatEther(b?.ratioPriceTarget.toString());
+  
           const numericValueA = Number(formattedRatioTargetA);
           const numericValueB = Number(formattedRatioTargetB);
-
+  
           return numericValueA - numericValueB;
         });
-
+  
         // Process and display targets for the current page
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
         const itemsForCurrentPage = sortedArray.slice(startIndex, endIndex);
-
+  
         try {
           let items = await Promise.all(
             itemsForCurrentPage.map((target, index) =>
@@ -903,6 +907,7 @@ export default function TrackingPage() {
       }
     }
   };
+  
 
   let totalSummation = 0;
   const processTargetsRPT = async (target, index, currencyName) => {
@@ -942,7 +947,7 @@ export default function TrackingPage() {
   };
 
   const TotalVaultValueLocked = () => {
-    const totalvalue =( totalSUm * price + TotalSum * price )- getReachedTarget;
+    const totalvalue =( totalSUm * price + TotalSum * price );
     const roundedTotal = Number(totalvalue.toFixed(2));
 
     // Convert the rounded total to string

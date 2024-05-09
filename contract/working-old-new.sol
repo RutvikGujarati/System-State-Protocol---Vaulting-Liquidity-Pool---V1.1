@@ -1242,10 +1242,11 @@ contract System_State_Protocol is Ownable(msg.sender) {
     function getTotalProtocolFeesTransferred() external view returns (uint256) {
         return totalProtocolFeesTransferred;
     }
+
     // Part 1: Extract Parity Fees Calculation
     function calculationFunction(
         uint256 value
-    ) private  returns (uint256, uint256, uint256, uint256, uint256) {
+    ) private returns (uint256, uint256, uint256, uint256, uint256) {
         uint256 ratioPriceTarget = (value).mul(500).div(1000); // Ratio Price Targets - 50%
         uint256 escrowVault = (value).mul(200).div(1000); // Escrow Vault - 20.0%
         uint256 tokenParity = (value).mul(800).div(10000); // tokenParity - 8.0%
@@ -1254,13 +1255,7 @@ contract System_State_Protocol is Ownable(msg.sender) {
 
         totalProtocolFeesTransferred += ProtocolFees;
 
-        return (
-            ratioPriceTarget,
-            escrowVault,
-            tokenParity,
-            0,
-            developmentFee
-        );
+        return (ratioPriceTarget, escrowVault, tokenParity, 0, developmentFee);
     }
 
     // Part 4: Update new escrow vault data
@@ -1487,6 +1482,16 @@ contract System_State_Protocol is Ownable(msg.sender) {
         PSTClaimed[user] += allRewardAmount;
         ActualtotalPSDshare -= allRewardAmountInUsdValue;
         // Reset the user's bucket balance to zero
+        // Mark all reached targets as claimed for the user
+        Target[] storage userTargets = targetMapping[user];
+        for (uint256 i = 0; i < userTargets.length; i++) {
+            if (
+                userTargets[i].isClosed &&
+                price() >= userTargets[i].ratioPriceTarget
+            ) {
+                claimedTargets[user][i] = true;
+            }
+        }
         userBucketBalances[user] = 0;
         protocolFeeMapping[user].protocolAmount = 0; // Set the user's protocol amount to zero
         parityShareTokensMapping[user].parityClaimableAmount = 0; // Set the user's parity amount to zero
@@ -1531,6 +1536,7 @@ contract System_State_Protocol is Ownable(msg.sender) {
             );
         }
     }
+
     function getReachedPriceTargets(
         address user
     ) public view returns (uint256[] memory) {
@@ -1539,11 +1545,13 @@ contract System_State_Protocol is Ownable(msg.sender) {
         uint256 count = 0;
 
         for (uint256 i = 0; i < userTargets.length; i++) {
-            Target storage target = userTargets[i];
-            // Check if the target is closed (reached) and not claimed
-            if (target.isClosed) {
-                reachedTargets[count] = target.TargetAmount;
-                count++;
+            if (!claimedTargets[user][i]) {
+                // Check if the target is closed (reached) and not claimed
+                Target storage target = userTargets[i];
+                if (target.isClosed && price() >= target.ratioPriceTarget) {
+                    reachedTargets[count] = target.TargetAmount;
+                    count++;
+                }
             }
         }
 
@@ -1554,6 +1562,38 @@ contract System_State_Protocol is Ownable(msg.sender) {
         }
 
         return trimmedTargets;
+    }
+
+    mapping(address => mapping(uint256 => bool)) private claimedTargets; // Mapping to track claimed targets
+
+    function isTargetClaimed(
+        address user,
+        uint256 targetIndex
+    ) public view returns (bool) {
+        return claimedTargets[user][targetIndex];
+    }
+
+    function claimTarget(uint256 targetIndex) public {
+        address depositAddress = msg.sender;
+        Target[] storage userTargets = targetMapping[depositAddress];
+        require(targetIndex < userTargets.length, "Invalid target index");
+
+        Target storage target = userTargets[targetIndex];
+        require(target.isClosed, "Target is not  closed");
+        require(price() >= target.ratioPriceTarget, "Price not reached target");
+
+        // Mark target as claimed
+        claimedTargets[depositAddress][targetIndex] = true;
+
+        // Set the reached target to zero
+        target.TargetAmount = 0;
+
+        emit ClaimTarget(
+            depositAddress,
+            targetIndex,
+            depositAddress,
+            target.TargetAmount
+        );
     }
 
     // Helper functions
