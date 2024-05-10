@@ -6,11 +6,8 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faCloudMoon, faGasPump, faMoon, faSun, fas } from '@fortawesome/free-solid-svg-icons'
 import MetamskConnect from "./Utils/MetamskConnect";
 import Website from "./Website/Website";
-import BuyStateToken from "./pages/Buy State Token/BuyStateToken";
 import Functions from "./Utils/Functions";
-import TablePage from './pages/PriceTable/TablePage'
-import MixedIptAndRpt from "./pages/MixedIptAndRpt/MixedIptAndRpt";
-import StateTokenTarget from "./pages/StateTokenTargets/StateTokenTargets";
+
 library.add(fas, faGasPump, faSun, faMoon, faCloudMoon)
 
 
@@ -48,11 +45,7 @@ function App() {
               <Route path="/" element={<Website />} />
               <Route path="/" element={<Layout />}>
                 <Route path="Create-Vaults" element={<Index />} />
-                <Route path="inscription" element={<BuyStateToken />} />
-                {/* <Route path="ipt&rptTanzHistory" element={<TablePage />} /> */}
-                <Route path="TanzHistory" element={<MixedIptAndRpt />} />
-                  {/* <Route index path="ipt&rptHistory" element={<MixedIptAndRpt />} />
-                  <Route path="statetokenTransaction" element={<StateTokenTarget />} /> */}
+        
               </Route>
 
             </Routes>

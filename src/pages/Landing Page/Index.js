@@ -7,7 +7,6 @@ import { themeContext } from "../../App";
 import "../../Utils/Theme.css";
 import TrackingPage from "../../Components/Tracker/TrackingPage";
 import CreateVaultGraph from "./CreateVaultGraph/CreateVaultGraph";
-import Graph from "../../Components/GraphChart/Graph";
 export default function Index() {
   const { theme } = useContext(themeContext);
 

@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import './CreateVaultGraph.css';
-import Graph from '../../../Components/GraphChart/Graph';
 import { themeContext } from '../../../App';
 import { functionsContext } from '../../../Utils/Functions'
 import { Web3WalletContext } from '../../../Utils/MetamskConnect'
@@ -154,24 +153,8 @@ export default function CreateVaultGraph() {
 
     return (
         <div className={`container-xxl sizemax_align ${theme=='dimTheme' && 'graphDimThemeCusm'}`}>
-            <div className='garph_box'>
-                <p className='graph_boxPara'>YOUR REWARDS BREAKDOWN </p>
-                <div className={`${theme === 'lightTheme' && 'garph_has' || theme === 'dimTheme' && 'graph_has_theme' || theme == 'darkTheme' && 'graph_has_theme'}`}>
-                    <Graph data={data} />
-                </div>
-            </div>
-            <div className='garph_box'>
-                <p className='graph_boxPara'>PSD</p>
-                <div className={`${theme === 'lightTheme' && 'garph_has' || theme === 'dimTheme' && 'graph_has_theme' || theme == 'darkTheme' && 'graph_has_theme'}`}>
-                    <Graph data={data1} />
-                </div>
-            </div>
-            <div className='garph_box'>
-                <p className='graph_boxPara'>PST </p>
-                <div className={`${theme === 'lightTheme' && 'garph_has' || theme === 'dimTheme' && 'graph_has_theme' || theme == 'darkTheme' && 'graph_has_theme'}`}>
-                    <Graph data={data2} />
-                </div>
-            </div>
+            
+           
         </div>
     );
 }

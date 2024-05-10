@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 export default function Backend() {
     const artifacts = {
         PSD_CONTRACT: require("../Utils/ABI/PSD_ABI_UP.json"),
-        STATE_TOKEN: require("../Utils/ABI/STATE_TOKEN_ABI_UP.json")
     };
     const Provider = new ethers.providers.JsonRpcProvider(process.env.REACT_APP_PROVIDER);
     const PSD_CONTRACT = new Contract(PSD_ADDRESS, artifacts.PSD_CONTRACT, Provider)
