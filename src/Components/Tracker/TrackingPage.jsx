@@ -46,45 +46,23 @@ export default function TrackingPage() {
     getFormatEther,
     getDepositors,
     getParityDollarClaimed,
-    getUserUsdValue,
-    getTotalValueLockedInDollar,
     getParityDollardeposits,
     getParityTokensDeposits,
-    get_PSD_Claimed,
     get_PST_Claimed,
     getParityAmountDistributed,
     getRatioPriceTargets,
     getIncrementPriceTargets,
     getParityReached,
-    getUsdcSpendOnInscription,
-    getStateTokenHolding,
     getProtocolFee,
-    contractAddress,
     NumberOfUser,
-    reward,
-    isClaimed,
     getReachedPriceTargets,
-    getClaimableAmount,
-    getTargetTransferDetails,
     getTimeStampForCreateValut,
-    getTotalSupply,
     getCeateVaultTime,
-    getX1allocationClaimableBucket,
-    // getRefundRewardClaimableBucket,
-    fetchEtherToUsdRate,
-    getStateTokenPrice,
-    getInscriptionContractAddress,
     getClaimAllReward,
     onlyPSDclaimed,
-    getwithdrawX1allocationReward,
-    getWithdrawRefundReward,
-    getTotalNumberOfReward,
     getTotalTokenValueInVaults,
-    getOnlyProtocolFee,
-    contractBalance,
     getNumberOfStateProtocolUsers,
     getTotalProtocolFeesTransferred,
-    // getLastStateTokenPriceUpdateTimestamp
   } = useContext(functionsContext);
   const {
     accountAddress,
@@ -94,7 +72,6 @@ export default function TrackingPage() {
     currencyName,
   } = useContext(Web3WalletContext);
   const [toBeClaimed, setToBeClaimed] = useState("0.0000");
-  const [totalValueLocked, setTotalValueLocked] = useState("0");
   const [parityDollardeposits, setParityDollardeposits] = useState("0");
   const [parityTokensDeposits, setParityTokensDeposits] = useState("0");
   const [parityDollarClaimed, setParityDollarClaimed] = useState("0");
@@ -102,31 +79,18 @@ export default function TrackingPage() {
   const [IsParityReached, setIsParityReached] = useState(false);
   const [perpeptualYieldLocked, setPerpetualYieldLocked] = useState("0");
   const [getReachedTarget, setReachedPriceTargets] = useState("0");
-  const [amountInscription, setAmountInscription] = useState("0");
-  const [search, setSearch] = useState("");
-  const [depositAmount, setDepositAmount] = useState("");
-  const [stateTokenHoldPercentage, setStateTokenHoldPercentage] = useState("0");
-  const [stateTokenHold, setStateTokenHold] = useState("0");
   const [protocolFee, setProtocolFee] = useState("0");
   const [getTotalTokenValueVaults, setTotalTokenValueInVaults] = useState("0");
   const [ProtocolFeeInDollar, setProtocolFeeInDollar] = useState("0");
   const [parityAmountDistributed, setParityAmountDistributed] = useState("0");
   const [DayStamp, setDayStamp] = useState("0");
-  const [currentStateTokenSupply, setCurrentStateTokenSupply] = useState("0");
   const [createVaultDays, setCreateVaultDays] = useState("0");
-  const [claimX1, setClaimX1] = useState("0");
-  const [claimInscriptionRefund, setClaimInscriptionRefund] = useState("0");
-  const [inscriptionPrice, setInscriptionPrice] = useState("0");
   const [toBeClaimedReward, setToBeClaimedReward] = useState("");
   const [navigateToExplorer, setNavigateToExplorer] = useState("");
   const [balance, setBalance] = useState("Enter Amount");
   const [NumberOfStateProtocolUsers, setNumberOfStateProtocolUsers] =
     useState(0);
   const [totalVaultValue, setTotalVaultSum] = useState("0");
-  const [
-    remainingTimeForStateTokenPriceUpdate,
-    setRemainingTimeForStateTokenPriceUpdate,
-  ] = useState("0");
 
   const explorer_URL = async () => {
     if ((await networkName) === "Polygon Mumbai") {
@@ -207,40 +171,7 @@ export default function TrackingPage() {
     }
   };
 
-  // Assume targets is an array of Target objects retrieved from the contract
-  // Filter out targets where claimed is true
-  function filterUnclaimedTargets(targets) {
-    return targets.filter((target) => !target.claimed);
-  }
-  const totalReachedPriceTarget = async (accountAddress) => {
-    let totalReachedPriceTarget = await getReachedPriceTargets(accountAddress);
-
-    let formattedReachedPriceTargets = totalReachedPriceTarget.map((target) =>
-      ethers.utils.formatEther(target)
-    );
-
-    // Summarize the formatted reached price targets
-    let totalReachedPriceTargets = formattedReachedPriceTargets.reduce(
-      (acc, cur) => acc + parseFloat(cur),
-      0
-    );
-    console.log("reached price,,;;;;;;;;", totalReachedPriceTargets);
-  };
-
   // Done
-  const TotalValueLockedInDollar = async () => {
-    try {
-      let totalPsdShare = await getTotalValueLockedInDollar();
-      let formattedTotalPsdShare = ethers.utils.formatEther(
-        totalPsdShare || "0"
-      );
-      let fixed = Number(formattedTotalPsdShare).toFixed(2);
-      console.log("getTotalValueLockedInDollar", fixed);
-      setTotalValueLocked(fixed);
-    } catch (error) {
-      console.log("error:", error);
-    }
-  };
   // Done
   const ParityDollardeposits = async () => {
     try {
@@ -432,43 +363,6 @@ export default function TrackingPage() {
     // }
   };
 
-  const UsdcSpendOnInscription = async () => {
-    try {
-      let usdcSpendOnInscription = await getUsdcSpendOnInscription(
-        accountAddress
-      );
-      let isUndefined =
-        usdcSpendOnInscription != (undefined && NaN)
-          ? usdcSpendOnInscription
-          : "0";
-      let fixed = Number(isUndefined).toFixed(2);
-      setAmountInscription(fixed);
-    } catch (error) {
-      console.error("error:", error);
-    }
-  };
-  const StateTokenHold = async () => {
-    try {
-      let stateTokenHold = await getStateTokenHolding(accountAddress);
-      let stateTokenHoldPercentage = stateTokenHold?.percentage;
-      let isUndefinedPercentage =
-        stateTokenHoldPercentage !== undefined &&
-        !isNaN(stateTokenHoldPercentage)
-          ? stateTokenHoldPercentage
-          : "0";
-      let fixedPercentage = Number(isUndefinedPercentage).toFixed(2);
-
-      let stateTokenHoldNumber = stateTokenHold?.tokenHolds;
-      let isUndefinedTokens =
-        stateTokenHoldNumber != (undefined && NaN) ? stateTokenHoldNumber : "0";
-      let fixedTokens = Number(isUndefinedTokens).toFixed(0);
-      setStateTokenHold(fixedTokens);
-      setStateTokenHoldPercentage(fixedPercentage);
-    } catch (error) {
-      console.error("error:", error);
-    }
-  };
-
   const ProtocolFee = async () => {
     try {
       let protocolFee = await getTotalProtocolFeesTransferred();
@@ -543,24 +437,6 @@ export default function TrackingPage() {
     setDayStamp(Day);
   };
 
-  //Changing Hexadecimal number into Integer number
-  const HexNumberToIntegerNum = (hexNum) => {
-    try {
-      const bigNumberObject = BigNumber.from(hexNum || "0");
-      const integerValue = bigNumberObject.toNumber();
-      return integerValue;
-    } catch {}
-  };
-  const getCurrentStateTokenSupply = async () => {
-    try {
-      const supply = await getTotalSupply();
-      const integerNum = ethers.utils.formatEther(supply);
-      setCurrentStateTokenSupply(Math.round(integerNum));
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   const getVaultDays = async () => {
     try {
       const days = await getCeateVaultTime();
@@ -570,49 +446,6 @@ export default function TrackingPage() {
       console.error(error);
     }
   };
-
-  // const getClaimX1 = async (accountAddress) => {
-  //   try {
-  //     const claim = await getX1allocationClaimableBucket(accountAddress);
-  //     const claimInEth = ethers.utils.formatEther(claim);
-  //     setClaimX1(claimInEth);
-
-  //     // Check if the claimable amount is greater than the total amount staked
-  //     if (claimInEth && parseFloat(claimInEth) > parseFloat(toBeClaimed)) {
-  //       console.log("User cannot claim more money than they have staked");
-  //       return errors; // Handle the situation where the user cannot claim more money than they have staked
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  // const getClaimRefund = async (accountAddress) => {
-  //   try {
-  //     const refundClaim = await getRefundRewardClaimableBucket(accountAddress);
-  //     const refundClaimInEth = ethers.utils.formatEther(refundClaim);
-
-  //     // Dynamically fetch the current USD price from an external API
-  //     // const etherToUsdRate = await fetchEtherToUsdRate(); // Example function to fetch the current ETH to USD rate
-
-  //     // Convert refund claim from ether to dollars
-  //     const refundClaimInDollars = refundClaimInEth;
-  //     setClaimInscriptionRefund(refundClaimInDollars);
-
-  //     // Check if the refundable amount is greater than the total amount spent on inscription
-  //     if (
-  //       refundClaimInDollars &&
-  //       parseFloat(refundClaimInDollars) > parseFloat(amountInscription)
-  //     ) {
-  //       console.log(
-  //         "User cannot refund more money than they have spent on inscription"
-  //       );
-  //       // Handle the situation where the user cannot refund more money than they have spent on inscription
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
 
   Number.prototype.noExponents = function () {
     let data = String(this).split(/[eE]/);
@@ -634,16 +467,6 @@ export default function TrackingPage() {
   };
   let n = 2e-7;
 
-  // const getInscriptionPrice = async () => {
-  //   try {
-  //     const inscrPrice = await getStateTokenPrice();
-  //     const pureInscriptionPrice = HexNumberToIntegerNum(inscrPrice);
-  //     const inEthValue = ethers.utils.formatEther(pureInscriptionPrice);
-  //     setInscriptionPrice(inEthValue);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
   const claimAllReward = async () => {
     console.log("Number(toBeClaimed):", Number(toBeClaimed));
     console.log("Number(toBeClaimed):", toBeClaimed);
@@ -668,39 +491,6 @@ export default function TrackingPage() {
       return;
     }
   };
-
-  const getX1Reward = async (accountAddress) => {
-    try {
-      const x1RewardClaim = await getwithdrawX1allocationReward(accountAddress);
-      console.log("x1RewardClaim", x1RewardClaim);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
-  const getInscriptionRefund = async () => {
-    try {
-      const inscriptionRefuund = await getWithdrawRefundReward();
-      console.log("inscriptionRefuund", inscriptionRefuund);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
-  const getRewardPerc = async () => {
-    try {
-      const reward = await getTotalNumberOfReward();
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  // const getLastPriceUpdate = useCallback(async () => {
-  //     const days = await getLastPriceUpdateDate();
-  //     let day = (36.9 - Number(days)) == 0 ? 36.9 : (36.9 - Number(days));
-  //     // let day = (24 - hourse) == 0 ? 24 : (24 - hourse);
-  //     setPriceUpdateDate(day)
-  // }, [setPriceUpdateDate])
 
   const FetchBalance = async () => {
     try {
@@ -737,37 +527,6 @@ export default function TrackingPage() {
       console.error("getStateTokenUserInNumber: ", error);
     }
   };
-
-  function getRemainingTime(timestamp, intervalInDays, intervalInHours) {
-    const now = Math.floor(Date.now() / 1000); // Current timestamp in seconds
-    const oneDay = 86400;
-    const oneHour = 3600;
-    const priceUpdateInSeconds =
-      intervalInDays * oneDay + intervalInHours * oneHour;
-
-    const difference = Number(timestamp) + priceUpdateInSeconds - now; // Difference in seconds
-
-    if (difference <= 0) {
-      return "Timestamp has already passed";
-    }
-
-    const days = Math.floor(difference / (24 * 60 * 60));
-    const hours = Math.floor((difference % (24 * 60 * 60)) / (60 * 60));
-    const minutes = Math.floor((difference % (60 * 60)) / 60);
-    const seconds = difference % 60;
-
-    let remainingTime = "";
-    if (days > 0) {
-      remainingTime += `${days} DAY${days > 1 ? "S " : ""}`;
-    }
-    if (hours > 0) {
-      remainingTime += `${hours} HOUR${hours > 1 ? "S" : ""}`;
-    } else {
-      remainingTime += `${minutes} MINUTE${minutes > 1 ? "S" : ""}`;
-    }
-
-    return remainingTime;
-  }
 
   const [price, setPrice] = useState("0");
   const [totalSUm, setTotalSum] = useState("0");
@@ -1023,7 +782,6 @@ export default function TrackingPage() {
 
   useEffect(() => {
     if (userConnected) {
-      TotalValueLockedInDollar();
       ToBeClaimed();
       ParityDollardeposits();
       ParityTokensDeposits();
@@ -1033,16 +791,10 @@ export default function TrackingPage() {
       ParityAmountDistributed();
       PERPETUAL_YIELD_LOCKED();
       isParityReached();
-      UsdcSpendOnInscription();
-      StateTokenHold();
       ProtocolFee();
       getDay();
-      getCurrentStateTokenSupply();
+
       getVaultDays();
-      // getClaimX1(accountAddress);
-      // getClaimRefund(accountAddress);
-      // getInscriptionPrice();
-      getRewardPerc();
       getStateTokenUserInNumber();
       // getRemainingTimeForStateTokenPriceUpdate()
     }
@@ -1113,6 +865,7 @@ export default function TrackingPage() {
                       </button>
                     </div>
                   </div>
+                  {/*for showing total locked value. */}
                   {/* <hr className="my-2" />
                                         <div className="d-flex">
                                             <div className='margin-right'>
@@ -1444,319 +1197,7 @@ export default function TrackingPage() {
                 </div>
               </div>
             ) : (
-              <div className="row g-lg-10">
-                <div
-                  className={`col-md-4 border-right ${borderDarkDim} col-lg-3 d-flex flex-column justify-content-center `}
-                >
-                  <div className={`d-flex uniqHeight`}>
-                    <div className=" margin-right">
-                      <i
-                        className={`iconSize fa-solid fa-coins fa-money-bill-transfer ${theme}`}
-                      ></i>
-                    </div>
-                    <div>
-                      <div
-                        className={`flex-grow-1 fontSize text-start ${textTheme}`}
-                      >
-                        <div className={`${textTitle}`}>
-                          AMOUNT SPENT ON INSCRIPTION
-                        </div>
-                        <div className="varSize">
-                          <span className={`spanText ${spanDarkDim}`}>
-                            $ {amountInscription}
-                          </span>
-                        </div>
-                      </div>
-                      <div
-                        className={`flex-grow-1 fontSize text-start ${textTheme}`}
-                      >
-                        <div className={`${textTitle}`}>INSCRIPTION PRICE</div>
-                        <div className="varSize">
-                          <span className={`spanTextAdd ${spanDarkDim}`}>
-                            $ {inscriptionPrice} - THIS PRICE WILL CHANGE IN{" "}
-                            {remainingTimeForStateTokenPriceUpdate} TO $
-                            {(
-                              Number(inscriptionPrice) + 0.0000001
-                            ).noExponents()}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    {/* <InfoBox data='The inscription price changes every 36,9 days' /> */}
-                    <div className="d-flex align-items-end pb-2">
-                      <span
-                        className={`${tooltip} hoverText tooltipAlign`}
-                        data-tooltip="The inscription price changes every 36,9 days"
-                        data-flow="bottom"
-                      >
-                        {" "}
-                        <i
-                          className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                        ></i>
-                      </span>
-                    </div>
-                  </div>
-                  <hr className="my-3" />
-                  <div>
-                    <div className={`d-flex `}>
-                      <div className=" margin-right">
-                        {/* <i class="fa-solid fa-link"></i> */}
-
-                        <i
-                          className={`iconSize fa-solid fa-solid fa-link ${theme}`}
-                        ></i>
-                      </div>
-                      <div className="contractClass w-100 d-flex flex-column">
-                        <div
-                          className={`flex-grow-1 fontSize text-start ${textTheme}`}
-                        >
-                          <div className={`${textTitle}`}>CONTRACT ADDRESS</div>
-                          <div className="varSize">
-                            <span className={`spanTextAdd ${spanDarkDim}`}>
-                              {/* {createVaultContractAddress.slice(0, 4)}....{createVaultContractAddress.slice(-4) */}
-                              <Link
-                                to={navigateToExplorer}
-                                target="_blank"
-                                className={`spanTextAdd ${spanDarkDim}`}
-                              >
-                                {isHome
-                                  ? conciseAddress(PSD_ADDRESS)
-                                  : conciseAddress()}
-                              </Link>
-                            </span>
-                          </div>
-                        </div>
-                        <div className={`d-flex `}>
-                          <div
-                            className={`flex-grow-1 fontSize text-start ${textTheme}`}
-                          >
-                            <div className={`${textTitle}`}>
-                              CONTRACT STATUS
-                            </div>
-                            <div className="varSize">
-                              <span className={`spanTextAdd ${spanDarkDim}`}>
-                                Contract Status - NOT RENOUNCED YET
-                              </span>
-                            </div>
-                          </div>
-                          {/* <InfoBox data='See whitepaper under ”TokenListings' /> */}
-                          <div className="d-flex align-items-end pb-2">
-                            <span
-                              className={`${tooltip} hoverText hoverText`}
-                              data-tooltip='See whitepaper under ”Token Listings"'
-                              data-flow="bottom"
-                            >
-                              {" "}
-                              <i
-                                className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                              ></i>
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className={`col-md-4 border-right col-lg-3 d-flex flex-column justify-content-between my-1 ${borderDarkDim}`}
-                >
-                  <hr className="d-block d-lg-none d-md-none " />
-                  <div className="d-flex">
-                    <div className="margin-right">
-                      <i
-                        className={`iconSize fa-solid fa-hand-holding-dollar ${theme}`}
-                      ></i>
-                    </div>
-                    <div
-                      className={`flex-grow-1 fontSize text-start  ${textTheme}`}
-                    >
-                      <div>
-                        <div className={`${textTitle}`}>
-                          CLAIM X1 (XN) REBATE
-                        </div>
-                        {/* <div className={`varSize `}><span className={`spanText ${spanDarkDim}`}>{stateTokenHold} / {stateTokenHoldPercentage}%</span></div> */}
-                        <div className={`varSize `}>
-                          <span className={`spanText ${spanDarkDim}`}>
-                            $ {claimX1}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="d-flex justify-content-between">
-                    <div className="d-flex align-items-center pumpBoxImg">
-                      {/* <img src={firstPump} alt="firstPump" /> */}
-                      <button
-                        onClick={() => getX1Reward(accountAddress)}
-                        className={`first_pump_boxIcon ${
-                          (theme === "darkTheme" && "firstdumDark") ||
-                          (theme === "dimTheme" && "dimThemeBg")
-                        } `}
-                      >
-                        <img src={fisrtPumpBrt} className="w-100 h-100" />
-                      </button>
-                    </div>
-                    {/* <InfoBox data='$ value to be claimed' /> */}
-                    <div className="d-flex align-items-end pb-2">
-                      <span
-                        className={` tooltipAlign ${tooltip} hoverText `}
-                        data-tooltip="$ value to be claimed"
-                        data-flow="bottom"
-                      >
-                        {" "}
-                        <i
-                          className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                        ></i>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  className={`col-md-4 border-right col-lg-3 d-flex flex-column justify-content-between my-1  ${borderDarkDim}`}
-                >
-                  <hr className="d-block d-lg-none d-md-none " />
-
-                  <div className="d-flex">
-                    <div className="margin-right">
-                      <i
-                        className={`iconSize fa-solid fa-cubes-stacked ${theme}`}
-                      ></i>
-                    </div>
-                    <div
-                      className={`flex-grow-1 fontSize text-start  ${textTheme}`}
-                    >
-                      <div>
-                        <div className={`${textTitle} `}>
-                          CLAIM INSCRIPTION REFUND
-                        </div>
-                        {/* <div className={`varSize `}><span className={`spanText ${spanDarkDim}`}>{stateTokenHoldPercentage}%</span></div> */}
-                        <div className={`varSize `}>
-                          <span className={`spanText ${spanDarkDim}`}>
-                            $ {claimInscriptionRefund}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="d-flex justify-content-between">
-                    <div className="d-flex align-items-center pumpBoxImg">
-                      {/* <img src={firstPump} alt="firstPump" /> */}
-                      <button
-                        onClick={getInscriptionRefund}
-                        className={`first_pump_boxIcon ${
-                          (theme === "darkTheme" && "firstdumDark") ||
-                          (theme === "dimTheme" && "dimThemeBg")
-                        } `}
-                      >
-                        <img src={fisrtPumpBrt} className="w-100 h-100" />
-                      </button>
-                    </div>
-                    {/* <InfoBox data='$ value to be claimed' /> */}
-                    <div className="d-flex align-items-end pb-3">
-                      <span
-                        className={`${tooltip} tooltipAlign hoverText `}
-                        data-tooltip="$ value to be claimed"
-                        data-flow="bottom"
-                      >
-                        {" "}
-                        <i
-                          className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                        ></i>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className=" col-lg-3 extraFlex">
-                  <hr className="d-lg-none d-block my-3" />
-                  <div className="d-flex pt-1">
-                    <div className="margin-right">
-                      {/* <i className={`iconSize fa-solid fa-magnifying-glass-dollar ${theme}`}></i> */}
-                      {/* <InfoBox data='Days since deploymen' /> */}
-                      <span
-                        className={`${tooltip} hoverText`}
-                        data-tooltip="Days since deploymen"
-                        data-flow="bottom"
-                      >
-                        {" "}
-                        <i
-                          className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                        ></i>
-                      </span>
-                    </div>
-                    <div
-                      className={`flex-grow-1 fontSize text-start  ${textTheme}`}
-                    >
-                      <div className={`${textTitle} `}>DAY</div>
-                      {/* <div className={`varSize ${spanDarkDim}`}><span className={`spanText ${spanDarkDim} fs-5`}>$ {amountInscription}</span></div> */}
-                      <div className={`varSize ${spanDarkDim}`}>
-                        <span className={`spanText ${spanDarkDim} fs-5`}>
-                          {createVaultDays}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <hr className="d-lg-none d-block my-3" />
-                  <div className="d-flex pt-1">
-                    <div className="margin-right">
-                      {/* <i className={`iconSize fa-solid fa-magnifying-glass-dollar ${theme}`}></i> */}
-                      {/* <InfoBox data='Number & % State tokens you own' /> */}
-                      <span
-                        className={`${tooltip} hoverText`}
-                        data-tooltip="Number & % State tokens you own"
-                        data-flow="bottom"
-                      >
-                        {" "}
-                        <i
-                          className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                        ></i>
-                      </span>
-                    </div>
-                    <div
-                      className={`flex-grow-1 fontSize text-start  ${textTheme}`}
-                    >
-                      <div className={`${textTitle} `}>
-                        NUMBER / % STATE TOKENS
-                      </div>
-                      {/* <div className={`varSize ${spanDarkDim}`}><span className={`spanText ${spanDarkDim} fs-5`}>$ {amountInscription}</span></div> */}
-                      <div className={`varSize `}>
-                        <span className={`spanText fs-5 ${spanDarkDim}`}>
-                          {Number(stateTokenHold).toLocaleString()} /{" "}
-                          {stateTokenHoldPercentage}%
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <hr className="d-lg-none d-block my-3" />
-                  <div className="d-flex pt-1">
-                    <div className="margin-right">
-                      {/* <i className={`iconSize fa-solid fa-magnifying-glass-dollar ${theme}`}></i> */}
-                      {/* <InfoBox data='Total number of State tokens minted' /> */}
-                      <span
-                        className={`${tooltip} hoverText`}
-                        data-tooltip="Total number of State tokens minted"
-                        data-flow="bottom"
-                      >
-                        {" "}
-                        <i
-                          className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                        ></i>
-                      </span>
-                    </div>
-                    <div
-                      className={`flex-grow-1 fontSize text-start  ${textTheme}`}
-                    >
-                      <div className={`${textTitle} `}>
-                        CURRENT STATE TOKEN SUPPLY
-                      </div>
-                      <div className={`varSize ${spanDarkDim}`}>
-                        <span className={`spanText ${spanDarkDim} fs-5`}>
-                          {Number(currentStateTokenSupply).toLocaleString()}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <div></div>
             )}
           </div>
         </div>

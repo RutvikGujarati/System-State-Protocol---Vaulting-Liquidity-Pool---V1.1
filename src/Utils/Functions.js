@@ -257,32 +257,32 @@ export default function Functions({ children }) {
                 let PST_Deposit = await getParityTokensDeposits(accountAddress);
                 let PST_Deposit_formatted = ethers.utils.formatEther(PST_Deposit || '0');
                 let PST_DepositInNumber = Number(PST_Deposit_formatted);
-
+    
                 // Get the total amount of PST tokens distributed to the user
                 let ParityAmountDistributed = await getParityAmountDistributed(accountAddress);
                 let ParityAmountDistributed_formatted = await getFormatEther(ParityAmountDistributed || '0');
                 let ParityAmountDistributed_InNumer = Number(ParityAmountDistributed_formatted);
-
+    
                 // Check if token parity is reached
                 let isParityReached = PST_DepositInNumber === ParityAmountDistributed_InNumer;
-
+    
                 // If token parity is reached and the user has deposited some PST tokens,
                 // display a warning indicating that token parity has been reached
                 if (isParityReached && PST_DepositInNumber > 0) {
                     allInOnePopup(null, 'Token Parity Reached', null, `OK`, null);
                     // You can trigger a pop-up or display a message to the user here
                 }
-
+    
                 // Return whether token parity is reached
                 return isParityReached;
-
+    
             } catch (error) {
                 console.error('getParityReached error:', error);
                 // You can handle errors here as needed
             }
         }
     };
-
+    
 
 
     const handle_Claim_Parity_Tokens = async (address) => {
