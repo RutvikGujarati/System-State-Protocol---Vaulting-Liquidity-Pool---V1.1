@@ -5,15 +5,13 @@ import { themeContext } from "../../App";
 import "../../Utils/Theme.css";
 import "./Searchbar.css";
 import { Web3WalletContext } from "../../Utils/MetamskConnect";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import fistPump from "../../Assets/High-Resolutions-Svg/Updated/fist pump small.svg";
 import metamask from "../../Assets/metamask.png";
 import SystemStateLogo from "../../Assets/High-Resolutions-Svg/Updated/logo.svg";
 import { functionsContext } from "../../Utils/Functions";
 import { PSD_ADDRESS, conciseAddress } from "../../Utils/ADDRESSES/Addresses";
-// import {STATE_TOKEN_ADDRES} from "../../Utils/ADDRESSES/Addresses"
 import { ethers } from "ethers";
-import Swal from "sweetalert2";
 
 export default function Searchbar() {
   const [search, setSearch] = useState("");
@@ -75,7 +73,6 @@ export default function Searchbar() {
     handle_Claim_Protocol_Fee,
     handle_Claim_Parity_Tokens,
     handle_Claim_All_Reward_Amount,
-    handle_Buy_State_Token,
     getParityDollarClaimed,
     getFormatEther,
     getProtocolFee,
@@ -105,22 +102,6 @@ export default function Searchbar() {
     }
   };
 
-  const isHandleBuyToken = async (e) => {
-    e.preventDefault();
-    try {
-      if (buyTokenSelector === "Inscribe") {
-        const isSuccess = await handle_Buy_State_Token(
-          accountAddress,
-          depositAmount
-        );
-        if (isSuccess) {
-          setSearch("");
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const getPlaceHolder = async () => {
     if (isHome) {
       if (selectedValue === "Deposit") {
@@ -292,10 +273,6 @@ export default function Searchbar() {
       " " +
       currencyName;
     setAllRewardAmount(fixed);
-
-    // let fixed = (AllFee.toFixed(4) === 'NaN' ? 0 : AllFee.toFixed(4)) + currencyName
-    // setAllRewardAmount(fixed)
-    // console.log('AllFee.toFixed(4)----',AllFee.toFixed(4) === 'NaN' ? 0 : AllFee.toFixed(4) )
   };
   useEffect(() => {
     try {
@@ -325,40 +302,6 @@ export default function Searchbar() {
     }
   }, [socket]);
 
-  const AddTokenToWallet = () => {
-    const tokenAddress = "0x3887373A5dD1246576D181d2b18a5Edd9D6AbFbA"; // Replace with your token's contract address
-    const tokenSymbol = "tPLS"; // Replace with your token's symbol
-    const tokenDecimals = 18; // Replace with your token's decimals
-    const tokenImage = { fistPump }; // Replace with your token's image URL
-  };
-
-  const addTokenToWallet = async () => {
-    if (window.ethereum) {
-      try {
-        await window.ethereum.request({
-          method: "wallet_watchAsset",
-          params: {
-            type: "ERC20", // Indicates that this is an ERC20 token
-            options: {
-              address: "0x53E351Ff87f7FDa5F8bA63Ea995C65cf571B6525", // The address of the token contract
-              symbol: "State token", // A ticker symbol or shorthand, up to 5 characters
-              decimals: "18", // The number of decimals in the token
-              image: { fistPump }, // A string url of the token logo
-            },
-          },
-        });
-      } catch (error) {
-        console.error("Failed to add token to wallet", error);
-      }
-    } else {
-      console.error("MetaMask is not installed");
-    }
-  };
-
-  const isVisibleHomeSearch =
-    (selectedValue === "Claim IPT & RPT" && "isVisible") ||
-    (selectedValue === "Claim Parity Tokens" && "isVisible");
-
   return (
     <>
       <div
@@ -371,8 +314,19 @@ export default function Searchbar() {
           <div className="d-flex w-100 my-auto">
             <div className="d-flex flex-wrap justify-content-between w-100 searchBar">
               <div className=" input-search firstSeach_small col-md-7 py-3">
-              <div style={{ fontSize: '14px', color: '#ffffff' ,marginBottom: "15px", marginLeft:"10px", marginTop:"-30px"}}>
-              Vaulting is the process through which a smart contract employs ratio vaults to mitigate inflation erosion and directly creating multiple copies of your crypto assets over cycles.</div>
+                <div
+                  style={{
+                    fontSize: "14px",
+                    color: "#ffffff",
+                    marginBottom: "15px",
+                    marginLeft: "10px",
+                    marginTop: "-30px",
+                  }}
+                >
+                  Vaulting is the process through which a smart contract employs
+                  ratio vaults to mitigate inflation erosion and directly
+                  creating multiple copies of your crypto assets over cycles.
+                </div>
                 {isHome ? (
                   <div
                     className={` search ${theme} ${
@@ -394,7 +348,7 @@ export default function Searchbar() {
                     >
                       {currencyName}&nbsp;<span>(Pulsechain)</span>
                     </p>
-
+                    {/*below is for selecting tokens */}
                     {/* <select onChange={(e) => {
                         console.log(e)
                         setTokenSelector(e.target.value)
@@ -426,6 +380,7 @@ export default function Searchbar() {
                       {/* <p className={`mx-2 m-0 w-25 d-none d-md-block ${block + dark} ${theme === "lightTheme" && "depositInputLight" || theme === "dimTheme" && "depositInputGrey darkColor"} ${theme === "darkTheme" && "depositInputDark darkColor"}`}>Deposit</p>
                        */}
 
+                      {/* below is for selecting multiple claims with different time. */}
                       {/* <select onChange={(e) => {
                           setSelectedValue(e.target.value)
                           getPlaceHolder()
@@ -456,106 +411,9 @@ export default function Searchbar() {
                     </form>
                   </div>
                 ) : (
-                  <div
-                    className={`search ${theme} ${
-                      theme === "lightTheme" && "text-dark"
-                    } ${
-                      (theme === "darkTheme" && "Theme-block-container") ||
-                      (theme === "dimTheme" && "dimThemeBg")
-                    }`}
-                  >
-                    <div className="d-flex align-items-center">
-                      <p
-                        className={`m-0 ms-3 d-none d-md-block ${
-                          block + dark
-                        } ${
-                          (theme === "lightTheme" && "depositInputLight") ||
-                          (theme === "dimTheme" && "depositInputGrey darkColor")
-                        } ${
-                          theme === "darkTheme" && "depositInputDark darkColor"
-                        }`}
-                      >
-                        State
-                      </p>
-                    </div>
-
-                    <form className="w-100 search-form">
-                      <div style={{ marginRight: "10mm" }}>
-                        {" "}
-                        {/* Create space for the MetaMask logo */}
-                        {/* <button onClick={handleSaveToken} className="save-token-button"> */}
-                        <img
-                          src={metamask}
-                          alt="MetaMask Logo"
-                          onClick={addTokenToWallet}
-                          style={{ cursor: "pointer" }}
-                          className="small-metamask-logo"
-                        />
-                        {/* </button> */}
-                      </div>
-                      <input
-                        className={`w-75 ms-3 me-4 form-control inputactive ${block} ${
-                          (theme === "lightTheme" && "depositInputLight") ||
-                          (theme === "dimTheme" && "depositInputGrey darkColor")
-                        } ${
-                          theme === "darkTheme" && "depositInputDark darkColor"
-                        }`}
-                        pattern={`[0-9,.]*`}
-                        type="text"
-                        onBlur={handleBlur}
-                        value={search}
-                        disabled={isBuyTokenInputDisabled}
-                        placeholder={placeHolder}
-                        onChange={(e) => addCommasAsYouType(e)}
-                      />
-
-                      <button
-                        disabled={
-                          buyTokenSelector === "Inscribe" &&
-                          (Number(search) <= 0 && search == "" ? true : false)
-                        }
-                        className={`fist-pump-img first_pump_serchbar ${
-                          (theme === "darkTheme" && "firstdumDark") ||
-                          (theme === "dimTheme" && "dimThemeBg")
-                        } `}
-                        onClick={(e) => {
-                          isHandleBuyToken(e);
-                        }}
-                      >
-                        <img
-                          src={fistPump}
-                          className="w-100 h-100"
-                          alt="Fist Pump"
-                        />
-                      </button>
-                    </form>
-                  </div>
+                  <div></div>
                 )}
-
-                {/* <div style={{ color: "white" }} className="d-flex  flex-wrap my-1 para-icons">
-                  <Link to={navigateToExplorer} target="_blank" className={` min-block px-3 ${(theme === "darkTheme" && "Theme-btn-block") || (theme === "dimTheme" && "dimThemeBtnBg")}`}>
-                    {
-                      isHome ?
-                        conciseAddress(PSD_ADDRESS)
-                        :
-                        conciseAddress(STATE_TOKEN_ADDRES)
-                    }
-                  </Link>
-                  <span className={` min-block px-3 ${(theme === "darkTheme" && "Theme-btn-block") || (theme === "dimTheme" && "dimThemeBtnBg")}`}>
-                    Dexscreener
-                  </span>
-                  <span className={` min-block px-3 ${(theme === "darkTheme" && "Theme-btn-block") || (theme === "dimTheme" && "dimThemeBtnBg")}`}>
-                    Contract Status
-                  </span>
-                  <span className={` min-block px-3 ${(theme === "darkTheme" && "Theme-btn-block") || (theme === "dimTheme" && "dimThemeBtnBg")}`}>
-                    Beta
-                  </span>
-                  <span className={` min-block px-3 ${(theme === "darkTheme" && "Theme-btn-block") || (theme === "dimTheme" && "dimThemeBtnBg")}`}>
-                    Contract Renounced
-                  </span>
-                </div> */}
               </div>
-
               <Link
                 to={"/"}
                 className="serachIconLink State searchBar2_small d-flex flex-wrap justify-content-lg-center justify-content-md-start justify-content-sm-start"
@@ -568,9 +426,6 @@ export default function Searchbar() {
                   />
                 </div>
                 <p className="state-dex-txt">System State</p>
-                {/* <Link className={`${theme === "lightTheme" && 'open_vault_view' } ${theme === "dimTheme" && "dimThemeBg_viewBar"}`} to={'/TanzHistory'} aria-label="Etherscan" target="_self">
-                  <p className="m-0">VIEW OPEN VAULTS FOR MATIC</p>
-                </Link> */}
               </Link>
             </div>
           </div>
