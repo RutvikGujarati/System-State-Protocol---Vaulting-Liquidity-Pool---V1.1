@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import PSD_ABI_UP from '../Utils/ABI/PSD_ABI_UP.json'
 import { PSD_ADDRESS, allInOnePopup } from './ADDRESSES/Addresses';
 import { Web3WalletContext } from './MetamskConnect';
-import { BigNumber, ethers } from 'ethers';
+import { ethers } from 'ethers';
 export const functionsContext = createContext();
 
 export default function Functions({ children }) {
@@ -111,16 +111,6 @@ export default function Functions({ children }) {
             return dollarValueLockedNumber;
         } catch (err) {
             console.log(err)
-        }
-    }
-
-    const getTotalNumberOfValue = async () => {
-        const contract = await getPsdContract();
-
-        try {
-            const totalValue = contract.getTotalValue();
-        } catch (error) {
-            console.log(error)
         }
     }
     const getUserUsdValue = async (amount) => {
@@ -267,32 +257,32 @@ export default function Functions({ children }) {
                 let PST_Deposit = await getParityTokensDeposits(accountAddress);
                 let PST_Deposit_formatted = ethers.utils.formatEther(PST_Deposit || '0');
                 let PST_DepositInNumber = Number(PST_Deposit_formatted);
-    
+
                 // Get the total amount of PST tokens distributed to the user
                 let ParityAmountDistributed = await getParityAmountDistributed(accountAddress);
                 let ParityAmountDistributed_formatted = await getFormatEther(ParityAmountDistributed || '0');
                 let ParityAmountDistributed_InNumer = Number(ParityAmountDistributed_formatted);
-    
+
                 // Check if token parity is reached
                 let isParityReached = PST_DepositInNumber === ParityAmountDistributed_InNumer;
-    
+
                 // If token parity is reached and the user has deposited some PST tokens,
                 // display a warning indicating that token parity has been reached
                 if (isParityReached && PST_DepositInNumber > 0) {
                     allInOnePopup(null, 'Token Parity Reached', null, `OK`, null);
                     // You can trigger a pop-up or display a message to the user here
                 }
-    
+
                 // Return whether token parity is reached
                 return isParityReached;
-    
+
             } catch (error) {
                 console.error('getParityReached error:', error);
                 // You can handle errors here as needed
             }
         }
     };
-    
+
 
 
     const handle_Claim_Parity_Tokens = async (address) => {
@@ -563,35 +553,6 @@ export default function Functions({ children }) {
             console.error('getIncrementPriceTargets error:', error);
         }
     }
-
-
-
-
-    const addTokenToMetaMask = async (tokenAddress, tokenSymbol, decimals) => {
-        try {
-            // Request MetaMask to add the token
-            await window.ethereum.request({
-                method: 'wallet_watchAsset',
-                params: {
-                    type: 'ERC20',
-                    options: {
-                        address: tokenAddress,
-                        symbol: tokenSymbol,
-                        decimals: decimals,
-                    },
-                },
-            });
-            // allInOnePopup(`success`, `Successful Added.`, `Your token has been added to MetaMask successfully.`, `OK`, true)
-            allInOnePopup(null, `Your token has been added to MetaMask successfully.`, null, `OK`, null)
-            console.log('Token added to MetaMask successfully!');
-            setSocket(prevBool => !prevBool);
-        } catch (error) {
-            console.error('Error adding token to MetaMask:', error);
-            // allInOnePopup(`error`, `Error`, `An error occurred. Please try again.`, `OK`, true);
-            allInOnePopup(null, `An error occurred. Please try again.`, null, `OK`, null)
-        }
-    };
-
     const getDepositors = async () => {
         try {
             let contract = await getPsdContract()
@@ -601,27 +562,6 @@ export default function Functions({ children }) {
             console.error('getDepositors error:', error);
         }
     }
-
-
-    const fetch = require('node-fetch'); // Import the node-fetch library for making HTTP requests
-
-    const fetchEtherToUsdRate = async () => {
-        try {
-            // Make a GET request to CoinGecko API to fetch the current Ethereum to USD price
-            const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
-            const data = await response.json();
-
-            // Extract the ETH to USD price from the response
-            const etherToUsdRate = data.ethereum.usd;
-
-            return etherToUsdRate;
-        } catch (error) {
-            console.error('Error fetching ETH to USD rate:', error);
-            throw error; // Propagate the error to the caller
-        }
-    }
-
-
 
 
     const getClaimAllReward = async (address) => {
@@ -713,7 +653,6 @@ export default function Functions({ children }) {
                 getClaimableAmount,
                 getOnlyProtocolFee,
                 getDepositors,
-                addTokenToMetaMask,
                 getUserUsdValue,
                 getTotalTokenValueInVaults,
                 contractBalance,
@@ -723,7 +662,6 @@ export default function Functions({ children }) {
                 getReachedPriceTargets,
                 getTimeStampForCreateValut,
                 getClaimAllReward,
-                fetchEtherToUsdRate,
                 getDepositeValues,
                 depositedAmount,
                 getNumberOfStateProtocolUsers,
