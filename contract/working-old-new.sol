@@ -1054,11 +1054,11 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
     }
 }
 
-contract System_State_Protocol is Ownable(msg.sender) {
+contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     PLSTokenPriceFeed private priceFeed;
     address private AdminAddress;
     address private BackendOperationAddress;
-    address private AdminWallet;
+    address private OracleWallet;
     using SafeMath for uint256;
     uint256 public ID = 1;
     uint256 private totalPSDshare;
@@ -1204,7 +1204,7 @@ contract System_State_Protocol is Ownable(msg.sender) {
 
     constructor() {
         AdminAddress = 0x31348CDcFb26CC8e3ABc5205fB47C74f8dA757D6;
-        AdminWallet = 0x5E19e86F1D10c59Ed9290cb986e587D2541e942C;
+        OracleWallet = 0x5E19e86F1D10c59Ed9290cb986e587D2541e942C;
         BackendOperationAddress = 0xb9B2c57e5428e31FFa21B302aEd689f4CA2447fE;
         priceFeed = PLSTokenPriceFeed(
             0x68d0934F1e1F0347aad5632084D153cDBfe07992
@@ -1230,7 +1230,7 @@ contract System_State_Protocol is Ownable(msg.sender) {
         address _backendOperationAddress,
         address _priceFeedAddress
     ) public onlyOwner {
-        AdminWallet = _oracleAddress; // 0.4% fee address
+        OracleWallet = _oracleAddress; // 0.4% fee address
         AdminAddress = _adminAddress; // 1% fee address
         BackendOperationAddress = _backendOperationAddress; // calling backend functions
         priceFeed = PLSTokenPriceFeed(_priceFeedAddress);
@@ -1296,7 +1296,7 @@ contract System_State_Protocol is Ownable(msg.sender) {
             uint256 ProtocolFees,
             uint256 devlopmentFee
         ) = calculationFunction(value);
-        (bool success, ) = payable(AdminWallet).call{value: devlopmentFee}("");
+        (bool success, ) = payable(OracleWallet).call{value: devlopmentFee}("");
 
         uint256 PSDdistributionPercentage = (userUsdValue).mul(854).div(1000); // ● PSD Distribution Percentage 85.4%
         uint256 PSTdistributionPercentage = (value).mul(800).div(10000); // ● PST Distribution Percentage 8%
@@ -1692,7 +1692,7 @@ contract System_State_Protocol is Ownable(msg.sender) {
             AdminAddress,
             BackendOperationAddress,
             address(priceFeed),
-            AdminWallet
+            OracleWallet
         );
     }
 

@@ -86,9 +86,11 @@ const PRICE_FEED_ADDRESS = '0x68d0934F1e1F0347aad5632084D153cDBfe07992'
 // const PSD_ADDRESS = "0x63C840b53186Cae178cD975419b3ee8e494B4e06"//full working with new reached function.
 // const PSD_ADDRESS = "0x69DdC8C57CE6807047AE08EB525F6c36e7d362Cf"//full with claimed functions working with value is sending to the user and also showing.
 // const PSD_ADDRESS = "0x8aaA08C5cD19bCF6766a258EcCe1008AD6Ea186C"// deployed testing address (working with all things except claim value is not going 0)
+
+// => below is the full working contracts
 // const PSD_ADDRESS = "0xBB322b8FbB3A5030E3ECa2C23bCD6F15dB745d6C"// full working address (working with all things )
 // const PSD_ADDRESS = "0x3c0e9B6193F15cD969253A6a45fC8D6934025529"// testing address (working with all things )
-const PSD_ADDRESS = "0x89a100837B34D723eF78eC7e23888482F7EDbF4C"// next deploy full working testing address (working with all things )
+const PSD_ADDRESS = "0xE39e80cce2080E1A4f9FfA0F58b88FBCc0a2CD59"// next deploy full working testing address (working with all things )
 
 
 // const System_State_Ratio_Vaults_V1 = "0x7D58E2775b4dbdd84BCbec15A36A146a1BaDfB5f";
