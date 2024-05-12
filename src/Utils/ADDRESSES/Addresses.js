@@ -90,7 +90,10 @@ const PRICE_FEED_ADDRESS = '0x68d0934F1e1F0347aad5632084D153cDBfe07992'
 // => below is the full working contracts
 // const PSD_ADDRESS = "0xBB322b8FbB3A5030E3ECa2C23bCD6F15dB745d6C"// full working address (working with all things )
 // const PSD_ADDRESS = "0x3c0e9B6193F15cD969253A6a45fC8D6934025529"// testing address (working with all things )
-const PSD_ADDRESS = "0xE39e80cce2080E1A4f9FfA0F58b88FBCc0a2CD59"// next deploy full working testing address (working with all things )
+// const PSD_ADDRESS = "0xE39e80cce2080E1A4f9FfA0F58b88FBCc0a2CD59"// next deploy full working testing address (working with all things )
+// const PSD_ADDRESS = "0xccB242AF03073E5b58502bF750142fe47a1e107A"// next deploy full working testing address (working with all things )
+// const PSD_ADDRESS = "0xD99C12036ad5D5b851525b6642A656d1AD3853Ab"// my new for close vaults share deploy full working testing address (working with all things )
+const PSD_ADDRESS = "0xF1f1ad6685DD4e764d21261F150c7Bc25ED0Ae37"// deployed for close vaults share deploy full working testing address (working with all things )
 
 
 // const System_State_Ratio_Vaults_V1 = "0x7D58E2775b4dbdd84BCbec15A36A146a1BaDfB5f";

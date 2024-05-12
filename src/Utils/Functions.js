@@ -133,7 +133,7 @@ export default function Functions({ children }) {
         // };
         try {
             // allInOnePopup(null, 'Connecting...', 'Please wait for Depositing.', `OK`, null)
-            allInOnePopup(null, 'Processing Deposit', null, `OK`, null)
+            allInOnePopup(null, 'Create a New Vault', null, `OK`, null)
             const parsedAmount = await getParseEther(amount);
             let contract = await getPsdContract();
             let depositTx = await contract.deposit({
@@ -141,7 +141,7 @@ export default function Functions({ children }) {
             })
             await depositTx.wait();
             // allInOnePopup(`success`, `Successful Deposit`, null, `OK`, true)
-            allInOnePopup(null, 'Successful Deposit', null, `OK`, null)
+            allInOnePopup(null, 'Done - Inflation Locked', null, `OK`, null)
             console.log('depositTx:', depositTx);
             setSocket(prevBool => !prevBool);
             return true

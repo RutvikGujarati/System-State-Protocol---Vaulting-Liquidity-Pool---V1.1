@@ -97,19 +97,6 @@
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "targetIndex",
-				"type": "uint256"
-			}
-		],
-		"name": "claimTarget",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -190,6 +177,13 @@
 		],
 		"name": "DepositEvent",
 		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "distributeTokensFromClosedVaults",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"anonymous": false,
@@ -714,7 +708,7 @@
 						"type": "bool"
 					}
 				],
-				"internalType": "struct System_State_Protocol.Deposit[]",
+				"internalType": "struct System_State_Ratio_Vaults_V1.Deposit[]",
 				"name": "",
 				"type": "tuple[]"
 			}
@@ -783,7 +777,7 @@
 						"type": "uint256"
 					}
 				],
-				"internalType": "struct System_State_Protocol.Escrow[]",
+				"internalType": "struct System_State_Ratio_Vaults_V1.Escrow[]",
 				"name": "",
 				"type": "tuple[]"
 			}
@@ -981,7 +975,7 @@
 						"type": "bool"
 					}
 				],
-				"internalType": "struct System_State_Protocol.Target[]",
+				"internalType": "struct System_State_Ratio_Vaults_V1.Target[]",
 				"name": "",
 				"type": "tuple[]"
 			}
@@ -1194,6 +1188,25 @@
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "tokensDistributed",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "totalProtocolFeesTransferred",
 		"outputs": [
@@ -1220,6 +1233,24 @@
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "viewTokensDistributedFromClosedVaults",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "",
+				"type": "address[]"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "",
+				"type": "uint256[]"
 			}
 		],
 		"stateMutability": "view",

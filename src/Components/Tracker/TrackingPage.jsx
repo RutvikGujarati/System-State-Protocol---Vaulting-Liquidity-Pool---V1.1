@@ -204,16 +204,12 @@ export default function TrackingPage() {
         ParityTokensDeposits || "0"
       );
       let fixed =
-        Number(formattedParityTokensDeposits).toFixed(4) + " " + currencyName;
-      if (/^[0-9,.]*$/.test(fixed)) {
-        const numericValue = fixed.replace(/,/g, "");
-        const formattedValue = numericValue.replace(
-          /\B(?=(\d{3})+(?!\d))/g,
-          ","
-        );
-        const formattedWithDecimals = `${formattedValue} .00`;
-        setParityTokensDeposits(formattedValue);
-      }
+        parseFloat(formattedParityTokensDeposits)
+          .toFixed(2)
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
+        " " +
+        currencyName;
+      setParityTokensDeposits(fixed);
     } catch (error) {
       console.error(error);
     }
@@ -262,16 +258,13 @@ export default function TrackingPage() {
     try {
       let PSTClaimed = await get_PST_Claimed(accountAddress);
       let formatted_PST_Claimed = ethers.utils.formatEther(PSTClaimed || "0");
-      let fixed = Number(formatted_PST_Claimed).toFixed(4) + " " + currencyName;
-      if (/^[0-9,.]*$/.test(fixed)) {
-        const numericValue = fixed.replace(/,/g, "");
-        const formattedValue = numericValue.replace(
-          /\B(?=(\d{3})+(?!\d))/g,
-          ","
-        );
-        const formattedWithDecimals = `${formattedValue} .00`;
-        setParityTokensClaimed(formattedValue);
-      }
+      let fixed =
+        parseFloat(formatted_PST_Claimed)
+          .toFixed(2)
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
+        " " +
+        currencyName;
+      setParityTokensClaimed(fixed);
     } catch (error) {
       console.error("error:", error);
     }
@@ -752,7 +745,7 @@ export default function TrackingPage() {
 
   const TotalVaultValueLocked = () => {
     const totalvalue = totalSUm * price + TotalSum * price;
-    const roundedTotal = Number(totalvalue.toFixed(2));
+    const roundedTotal = Number(totalvalue.toFixed(3));
 
     // Convert the rounded total to string
     const stringValue = roundedTotal.toString();
@@ -942,13 +935,10 @@ export default function TrackingPage() {
                     >
                       <div>
                         <div className={`${textTitle}`}>
-                          DEPOSITS IN $ - PSD
+                          <div className={`varSize`}> PSD</div>
                         </div>
                         <div className={`varSize `}>
-                          <span
-                            className={`spanText ${spanDarkDim}`}
-                            // onChange={(e) => addCommasForParity(e)}
-                          >
+                          <span className={`spanText ${spanDarkDim}`}>
                             {" "}
                             $ {parityDollardeposits}
                           </span>
@@ -981,7 +971,7 @@ export default function TrackingPage() {
                     >
                       <div>
                         <div className={`${textTitle}`}>
-                          DEPOSITS IN TOKENS - PST{" "}
+                          <div className={`varSize `}> PST </div>
                         </div>
                         <div className={`varSize ${spanDarkDim}`}>
                           <span className={`spanText ${spanDarkDim}`}>
@@ -1024,7 +1014,7 @@ export default function TrackingPage() {
                     >
                       <div>
                         <div className={`${textTitle}`}>
-                          REWARDS BASED ON PSD
+                          <div className={`varSize`}> PSD Rewards </div>
                         </div>
                         <div className={`varSize ${spanDarkDim}`}>
                           <span className={`spanText ${spanDarkDim}`}>
@@ -1059,7 +1049,7 @@ export default function TrackingPage() {
                     >
                       <div>
                         <div className={`${textTitle}`}>
-                          REWARDS BASED ON PST
+                          <div className={`varSize`}>PST Rewards </div>
                         </div>
                         <div className={`varSize ${spanDarkDim}`}>
                           <span className={`spanText ${spanDarkDim}`}>
