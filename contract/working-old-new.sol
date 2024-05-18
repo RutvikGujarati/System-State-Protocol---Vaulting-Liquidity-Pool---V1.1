@@ -1414,23 +1414,34 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     }
 
     function updateParityAmount(uint256 _tokenParity) internal {
-        uint256 remainTokenParityAmount;
-        remainTokenParityAmount += _tokenParity;
+        // Initialize the remaining token parity amount to the given _tokenParity
+        uint256 remainTokenParityAmount = _tokenParity;
+
+        // Loop through all users with deposits
         for (uint256 i = 0; i < usersWithDeposits.length; i++) {
             address user = usersWithDeposits[i];
+            // Access the parity share information of the user
             ParityShareTokens storage parityshare = parityShareTokensMapping[
                 user
             ];
-            // if(parityshare.parityAmount < PSTSharePerUser[user]){
+
+            // Check if the user has more PST shares than the distributed parity amount
             if (PSTSharePerUser[user] > ParityAmountDistributed[user]) {
+                // Calculate the distribution percentage of parity fees for the user
                 uint256 distributeParityFeePercentage = (PSTdistributionPercentageMapping[
                         user
                     ] *
                         FIXED_POINT *
                         10000) / totalPSTshare;
+
+                // Calculate the amount of parity tokens to distribute to the user
                 uint256 parityAmountPerUser = (_tokenParity *
                     distributeParityFeePercentage) / (10000 * FIXED_POINT);
+
+                // Subtract the distributed amount from the remaining parity amount
                 remainTokenParityAmount -= parityAmountPerUser;
+
+                // Update the parity share information for the user
                 parityshare.UserAddress = user;
                 parityshare.parityAmount = parityshare.parityAmount.add(
                     parityAmountPerUser
@@ -1439,6 +1450,8 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
                     .parityClaimableAmount
                     .add(parityAmountPerUser);
                 ParityAmountDistributed[user] += parityAmountPerUser;
+
+                // Emit an event to log the parity distribution details
                 emit Parity(
                     parityshare.parityAmount,
                     totalPSTshare,
@@ -1448,15 +1461,21 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
                 );
             }
         }
+
+        // Transfer the remaining parity amount to the AdminAddress
         (bool success, ) = payable(AdminAddress).call{
             value: remainTokenParityAmount
         }("");
+        // Emit an event to confirm the transaction status
         emit TransactionConfirmation(success);
+
+        // Reset the remaining token parity amount to zero
         remainTokenParityAmount = 0;
     }
 
     function claimAllReward() public {
         address user = msg.sender;
+
         // Transfer the user bucket amount to the user
         uint256 ipt_and_rpt_reward = userBucketBalances[user];
         // Transfer the parity amount to the user
@@ -1469,6 +1488,7 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
             protocolFeeReward;
 
         require(allRewardAmount > 0, "No funds available in your reward.");
+
         // Transfer the reward balance to the user
         uint256 userShare = (allRewardAmount * 99) / 100;
         uint256 adminShare = allRewardAmount - userShare;
@@ -1478,31 +1498,33 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         require(success1, "Admin transaction failed.");
         emit ClaimAllRewardEvent(user, userShare, adminShare);
 
-        uint256 allRewardAmountInUsdValue = (allRewardAmount.mul(price())) /
+        uint256 allRewardAmountInUsdValue = (allRewardAmount * price()) /
             1 ether;
         PSDClaimed[user] += allRewardAmountInUsdValue;
         PSTClaimed[user] += allRewardAmount;
         ActualtotalPSDshare -= allRewardAmountInUsdValue;
-        // Reset the user's bucket balance to zero
-        // Mark all reached targets as claimed for the user
+
+        claimTargetWithDistribution();
+
+        // Track reached targets that need to be distributed
         Target[] storage userTargets = targetMapping[user];
+        uint256 totalReachedTargetAmount = 0;
+
         for (uint256 i = 0; i < userTargets.length; i++) {
             if (
                 userTargets[i].isClosed &&
-                price() >= userTargets[i].ratioPriceTarget
+                price() >= userTargets[i].ratioPriceTarget &&
+                !claimedTargets[user][i]
             ) {
-                claimedTargets[user][i] = true;
+                totalReachedTargetAmount += userTargets[i].TargetAmount;
+                claimedTargets[user][i] = true; // Mark as claimed when distributed
             }
         }
 
-        for (uint256 i = 0; i < usersWithDeposits.length; i++) {
-            address ownerOfTagrgets = usersWithDeposits[i];
-            tokensDistributed[ownerOfTagrgets] = 0;
-        }
-
+        // Reset the user's balances to zero
         userBucketBalances[user] = 0;
-        protocolFeeMapping[user].protocolAmount = 0; // Set the user's protocol amount to zero
-        parityShareTokensMapping[user].parityClaimableAmount = 0; // Set the user's parity amount to zero
+        protocolFeeMapping[user].protocolAmount = 0;
+        parityShareTokensMapping[user].parityClaimableAmount = 0;
     }
 
     function calculateIPT(uint8 fibonacciIndex) private view returns (uint256) {
@@ -1520,6 +1542,10 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         ];
         uint256 multiplier = uint256(fibonacciRatioNumbers[fibonacciIndex]);
         return (price() * (1000 + multiplier)) / 1000;
+    }
+
+    function getUserReceivedTokens(address user) public view returns (uint256) {
+        return userBucketBalances[user];
     }
 
     function initializeTargetsForDeposit(
@@ -1545,87 +1571,27 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         }
     }
 
-    // Function to distribute tokens from closed vaults among all users based on their PSD holdings
-    function distributeTokensFromClosedVaults() public {
-        // Calculate total tokens available from closed vaults
-        uint256 totalTokensFromClosedVaults = 0;
-        // Loop through all users and their vaults to calculate total tokens
+    function getTotalReachedAmount() public view returns (uint256) {
+        uint256 totalReachedAmount = 0;
+
+        // Loop through all users with deposits
         for (uint256 i = 0; i < usersWithDeposits.length; i++) {
             address user = usersWithDeposits[i];
-            Escrow[] storage userEscrows = escrowMapping[user];
-            for (uint256 j = 0; j < userEscrows.length; j++) {
-                Escrow storage escrow = userEscrows[j];
-                if (escrow.Time > 0 && escrow.Time < block.timestamp) {
-                    // The vault is closed
-                    totalTokensFromClosedVaults += escrow.totalFunds;
+            Target[] storage userTargets = targetMapping[user];
+
+            // Loop through all targets for the user
+            for (uint256 j = 0; j < userTargets.length; j++) {
+                if (!claimedTargets[user][j]) {
+                    // Check if the target is closed (reached) and not claimed
+                    Target storage target = userTargets[j];
+                    if (target.isClosed && price() >= target.ratioPriceTarget) {
+                        totalReachedAmount += target.TargetAmount;
+                    }
                 }
             }
         }
 
-        // Distribute tokens proportionally among users based on their PSD holdings
-        for (uint256 i = 0; i < usersWithDeposits.length; i++) {
-            address user = usersWithDeposits[i];
-            // Get the reached price targets of the user
-            uint256[] memory reachedTargets = getReachedPriceTargets(user);
-            // Calculate user's share of tokens based on reached price targets
-            uint256 userShare = 0;
-            for (uint256 j = 0; j < reachedTargets.length; j++) {
-                userShare +=
-                    (PSDSharePerUser[user] * reachedTargets[j]) /
-                    ActualtotalPSDshare;
-            }
-            // Transfer tokens to the user
-            (bool success1, ) = payable(user).call{value: userShare}("");
-            require(success1, "userShare transaction failed.");
-        }
-    }
-
-    mapping(address => uint256) public tokensDistributed;
-
-    // Function to view the value of tokens distributed from closed vaults among users based on their PSD holdings
-    function viewTokensDistributedFromClosedVaults()
-        public
-        view
-        returns (address[] memory, uint256[] memory)
-    {
-        address[] memory users = new address[](usersWithDeposits.length);
-        uint256[] memory distributedTokens = new uint256[](
-            usersWithDeposits.length
-        );
-
-        // Calculate total tokens available from closed vaults
-        uint256 totalTokensFromClosedVaults = 0;
-
-        // Loop through all users and their vaults to calculate total tokens
-        for (uint256 i = 0; i < usersWithDeposits.length; i++) {
-            address user = usersWithDeposits[i];
-            Escrow[] storage userEscrows = escrowMapping[user];
-            for (uint256 j = 0; j < userEscrows.length; j++) {
-                Escrow storage escrow = userEscrows[j];
-                if (escrow.Time > 0 && escrow.Time < block.timestamp) {
-                    // The vault is closed
-                    totalTokensFromClosedVaults += escrow.totalFunds;
-                }
-            }
-        }
-
-        // Distribute tokens proportionally among users based on their PSD holdings
-        for (uint256 i = 0; i < usersWithDeposits.length; i++) {
-            address user = usersWithDeposits[i];
-            // Get the reached price targets of the user
-            uint256[] memory reachedTargets = getReachedPriceTargets(user);
-            // Calculate user's share of tokens based on reached price targets
-            uint256 userShare = 0;
-            for (uint256 j = 0; j < reachedTargets.length; j++) {
-                userShare +=
-                    (PSDSharePerUser[user] * reachedTargets[j]) /
-                    ActualtotalPSDshare;
-            }
-            distributedTokens[i] = userShare;
-            users[i] = user;
-        }
-
-        return (users, distributedTokens);
+        return totalReachedAmount;
     }
 
     function getReachedPriceTargets(
@@ -1653,6 +1619,34 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         }
 
         return trimmedTargets;
+    }
+
+    struct UserTargetDistribution {
+        address user;
+        uint256 distributedAmount;
+    }
+
+    // View function to get the distributed tokens for all users
+    function getUsersDistributedTokens()
+        public
+        view
+        returns (UserTargetDistribution[] memory)
+    {
+        UserTargetDistribution[]
+            memory distributions = new UserTargetDistribution[](
+                usersWithDeposits.length
+            );
+
+        // Loop through all users with deposits and populate their distributed token details
+        for (uint256 i = 0; i < usersWithDeposits.length; i++) {
+            address user = usersWithDeposits[i];
+            distributions[i] = UserTargetDistribution({
+                user: user,
+                distributedAmount: userBucketBalances[user]
+            });
+        }
+
+        return distributions;
     }
 
     mapping(address => mapping(uint256 => bool)) private claimedTargets; // Mapping to track claimed targets
@@ -1787,6 +1781,84 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
             }
         }
         return false;
+    }
+
+    // Define the mapping to keep track of distributions
+    mapping(address => uint256) public userDistributedTokens;
+
+    function claimTargetWithDistribution() public {
+        uint256 totalDistributed = 0;
+
+        // Loop through all users with deposits
+        for (uint256 i = 0; i < usersWithDeposits.length; i++) {
+            address thisUser = usersWithDeposits[i];
+
+            // Loop through all targets for this user
+            for (uint256 j = 0; j < targetMapping[thisUser].length; j++) {
+                Target storage target = targetMapping[thisUser][j];
+
+                // Check if the target is not closed and has been reached
+                if (!target.isClosed && price() >= target.ratioPriceTarget) {
+                    // Calculate the percentage of profit to be distributed for this target
+                    uint256 targetPercentage = (target.ratio * 1 ether) / 10;
+                    percentProfit += targetPercentage;
+
+                    // Loop through all users to distribute the target rewards
+                    for (uint256 k = 0; k < usersWithDeposits.length; k++) {
+                        address userToDistribute = usersWithDeposits[k];
+
+                        // Check if the user has deposited for this target
+                        if (targetMapping[userToDistribute].length > 0) {
+                            // Calculate the percentage of target distribution for this user
+                            uint256 distributeEachTargetPercentage = (PSDdistributionPercentageMapping[
+                                    userToDistribute
+                                ] *
+                                    FIXED_POINT *
+                                    10000) / totalPSDshare;
+
+                            // Calculate the amount to distribute to this user for the target
+                            uint256 targetAmountPerUser = (target.TargetAmount *
+                                distributeEachTargetPercentage) /
+                                (10000 * FIXED_POINT);
+
+                            // Update the user's bucket balance with the distributed amount
+                            userBucketBalances[
+                                userToDistribute
+                            ] += targetAmountPerUser;
+
+                            // Update the total distributed amount
+                            totalDistributed += targetAmountPerUser;
+
+                            // Track distributed tokens for each user
+                            userDistributedTokens[
+                                userToDistribute
+                            ] += targetAmountPerUser;
+
+                            // Emit an event indicating the distribution of the target to this user
+                            emit ClaimTarget(
+                                thisUser,
+                                j,
+                                userToDistribute,
+                                targetAmountPerUser
+                            );
+                        }
+                    }
+
+                    // Mark the target as closed after distributing to all users
+                    target.isClosed = true;
+                }
+            }
+        }
+
+        // Emit an event indicating the total amount distributed
+        emit TotalTargetDistributed(totalDistributed);
+    }
+
+    // View function to get the distributed tokens for a specific user
+    function getUserDistributedTokens(
+        address user
+    ) public view returns (uint256) {
+        return userDistributedTokens[user];
     }
 
     event TotalTargetDistributed(uint256 TotalDistributedAmount);

@@ -123,6 +123,26 @@ export default function Functions({ children }) {
             console.error('getUserUsdValue error:', error);
         }
     }
+
+    const getDistributedTokens = async (accountAddress)=>{
+        try{
+            let contract = await getPsdContract();
+
+            const tokens = await contract.getDistributedTokens(accountAddress);
+
+             // Convert the BigNumber values to readable format
+             const PSDTokens = ethers.utils.formatUnits(tokens[0], 18); // Assuming 18 decimals for PSD token
+             const PSTTokens = ethers.utils.formatUnits(tokens[1], 18); 
+
+        return {
+            PSDTokens,
+            PSTTokens
+        };
+
+        }catch(error){
+            console.log(error)
+        }
+    }
     const handleDeposit = async (amount) => {
         console.log('amountx:', amount);
         // let userUsdValue = await getUserUsdValue(amount)
@@ -147,7 +167,7 @@ export default function Functions({ children }) {
             return true
         } catch (error) {
             // allInOnePopup(`error`, `Error`, `An error occurred. Please try again.`, `OK`, true);
-            allInOnePopup(null, 'An error occurred. Please try again.', null, `OK`, null)
+            allInOnePopup(null, 'Transaction reverted', null, `OK`, null)
             console.error('handleDeposit error:', error);
         }
     }
@@ -360,6 +380,8 @@ export default function Functions({ children }) {
             console.error('getToBeClaimed error:', error);
         }
     }
+
+  
     const isClaimed = async (accountAddress) => {
         try {
             let contract = await getPsdContract();
@@ -369,18 +391,18 @@ export default function Functions({ children }) {
             console.log(error);
         }
     }
-    const getReachedPriceTargets = async (accountAddress) => {
+    const getUserDistributedTokens  = async (address) => {
         try {
             let contract = await getPsdContract();
-            let getReachedPriceTargets = await contract.getReachedPriceTargets(accountAddress);
-            let formattedReachedPriceTargets = getReachedPriceTargets.map(target => ethers.utils.formatEther(target));
+           // Fetch the distributed tokens for the user
+        let distributedTokens = await contract.getUserReceivedTokens(address);
+        let formattedDistributedTokens = await getFormatEther(distributedTokens);
 
-            // Summarize the formatted reached price targets
-            let totalReachedPriceTargets = formattedReachedPriceTargets.reduce((acc, cur) => acc + parseFloat(cur), 0);
+          
 
-            console.log("getCLoseValue,,...... ", totalReachedPriceTargets)
+            console.log("distributed amount,,...... ", formattedDistributedTokens)
 
-            return getReachedPriceTargets;
+            return formattedDistributedTokens;
         } catch (error) {
             console.error(error);
         }
@@ -514,6 +536,18 @@ export default function Functions({ children }) {
             console.error('get_PST_Claimed error:', error);
         }
     }
+
+   const getAndMarkReachedTarget = async (accountAddress)=>{
+    try{
+        let contract = await getPsdContract();
+        let getAndMarkReachedTarget = await contract.getAndMarkReachedTargets(accountAddress);
+        let getAndMarkReachedTarget_InStr = await getAndMarkReachedTarget.toString();
+
+            return getAndMarkReachedTarget_InStr;
+    }catch(error){
+        console.log(error)
+    }
+   }
     // unused
     const getParityDollarClaimed = async (address) => {
         // address = accountAddress
@@ -613,7 +647,7 @@ export default function Functions({ children }) {
     }
 
     useEffect(() => {
-        getReachedPriceTargets()
+        getUserDistributedTokens ()
         const intervalId = setInterval(() => {
             userConnected && setSocket((prevBool) => !prevBool);
         }, 5000);
@@ -635,6 +669,7 @@ export default function Functions({ children }) {
                 handle_Claim_Parity_Tokens,
                 handle_Claim_All_Reward_Amount,
                 getPrice,
+                getDistributedTokens,
                 onlyPSDclaimed,
                 getToBeClaimed,
                 getTotalValueLockedInDollar,
@@ -643,6 +678,7 @@ export default function Functions({ children }) {
                 get_PSD_Claimed,
                 getClaimedAmount,
                 get_PST_Claimed,
+                getPsdContract,
                 getTargetTransferDetails,
                 getCurrentTokenPrice,
                 getParityDollarClaimed,
@@ -658,8 +694,9 @@ export default function Functions({ children }) {
                 contractBalance,
                 getTotalNumberOfReward,
                 reward,
+                getAndMarkReachedTarget,
                 isClaimed,
-                getReachedPriceTargets,
+                getUserDistributedTokens ,
                 getTimeStampForCreateValut,
                 getClaimAllReward,
                 getDepositeValues,

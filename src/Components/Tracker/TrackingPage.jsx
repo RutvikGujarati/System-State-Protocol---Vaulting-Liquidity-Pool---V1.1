@@ -55,7 +55,7 @@ export default function TrackingPage() {
     getParityReached,
     getProtocolFee,
     NumberOfUser,
-    getReachedPriceTargets,
+    getUserDistributedTokens,
     getTimeStampForCreateValut,
     getCeateVaultTime,
     getClaimAllReward,
@@ -119,26 +119,11 @@ export default function TrackingPage() {
       let formattedIptAndRptReward = ethers.utils.formatEther(
         iptAndRptReward || "0"
       );
-
-      // Get the reached price targets
-      let reachedPriceTargets = await getReachedPriceTargets(accountAddress);
-
-      // Format the reached price targets
-      let formattedReachedPriceTargets = reachedPriceTargets.map((target) =>
-        ethers.utils.formatEther(target)
-      );
-
-      // Summarize the formatted reached price targets
-      let totalReachedPriceTargets = formattedReachedPriceTargets.reduce(
-        (acc, cur) => acc + parseFloat(cur),
-        0
-      );
-      let reach = totalReachedPriceTargets * price;
-
-      let tofixed = reach.toFixed(4);
-      console.log("reachiiiiiinggg", tofixed);
-      setReachedPriceTargets(tofixed);
-      console.log("closed value.......;;;;", totalReachedPriceTargets);
+  
+      // Get the user's distributed tokens
+      let userDistributedTokens = await getUserDistributedTokens(accountAddress);
+      let formattedUserDistributedTokens = parseFloat(userDistributedTokens);
+  
       // Get the parity share tokens claimable amount
       let parityShareTokensDetail = await getParityDollarClaimed(
         accountAddress
@@ -148,21 +133,21 @@ export default function TrackingPage() {
       let formattedParityClaimableAmount = ethers.utils.formatEther(
         parityClaimableAmount || "0"
       );
-
+  
       // Get the protocol fee
       let protocolFeeDetail = await getProtocolFee(accountAddress);
       let protocolAmount = protocolFeeDetail?.protocolAmount || 0;
-
+  
       // Calculate the total amount to be claimed
       let totalToBeClaimed =
         parseFloat(formattedIptAndRptReward) +
         parseFloat(formattedParityClaimableAmount) +
-        parseFloat(totalReachedPriceTargets) + // Add the total reached price targets here
+        parseFloat(formattedUserDistributedTokens) + // Use user's distributed tokens instead of reached targets
         parseFloat(protocolAmount);
-
+  
       // Format the total amount
       let formattedTotalToBeClaimed = totalToBeClaimed.toFixed(4);
-
+  
       // Update the state with the total amount to be claimed
       setToBeClaimed(formattedTotalToBeClaimed);
     } catch (error) {
@@ -170,6 +155,7 @@ export default function TrackingPage() {
       // Handle error gracefully, e.g., display an error message to the user
     }
   };
+  
 
   // Done
   // Done
