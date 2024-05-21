@@ -305,133 +305,107 @@ export default function Searchbar() {
   return (
     <>
       <div
-        className={`main-search p-0 lightBg darkBg ${
-          (theme === "darkTheme" && "seachThemeBgDark") ||
-          (theme === "dimTheme" && " seachThemeBgDim")
-        }`}
-      >
-        <div className={`d-flex serach-container container-xxl`}>
-          <div className="d-flex w-100 my-auto">
-            <div className="d-flex flex-wrap justify-content-between w-100 searchBar">
-              <div className=" input-search firstSeach_small col-md-7 py-3">
-                <div
-                  style={{
-                    fontSize: "14px",
-                    color: "#ffffff",
-                    marginBottom: "15px",
-                    marginLeft: "10px",
-                    marginTop: "-30px",
+  className={`main-search p-0 lightBg darkBg ${
+    (theme === "darkTheme" && "seachThemeBgDark") ||
+    (theme === "dimTheme" && "seachThemeBgDim")
+  }`}
+>
+  <div className="d-flex serach-container container-xxl">
+    <div className="d-flex w-100 my-auto">
+      <div className="d-flex flex-wrap justify-content-between w-100 searchBar">
+        <div className="input-search firstSeach_small col-md-7 py-3">
+          <div
+            style={{
+              fontSize: "14px",
+              color: "#ffffff",
+              marginBottom: "15px",
+              marginLeft: "10px",
+              marginTop: "-30px",
+            }}
+          >
+            Vaulting is the process through which a smart contract employs
+            ratio vaults to mitigate inflation erosion and directly
+            creating multiple copies of your crypto assets over cycles.
+          </div>
+          {isHome ? (
+            <div
+              className={`search ${theme} ${
+                theme === "lightTheme" && "text-dark"
+              } ${
+                (theme === "darkTheme" && "Theme-block-container") ||
+                (theme === "dimTheme" && "dimThemeBg")
+              }`}
+            >
+              <p
+                className={`m-0 ms-3 tokenSize d-none d-md-block ${
+                  block + dark
+                } ${
+                  (theme === "lightTheme" && "depositInputLight") ||
+                  (theme === "dimTheme" && "depositInputGrey darkColor")
+                } ${
+                  theme === "darkTheme" && "depositInputDark darkColor"
+                }`}
+              >
+                {currencyName}&nbsp;<span>(Pulsechain)</span>
+              </p>
+              <form className="w-100 search-form">
+                <input
+                  className={`w-75 ms-3 me-4 form-control inputactive ${block} ${
+                    (theme === "lightTheme" && "depositInputLight") ||
+                    (theme === "dimTheme" && "depositInputGrey darkColor")
+                  } ${
+                    theme === "darkTheme" && "depositInputDark darkColor"
+                  }`}
+                  pattern={`[0-9,.]*`} // Only allow digits, commas, and dots
+                  type="text"
+                  disabled={isDashboardInputDisabled}
+                  onBlur={handleBlur}
+                  value={search}
+                  placeholder={placeHolder}
+                  onChange={(e) => addCommasAsYouType(e)}
+                />
+                <button
+                  disabled={
+                    selectedValue === "Deposit" &&
+                    (Number(search) <= 0 && search === "" ? true : false)
+                  }
+                  className={`fist-pump-img first_pump_serchbar ${
+                    (theme === "darkTheme" && "firstdumDark") ||
+                    (theme === "dimTheme" && "dimThemeBg")
+                  } `}
+                  onClick={(e) => {
+                    isHandleDeposit(e);
                   }}
                 >
-                  Vaulting is the process through which a smart contract employs
-                  ratio vaults to mitigate inflation erosion and directly
-                  creating multiple copies of your crypto assets over cycles.
-                </div>
-                {isHome ? (
-                  <div
-                    className={` search ${theme} ${
-                      theme === "lightTheme" && "text-dark"
-                    } ${
-                      (theme === "darkTheme" && "Theme-block-container") ||
-                      (theme === "dimTheme" && "dimThemeBg")
-                    }`}
-                  >
-                    <p
-                      className={`m-0 ms-3 tokenSize d-none d-md-block ${
-                        block + dark
-                      } ${
-                        (theme === "lightTheme" && "depositInputLight") ||
-                        (theme === "dimTheme" && "depositInputGrey darkColor")
-                      } ${
-                        theme === "darkTheme" && "depositInputDark darkColor"
-                      }`}
-                    >
-                      {currencyName}&nbsp;<span>(Pulsechain)</span>
-                    </p>
-                    {/*below is for selecting tokens */}
-                    {/* <select onChange={(e) => {
-                        console.log(e)
-                        setTokenSelector(e.target.value)
-                      }} value={tokenSelector} className={`form-select w-25 d-none d-md-block ${block + dark} ${theme === ("lightTheme") && ("depositInputLight") || theme === "dimTheme" && "depositInputGrey darkColor"} ${theme === "darkTheme" && "depositInputDark darkColor"}`} aria-label="Name Tags">
-                        <option className={`${theme} option-list `} disabled>List of Tokens</option>
-                        {
-                          getSelector()
-                        }
-
-                      </select> */}
-                    <form className=" w-100 search-form">
-                      {/* ${isVisibleHomeSearch} */}
-                      <input
-                        className={`w-75 ms-3 me-4 form-control inputactive ${block} ${
-                          (theme === "lightTheme" && "depositInputLight") ||
-                          (theme === "dimTheme" && "depositInputGrey darkColor")
-                        } ${
-                          theme === "darkTheme" && "depositInputDark darkColor"
-                        }`}
-                        pattern={`[0-9,.]*`} // Only allow digits, commas, and dots
-                        type="text"
-                        disabled={isDashboardInputDisabled}
-                        onBlur={handleBlur}
-                        value={search}
-                        placeholder={placeHolder}
-                        onChange={(e) => addCommasAsYouType(e)}
-                      />
-                      {/* <div>Balance : 0.13131</div> */}
-                      {/* <p className={`mx-2 m-0 w-25 d-none d-md-block ${block + dark} ${theme === "lightTheme" && "depositInputLight" || theme === "dimTheme" && "depositInputGrey darkColor"} ${theme === "darkTheme" && "depositInputDark darkColor"}`}>Deposit</p>
-                       */}
-
-                      {/* below is for selecting multiple claims with different time. */}
-                      {/* <select onChange={(e) => {
-                          setSelectedValue(e.target.value)
-                          getPlaceHolder()
-                        }}
-                          value={selectedValue} className={`mx-2 form-select w-25 d-none d-md-block ${block + dark} ${theme === "lightTheme" && "depositInputLight" || theme === "dimTheme" && "depositInputGrey darkColor"} ${theme === "darkTheme" && "depositInputDark darkColor"}`} aria-label="Name Tags" >
-                          <option className={`${theme} option-list`} value="Deposit"> Deposit</option>
-                          <option className={`${theme} option-list`} value="Claim IPT & RPT">Claim IPT & RPT</option>
-                          <option className={`${theme} option-list`} value="Claim Parity Tokens"> Claim Parity Tokens</option>
-                          <option className={`${theme} option-list`} value="Claim Protocol Fee">Claim Protocol Fee</option>
-                          <option className={`${theme} option-list`} value="Claim All Reward">Claim</option>
-
-                        </select> */}
-                      <button
-                        disabled={
-                          selectedValue === "Deposit" &&
-                          (Number(search) <= 0 && search == "" ? true : false)
-                        }
-                        className={`fist-pump-img first_pump_serchbar ${
-                          (theme === "darkTheme" && "firstdumDark") ||
-                          (theme === "dimTheme" && "dimThemeBg")
-                        } `}
-                        onClick={(e) => {
-                          isHandleDeposit(e);
-                        }}
-                      >
-                        <img src={fistPump} className="w-100 h-100" />
-                      </button>
-                    </form>
-                  </div>
-                ) : (
-                  <div></div>
-                )}
-              </div>
-              <Link
-                to={"/"}
-                className="serachIconLink State searchBar2_small d-flex flex-wrap justify-content-lg-center justify-content-md-start justify-content-sm-start"
-              >
-                <div className="under-state">
-                  <img
-                    src={SystemStateLogo}
-                    alt="SystemStateLogo "
-                    className="SystemStateLogo"
-                  />
-                </div>
-                <p className="state-dex-txt">System State</p>
-              </Link>
+                  <img src={fistPump} className="w-100 h-100" />
+                </button>
+              </form>
             </div>
-          </div>
+          ) : (
+            <div></div>
+          )}
         </div>
-        <div className="future-box"></div>
+        <a
+          href="/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="serachIconLink State searchBar2_small d-flex flex-wrap justify-content-lg-center justify-content-md-start justify-content-sm-start"
+        >
+          <div className="under-state">
+            <img
+              src={SystemStateLogo}
+              alt="SystemStateLogo"
+              className="SystemStateLogo"
+            />
+          </div>
+          <p className="state-dex-txt">System State</p>
+        </a>
       </div>
+    </div>
+  </div>
+  <div className="future-box"></div>
+</div>
+
     </>
   );
 }

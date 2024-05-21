@@ -167,7 +167,7 @@ export default function Functions({ children }) {
             return true
         } catch (error) {
             // allInOnePopup(`error`, `Error`, `An error occurred. Please try again.`, `OK`, true);
-            allInOnePopup(null, 'Transaction reverted', null, `OK`, null)
+            allInOnePopup(null, 'Transaction Rejected', null, `OK`, null)
             console.error('handleDeposit error:', error);
         }
     }

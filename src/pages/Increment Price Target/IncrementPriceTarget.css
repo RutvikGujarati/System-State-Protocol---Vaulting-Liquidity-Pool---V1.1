@@ -23,20 +23,44 @@
   margin: 0 auto;
   border-radius: 0.5rem;
   background-color: white;
-  font-family: 'Roboto', sans-serif;
-
+  font-family: "Roboto", sans-serif;
 }
 .view-link {
   margin-left: 10px; /* Adjust the margin as needed */
   align-self: flex-start; /* Align the link to the start of the cross axis */
- }
- 
+}
+.view-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Ensure items are spaced out evenly */
+  margin: 1rem 0; /* Add some vertical margin for spacing */
+}
+
+.view-link {
+  text-decoration: none;
+  color: inherit;
+  margin-left: -460px; /* Initial margin */
+}
+
+@media only screen and (max-width: 768px) {
+  .view-container {
+    flex-direction: column; /* Stack items vertically on smaller screens */
+    align-items: flex-start; /* Align items to the start */
+  }
+
+  .view-link {
+    margin-left: 0; /* Remove negative margin on smaller screens */
+    width: 100%; /* Make link take full width */
+    text-align: left; /* Align text to the left */
+    margin-bottom: 1rem; /* Add some margin at the bottom */
+  }
+}
+
 .view-container {
   /* display: flex; */
   justify-content: flex-start;
   align-items: center; /* This centers the items vertically if needed */
- }
- 
+}
 
 .main-cont-bor {
   border: 1px solid #dee0e1;
@@ -52,8 +76,8 @@
 }
 
 .box-titles2 h1 {
-  font-family: 'Roboto', sans-serif;
-  font-size: .9375rem;
+  font-family: "Roboto", sans-serif;
+  font-size: 0.9375rem;
   /* padding: 20px; */
   padding-top: 22px;
   /* opacity: 0.9; */
@@ -79,8 +103,8 @@
   border-top: 1px solid rgb(232, 232, 232);
   text-align: center;
   flex-wrap: wrap;
- }
-.view-main{
+}
+.view-main {
   padding: 0 12px;
 }
 .view-pageIncre a {
@@ -88,7 +112,7 @@
   text-align: right;
   text-decoration: none;
   color: black;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   font-weight: bold;
   /* font-weight: bold; */
   font-size: 12px;
@@ -106,7 +130,7 @@
 .box-items {
   /* padding-left: 14px;
   padding-right: 14px; */
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -131,7 +155,7 @@
   height: fit-content;
   background-color: white;
   border: 1px solid #d9dde1;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 .cube-icon {
@@ -154,17 +178,16 @@
   height: 70px;
   padding: 4px;
   font-size: 14px;
-  font-family: 'Roboto', sans-serif;
-
+  font-family: "Roboto", sans-serif;
 }
 
 .box-1 span {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   color: rgba(27, 138, 236, 0.89);
 }
 
 .box-1 p {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   letter-spacing: 0.5px;
   margin-bottom: 0rem;
 }
@@ -175,17 +198,15 @@
   align-items: center;
   gap: 10px;
   width: 160px;
-  font-family: 'Roboto', sans-serif;
-
+  font-family: "Roboto", sans-serif;
 }
 
 #box2 {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   width: fit-content;
-
 }
 
 .box-para {
@@ -227,20 +248,19 @@
 
 .reponsive-box1 {
   padding: 12px;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   /* max-height: 500px; */
   max-height: 27.4rem;
   height: 22.8rem;
   overflow: scroll;
   overflow-x: hidden;
   /* overflow-y: hidden; */
-
 }
-.seenFullContent{
+.seenFullContent {
   height: fit-content;
   max-height: fit-content;
 }
-.reponsive-box1::-webkit-scrollbar{
+.reponsive-box1::-webkit-scrollbar {
   width: 0;
 }
 .table_pageIndex {
@@ -262,16 +282,15 @@
 .pageBtnDir:hover {
   cursor: pointer;
 }
-.lightSh{
+.lightSh {
   box-shadow: 0 0.5rem 1.2rem rgb(23 28 37 / 20%);
   /* box-shadow: 0 0.5rem 1.2rem rgb(189 197 209 / 20%); */
 }
-.dimSh{
-  box-shadow: 0 0.5rem 1.2rem rgba(82, 85, 92, .15);
+.dimSh {
+  box-shadow: 0 0.5rem 1.2rem rgba(82, 85, 92, 0.15);
 }
-.darkSh{
-  
-  box-shadow: 0 0.5rem 1.2rem rgba(82, 85, 92, .15);
+.darkSh {
+  box-shadow: 0 0.5rem 1.2rem rgba(82, 85, 92, 0.15);
 }
 /* .reponsive-box1::-webkit-scrollbar {
   width: 8px;
@@ -304,28 +323,26 @@
   background-color: #555; 
 } */
 
-@media screen and (max-width:1165px) {
-  .view-pagerpt a{
+@media screen and (max-width: 1165px) {
+  .view-pagerpt a {
     text-align: left;
     width: 11rem;
   }
-  .makeBalance{
+  .makeBalance {
     display: none;
   }
-  .view-pageIncre a{
+  .view-pageIncre a {
     width: 11rem;
   }
   .view-main {
     padding: 1rem 12px;
   }
- 
 }
-@media screen and (max-width:380px) {
-  .view-pageIncre{
+@media screen and (max-width: 380px) {
+  .view-pageIncre {
     justify-content: center;
   }
-  .view-pageIncre a{
+  .view-pageIncre a {
     text-align: center;
   }
- 
 }

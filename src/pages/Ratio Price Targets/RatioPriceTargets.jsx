@@ -9,11 +9,16 @@ import { ethers } from "ethers";
 
 export default function RatioPriceTargets() {
   const { theme } = useContext(themeContext);
-  const shadow = (theme === "lightTheme" && "lightSh") || (theme === "dimTheme" && 'dimSh') || (theme === "darkTheme" && "darkSh");
-  const { accountAddress, currencyName, userConnected } = useContext(Web3WalletContext);
-  const { socket, getRatioPriceTargets, getPrice, getDepositors } = useContext(functionsContext);
+  const shadow =
+    (theme === "lightTheme" && "lightSh") ||
+    (theme === "dimTheme" && "dimSh") ||
+    (theme === "darkTheme" && "darkSh");
+  const { accountAddress, currencyName, userConnected } =
+    useContext(Web3WalletContext);
+  const { socket, getRatioPriceTargets, getPrice, getDepositors } =
+    useContext(functionsContext);
   const [ratioPriceTargets, setRatioPriceTargets] = useState([]);
-  const [price, setPrice] = useState('0');
+  const [price, setPrice] = useState("0");
   const [seeFullPage, setseeFullPage] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredArray, setFilteredArray] = useState([]);
@@ -23,7 +28,7 @@ export default function RatioPriceTargets() {
     if (accountAddress) {
       try {
         let price = await getPrice();
-        let formattedPrice = await ethers.utils.formatEther(price || '0');
+        let formattedPrice = await ethers.utils.formatEther(price || "0");
         setPrice(formattedPrice);
 
         let All_USERS_TARGETS = [];
@@ -32,13 +37,17 @@ export default function RatioPriceTargets() {
         for (let index = 0; index < allDepositorsAddress.length; index++) {
           const address = allDepositorsAddress[index];
           let targets = await getRatioPriceTargets(address);
-          All_USERS_TARGETS.push(...targets || []);
+          All_USERS_TARGETS.push(...(targets || []));
         }
 
         // Sort the targets
-        const sortedArray = [...All_USERS_TARGETS || []].sort((a, b) => {
-          const formattedRatioTargetA = ethers.utils.formatEther(a?.ratioPriceTarget.toString());
-          const formattedRatioTargetB = ethers.utils.formatEther(b?.ratioPriceTarget.toString());
+        const sortedArray = [...(All_USERS_TARGETS || [])].sort((a, b) => {
+          const formattedRatioTargetA = ethers.utils.formatEther(
+            a?.ratioPriceTarget.toString()
+          );
+          const formattedRatioTargetB = ethers.utils.formatEther(
+            b?.ratioPriceTarget.toString()
+          );
 
           const numericValueA = Number(formattedRatioTargetA);
           const numericValueB = Number(formattedRatioTargetB);
@@ -47,13 +56,15 @@ export default function RatioPriceTargets() {
         });
 
         // Remove reached targets
-        const newFilteredArray = sortedArray.filter(target => !target.isClosed);
+        const newFilteredArray = sortedArray.filter(
+          (target) => !target.isClosed
+        );
         setFilteredArray(newFilteredArray);
 
         // Process and display targets for the current page
         updateCurrentPageItems(newFilteredArray, currentPage);
       } catch (error) {
-        console.error('error:', error);
+        console.error("error:", error);
       }
     }
   };
@@ -64,58 +75,103 @@ export default function RatioPriceTargets() {
     const itemsForCurrentPage = array.slice(startIndex, endIndex);
 
     try {
-      let items = await Promise.all(itemsForCurrentPage.map((target, index) =>
-        processTargets(target, index, currencyName))
+      let items = await Promise.all(
+        itemsForCurrentPage.map((target, index) =>
+          processTargets(target, index, currencyName)
+        )
       );
       setRatioPriceTargets(items.filter(Boolean));
     } catch (error) {
-      console.error('Error processing targets:', error);
+      console.error("Error processing targets:", error);
     }
   };
 
   const processTargets = async (target, index, currencyName) => {
     try {
-      const formattedRatioTarget = ethers.utils.formatEther(target?.ratioPriceTarget.toString());
+      const formattedRatioTarget = ethers.utils.formatEther(
+        target?.ratioPriceTarget.toString()
+      );
       const ratioPriceTarget = Number(formattedRatioTarget).toFixed(6);
-      const formattedTargetAmount = ethers.utils.formatEther(target?.TargetAmount.toString());
-      const targetAmount = Number(formattedTargetAmount).toFixed(4) + ' ' + currencyName ?? currencyName;
+      const formattedTargetAmount = ethers.utils.formatEther(
+        target?.TargetAmount.toString()
+      );
+      const targetAmount =
+        Number(formattedTargetAmount).toFixed(4) + " " + currencyName ??
+        currencyName;
       const givenTimestamp = target?.Time.toString();
       const currentTimestamp = Math.floor(Date.now() / 1000);
       const timeDifferenceInSeconds = currentTimestamp - Number(givenTimestamp);
-      const timeDifference = await formatTimeDifference(Number(timeDifferenceInSeconds));
-
-      if (!target.isClosed) return (
-        <div key={index} className={`box-items  ${(theme === "darkTheme" && "Theme-box-item") || (theme === "dimTheme" && "dim-theme-items" && "dim-theme-items-border") || "viewItemsTop"}`} >
-          <div className="box-1" id="box1">
-            <div>
-              <p> <span>Transaction</span> </p>
-              <p className={`${(theme === "darkTheme" && "Theme-block-time") || (theme === "dimTheme" && "Theme-block-time") || "time-opacity "}`}>{timeDifference} ago</p>
-            </div>
-          </div>
-          <div className="box-1 box-2" id="box2">
-            <p className={`d-flex flex-column para-column-fit  ${(theme === "darkTheme" && "Theme-col2-para") || (theme === "dimTheme" && "Theme-col2-para")}`} >Target Price<span> Target Price : $ {ratioPriceTarget}
-            </span> </p>
-          </div>
-          <p className={`box-3  ${(theme === "darkTheme" && "Theme-btn-block") || (theme === "dimTheme" && "dimThemeBtnBg")}`}> {targetAmount}</p>
-        </div>
+      const timeDifference = await formatTimeDifference(
+        Number(timeDifferenceInSeconds)
       );
+
+      if (!target.isClosed)
+        return (
+          <div
+            key={index}
+            className={`box-items  ${
+              (theme === "darkTheme" && "Theme-box-item") ||
+              (theme === "dimTheme" &&
+                "dim-theme-items" &&
+                "dim-theme-items-border") ||
+              "viewItemsTop"
+            }`}
+          >
+            <div className="box-1" id="box1">
+              <div>
+                <p>
+                  {" "}
+                  <span>Transaction</span>{" "}
+                </p>
+                <p
+                  className={`${
+                    (theme === "darkTheme" && "Theme-block-time") ||
+                    (theme === "dimTheme" && "Theme-block-time") ||
+                    "time-opacity "
+                  }`}
+                >
+                  {timeDifference} ago
+                </p>
+              </div>
+            </div>
+            <div className="box-1 box-2" id="box2">
+              <p
+                className={`d-flex flex-column para-column-fit  ${
+                  (theme === "darkTheme" && "Theme-col2-para") ||
+                  (theme === "dimTheme" && "Theme-col2-para")
+                }`}
+              >
+                Target Price<span> Target Price : $ {ratioPriceTarget}</span>{" "}
+              </p>
+            </div>
+            <p
+              className={`box-3  ${
+                (theme === "darkTheme" && "Theme-btn-block") ||
+                (theme === "dimTheme" && "dimThemeBtnBg")
+              }`}
+            >
+              {" "}
+              {targetAmount}
+            </p>
+          </div>
+        );
     } catch (error) {
-      console.log('error:', error);
+      console.log("error:", error);
     }
   };
 
   const formatTimeDifference = async (seconds) => {
     if (seconds >= 60 * 60 * 24) {
       const days = Math.floor(seconds / (24 * 60 * 60));
-      return `${days} day${days > 1 ? 's' : ''}`;
+      return `${days} day${days > 1 ? "s" : ""}`;
     } else if (seconds >= 60 * 60) {
       const hours = Math.floor(seconds / (60 * 60));
-      return `${hours} hour${hours > 1 ? 's' : ''}`;
+      return `${hours} hour${hours > 1 ? "s" : ""}`;
     } else if (seconds >= 60) {
       const minutes = Math.floor(seconds / 60);
-      return `${minutes} minute${minutes > 1 ? 's' : ''}`;
+      return `${minutes} minute${minutes > 1 ? "s" : ""}`;
     } else {
-      return `${seconds} second${seconds !== 1 ? 's' : ''}`;
+      return `${seconds} second${seconds !== 1 ? "s" : ""}`;
     }
   };
 
@@ -134,30 +190,65 @@ export default function RatioPriceTargets() {
   return (
     <>
       <div className=" ">
-        <div className={`container-1 ${(theme === "darkTheme" && "Theme-block-container") || (theme === "dimTheme" && "dimThemeBg") || shadow} `} >
-          <div className={`box-titles1 mx-3 ${theme === "darkTheme" && ""} `} id={``} >
-            <h1 className={`box-title mb-3 ${(theme === "darkTheme" && "bg-dark" && "text-white") || (theme === "dimTheme" && "title-color")}`}>
+        <div
+          className={`container-1 ${
+            (theme === "darkTheme" && "Theme-block-container") ||
+            (theme === "dimTheme" && "dimThemeBg") ||
+            shadow
+          } `}
+        >
+          <div
+            className={`box-titles1 mx-3 ${theme === "darkTheme" && ""} `}
+            id={``}
+          >
+            <h1
+              className={`box-title mb-3 ${
+                (theme === "darkTheme" && "bg-dark" && "text-white") ||
+                (theme === "dimTheme" && "title-color")
+              }`}
+            >
               Ratio Price Targets (rPT)
             </h1>
           </div>
-          <div className={`${seeFullPage ? 'seenFullContent' : ''} reponsive-box1 `}>
+          <div
+            className={`${
+              seeFullPage ? "seenFullContent" : ""
+            } reponsive-box1 `}
+          >
             {ratioPriceTargets}
           </div>
           <div className="view-main">
-            <div className={`view-pagerpt  ${(theme === "darkTheme" && "Theme-view-page") || (theme === "dimTheme" && "dimThemeBlockView" && "dim-theme-items-border")} `} >
+            <div
+              className={`view-pagerpt  ${
+                (theme === "darkTheme" && "Theme-view-page") ||
+                (theme === "dimTheme" &&
+                  "dimThemeBlockView" &&
+                  "dim-theme-items-border")
+              } `}
+            >
               <div></div>
-              
+
               <div className="view-container">
                 <Link
                   onClick={() => setseeFullPage(!seeFullPage)}
-                  className={`view-link ${(theme === "darkTheme" && "text-white") || (theme === "dimTheme" && "dimThemeBlockView" && "dimThemeBlockView")}`}
-                  style={{ textDecoration: 'none', color: 'inherit', marginLeft: "-350px" }}>
-                  VIEW ALL TRANSACTIONS {seeFullPage ? <span> &uarr;</span> : <span> &darr;</span>}
+                  className={`view-link ${
+                    (theme === "darkTheme" && "text-white") ||
+                    (theme === "dimTheme" && "dimThemeBlockView")
+                  }`}
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  VIEW ALL TRANSACTIONS{" "}
+                  {seeFullPage ? <span> &uarr;</span> : <span> &darr;</span>}
                 </Link>
-                <div style={{ marginLeft: 'auto' }}></div> {/* Hidden element for alignment */}
+                <div style={{ marginLeft: "auto" }}></div>{" "}
+                {/* Hidden element for alignment */}
               </div>
 
-              <div className={`table_pageIndex ${theme === 'dimTheme' && 'text-white'}`}>
+              <div
+                className={`table_pageIndex ${
+                  theme === "dimTheme" && "text-white"
+                }`}
+              >
                 <span
                   className="pageBtnDir"
                   onClick={() => {
@@ -169,12 +260,16 @@ export default function RatioPriceTargets() {
                   &#10216;
                 </span>
                 <span>
-                  {currentPage} / {Math.ceil(filteredArray.length / itemsPerPage)}
+                  {currentPage} /{" "}
+                  {Math.ceil(filteredArray.length / itemsPerPage)}
                 </span>
                 <span
                   className="pageBtnDir"
                   onClick={() => {
-                    if (currentPage < Math.ceil(filteredArray.length / itemsPerPage)) {
+                    if (
+                      currentPage <
+                      Math.ceil(filteredArray.length / itemsPerPage)
+                    ) {
                       setCurrentPage(currentPage + 1); // Increment current page
                     }
                   }}

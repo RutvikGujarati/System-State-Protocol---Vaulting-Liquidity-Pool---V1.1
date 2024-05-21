@@ -448,28 +448,31 @@ export default function TrackingPage() {
 
   const claimAllReward = async () => {
     console.log("Number(toBeClaimed):", Number(toBeClaimed));
-    console.log("Number(toBeClaimed):", toBeClaimed);
-    if (Number(toBeClaimed) > 0) {
-      try {
-        const allReward = await getClaimAllReward(accountAddress);
-        setToBeClaimedReward(allReward);
-
-        allInOnePopup(null, "Successful Claimed", null, `OK`, null);
-      } catch (err) {
-        allInOnePopup(
-          null,
-          "Transaction Reverted. Please Try Again.",
-          null,
-          `OK`,
-          null
-        );
-        console.log("Reward To be Claim", err?.data?.message);
-      }
-    } else {
+    console.log("toBeClaimed:", toBeClaimed);
+  
+    if (Number(toBeClaimed) <= 0) {
       allInOnePopup(null, "Insufficient Balance", null, `OK`, null);
       return;
     }
+  
+    try {
+      // allInOnePopup(null, 'Processing...', 'Please wait while we claim your rewards', `OK`, null);
+      const allReward = await getClaimAllReward(accountAddress);
+      await allReward.wait(); // Wait for the transaction to be confirmed
+      setToBeClaimedReward(allReward);
+      allInOnePopup(null, 'Successfully Claimed', null, `OK`, null);
+      console.log('allReward:', allReward);
+    } catch (error) {
+      if (error.code === 4001) { // MetaMask user rejected the transaction
+        allInOnePopup(null, 'Transaction Rejected', null, `OK`, null);
+        console.error('User rejected the transaction:', error.message);
+      } else {
+        allInOnePopup(null, 'Transaction Rejected.', null, `OK`, null);
+        console.error('Transaction error:', error?.data?.message || error.message);
+      }
+    }
   };
+  
 
   const FetchBalance = async () => {
     try {
