@@ -29,32 +29,6 @@
   margin-left: 10px; /* Adjust the margin as needed */
   align-self: flex-start; /* Align the link to the start of the cross axis */
 }
-.view-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* Ensure items are spaced out evenly */
-  margin: 1rem 0; /* Add some vertical margin for spacing */
-}
-
-.view-link {
-  text-decoration: none;
-  color: inherit;
-  margin-left: -460px; /* Initial margin */
-}
-
-@media only screen and (max-width: 768px) {
-  .view-container {
-    flex-direction: column; /* Stack items vertically on smaller screens */
-    align-items: flex-start; /* Align items to the start */
-  }
-
-  .view-link {
-    margin-left: 0; /* Remove negative margin on smaller screens */
-    width: 100%; /* Make link take full width */
-    text-align: left; /* Align text to the left */
-    margin-bottom: 1rem; /* Add some margin at the bottom */
-  }
-}
 
 .view-container {
   /* display: flex; */

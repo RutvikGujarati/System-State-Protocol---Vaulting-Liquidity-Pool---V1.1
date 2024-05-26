@@ -323,9 +323,7 @@ export default function Searchbar() {
               marginTop: "-30px",
             }}
           >
-            Vaulting is the process through which a smart contract employs
-            ratio vaults to mitigate inflation erosion and directly
-            creating multiple copies of your crypto assets over cycles.
+         Vaulting Liquidity Pools (VLP) is the process through which a smart contract employs ratio vaults to mitigate token inflation-erosion and directly create multiple copies of your crypto assets over natural market cycles.
           </div>
           {isHome ? (
             <div

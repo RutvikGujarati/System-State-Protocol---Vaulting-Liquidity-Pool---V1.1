@@ -153,8 +153,6 @@ export default function CreateVaultGraph() {
 
     return (
         <div className={`container-xxl sizemax_align ${theme=='dimTheme' && 'graphDimThemeCusm'}`}>
-            
-           
         </div>
     );
 }

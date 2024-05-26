@@ -136,13 +136,6 @@
 	},
 	{
 		"inputs": [],
-		"name": "claimTargetWithDistribution",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [],
 		"name": "deposit",
 		"outputs": [],
 		"stateMutability": "payable",
@@ -296,7 +289,7 @@
 			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "DevlopmentFee",
+				"name": "DevelopmentFee",
 				"type": "uint256"
 			},
 			{
@@ -764,11 +757,6 @@
 					{
 						"internalType": "uint256",
 						"name": "priceTarget",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "NextPercentProfit",
 						"type": "uint256"
 					},
 					{

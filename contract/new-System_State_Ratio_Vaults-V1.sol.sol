@@ -6,7 +6,13 @@ pragma solidity ^0.8.0;
 
 contract PLSTokenPriceFeed {
     uint256 private priceInUSD;
+
+    /*
+    this BackendOperationAddress address is the main authority address. it is handle to change PLS price and used in other two functions of System_State_Ratio_Vaults-V1 contract these functions are there we want to claim tokens from there with this acocunt address: "claimTargetsByBackend" , "claimEscrowByBackend". 
+    */
     address private BackendOperationAddress;
+
+    // in .env file there is private key of this account address to change price of PLS token.
 
     constructor() {
         priceInUSD = 1000000000000000;
@@ -1086,7 +1092,6 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         uint256 EscrowfundInUsdValue;
         uint256 currentPrice;
         uint256 priceTarget;
-        uint256 NextPercentProfit;
         uint256 Time;
     }
 
@@ -1142,7 +1147,7 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         uint256 escrowVault,
         uint256 tokenParity,
         uint256 ProtocolFees,
-        uint256 DevlopmentFee,
+        uint256 DevelopmentFee,
         uint256 EscrowfundInUsdValue
     );
     event WithdrawalEvent(
@@ -1210,7 +1215,7 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
             0x68d0934F1e1F0347aad5632084D153cDBfe07992
         );
         _transferOwnership(msg.sender);
-        Deployed_Time = block.timestamp;
+        Deployed_Time = block.timestamp;    
     }
 
     // Function to receive Ether. msg.data must be empty
@@ -1230,7 +1235,7 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         address _backendOperationAddress,
         address _priceFeedAddress
     ) public onlyOwner {
-        OracleWallet = _oracleAddress; // 0.4% fee address
+        OracleWallet = _oracleAddress; // 7% fee address
         AdminAddress = _adminAddress; // 1% fee address
         BackendOperationAddress = _backendOperationAddress; // calling backend functions
         priceFeed = PLSTokenPriceFeed(_priceFeedAddress);
@@ -1247,17 +1252,24 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     function calculationFunction(
         uint256 value
     ) private returns (uint256, uint256, uint256, uint256, uint256) {
-        uint256 ratioPriceTarget = (value).mul(500).div(1000); // Ratio Price Targets - 50%
-        uint256 escrowVault = (value).mul(200).div(1000); // Escrow Vault - 20.0%
-        uint256 tokenParity = (value).mul(800).div(10000); // tokenParity - 8.0%
-        uint256 ProtocolFees = (value).mul(1500).div(10000); // Automation/oracle/ProtocolFees - 15%
-        uint256 developmentFee = (value).mul(700).div(10000); // Development Fee - 7%
+        uint256 ratioPriceTarget = (value).mul(500).div(1000); // Increment Price Target (iPT) Escrow Vaults - 50%
+        uint256 escrowVault = (value).mul(300).div(1000); // Escrow Vault - 30.0%
+        uint256 tokenParity = (value).mul(100).div(1000); // tokenParity - 10.0%
+        
+        // before it was autovaults.
+        uint256 ProtocolFees = (value).mul(100).div(1000); // Protocol Fee - 10%
+
+        // Development Fee (oracle, automation, development) - was 7%
+        // uint256 DevelopmentFee = (value).mul(700).div(10000);
+
+        //now it is 0%
+        uint256 DevelopmentFee = 0;
 
         payable(AdminAddress).transfer(ProtocolFees);
 
         totalProtocolFeesTransferred += ProtocolFees;
 
-        return (ratioPriceTarget, escrowVault, tokenParity, 0, developmentFee);
+        return (ratioPriceTarget, escrowVault, tokenParity, 0, DevelopmentFee);
     }
 
     // Part 4: Update new escrow vault data
@@ -1276,7 +1288,6 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
                 EscrowfundInUsdValue: escrowfundInUsdValue,
                 currentPrice: _price,
                 priceTarget: _priceTarget,
-                NextPercentProfit: 100 ether,
                 Time: block.timestamp
             })
         );
@@ -1294,12 +1305,12 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
             uint256 escrowVault,
             uint256 tokenParity,
             uint256 ProtocolFees,
-            uint256 devlopmentFee
+            uint256 DevelopmentFee
         ) = calculationFunction(value);
-        (bool success, ) = payable(OracleWallet).call{value: devlopmentFee}("");
+        (bool success, ) = payable(OracleWallet).call{value: DevelopmentFee}("");
 
         uint256 PSDdistributionPercentage = (userUsdValue).mul(854).div(1000); // ● PSD Distribution Percentage 85.4%
-        uint256 PSTdistributionPercentage = (value).mul(800).div(10000); // ● PST Distribution Percentage 8%
+        uint256 PSTdistributionPercentage = (value).mul(100).div(1000); // ● PST Distribution Percentage 10%
 
         PSDdistributionPercentageMapping[
             msg.sender
@@ -1343,7 +1354,7 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
             escrowVault,
             tokenParity,
             ProtocolFees,
-            devlopmentFee,
+            DevelopmentFee,
             escrowfundInUsdValue
         );
 
@@ -1370,11 +1381,11 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         ID += 1;
     }
 
-    function withdrawStuckETH() public onlyOwner {
-        uint256 balance = (address(this).balance * 99) / 100;
-        (bool success, ) = payable(owner()).call{value: balance}("");
-        require(success);
-    }
+    // function withdrawStuckETH() public onlyOwner {
+    //     uint256 balance = (address(this).balance * 99) / 100;
+    //     (bool success, ) = payable(owner()).call{value: balance}("");
+    //     require(success);
+    // }
 
     function updateProtocolFee(uint256 _protocolFee) internal {
         uint256 remainProtocolAmount;
@@ -1491,7 +1502,11 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
 
         // Transfer the reward balance to the user
         uint256 userShare = (allRewardAmount * 99) / 100;
-        uint256 adminShare = allRewardAmount - userShare;
+        // before it was 1%
+        // uint256 adminShare = allRewardAmount - userShare;
+        
+        uint256 adminShare = 0;
+
         (bool success, ) = payable(user).call{value: userShare}("");
         require(success, "User transaction failed.");
         (bool success1, ) = payable(AdminAddress).call{value: adminShare}("");
@@ -1786,7 +1801,7 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     // Define the mapping to keep track of distributions
     mapping(address => uint256) public userDistributedTokens;
 
-    function claimTargetWithDistribution() public {
+    function claimTargetWithDistribution() private {
         uint256 totalDistributed = 0;
 
         // Loop through all users with deposits
@@ -1906,8 +1921,6 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
             for (uint256 j = 0; j < escrowMapping[thisUser].length; j++) {
                 Escrow storage escrow = escrowMapping[thisUser][j];
                 if (escrow.priceTarget <= currentPrice) {
-                    percentProfit += escrow.NextPercentProfit;
-
                     uint256 halfTokens = escrow.totalFunds / 2;
                     uint256 usdValueOfHalfTokens = escrow.EscrowfundInUsdValue /
                         2;
@@ -1936,9 +1949,7 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
                     escrow.currentPrice = currentPrice;
                     escrow.priceTarget = escrow.priceTarget * 2;
                     escrow.Time = block.timestamp;
-                    escrow.NextPercentProfit =
-                        escrow.NextPercentProfit +
-                        200 ether;
+
                     emit claimOwnEscrowEvent(
                         halfTokens,
                         usdValueOfHalfTokens,

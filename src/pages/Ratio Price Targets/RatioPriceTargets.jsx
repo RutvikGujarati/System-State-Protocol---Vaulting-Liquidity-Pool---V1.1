@@ -235,7 +235,7 @@ export default function RatioPriceTargets() {
                     (theme === "darkTheme" && "text-white") ||
                     (theme === "dimTheme" && "dimThemeBlockView")
                   }`}
-                  style={{ textDecoration: "none", color: "inherit" }}
+                  style={{ textDecoration: "none", color: "inherit",marginLeft: "-350px" }}
                 >
                   VIEW ALL TRANSACTIONS{" "}
                   {seeFullPage ? <span> &uarr;</span> : <span> &darr;</span>}
