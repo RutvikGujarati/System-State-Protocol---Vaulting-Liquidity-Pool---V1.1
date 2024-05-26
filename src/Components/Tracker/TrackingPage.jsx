@@ -1146,7 +1146,7 @@ export default function TrackingPage() {
                       {/* <InfoBox data='Number of active wallets opening vaults' /> */}
                       <span
                         className={`${tooltip} hoverText tooltipAlign`}
-                        data-tooltip="The number of tokens in Auto-vaults * current price"
+                        data-tooltip="See white paper for more information"
                         data-flow="bottom"
                       >
                         {" "}
@@ -1158,7 +1158,7 @@ export default function TrackingPage() {
                     <div
                       className={`flex-grow-1 fontSize text-start  ${textTheme}`}
                     >
-                      <div className={`${textTitle} `}>$ AutoVaults TVL</div>
+                      <div className={`${textTitle} `}>STATE TOKEN AIRDROP</div>
                       {/* <div className={`${textTitle} `}>ESCROW VAULTS</div> */}
                       {/* <div className={`varSize ${spanDarkDim}`}><span className={`spanText ${spanDarkDim} fs-5`}>{perpeptualYieldLocked}</span></div> */}
                       {/* <div className={`varSize ${spanDarkDim}`}><span className={`spanText ${spanDarkDim} fs-5`}>{perpeptualYieldLocked}</span></div> */}
@@ -1168,7 +1168,8 @@ export default function TrackingPage() {
                           // onChange={(e) => addCommasForProtocolFee(e)}
                         >
                           {" "}
-                          $ {protocolFee}
+                          {/* $ {protocolFee} */}
+                           {0}
                         </span>
                       </div>
                     </div>

@@ -545,13 +545,6 @@
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "withdrawStuckETH",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"stateMutability": "payable",
 		"type": "receive"
 	},

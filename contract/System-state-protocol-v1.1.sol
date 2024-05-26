@@ -1064,7 +1064,6 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     PLSTokenPriceFeed private priceFeed;
     address private AdminAddress;
     address private BackendOperationAddress;
-    address private OracleWallet;
     using SafeMath for uint256;
     uint256 public ID = 1;
     uint256 private totalPSDshare;
@@ -1136,7 +1135,6 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     // Events
     event DepositEvent(
         uint256 ID,
-        bool txStatus,
         address indexed depositAddress,
         uint256 depositAmount,
         uint256 userUsdValue
@@ -1209,13 +1207,12 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
 
     constructor() {
         AdminAddress = 0x31348CDcFb26CC8e3ABc5205fB47C74f8dA757D6;
-        OracleWallet = 0x5E19e86F1D10c59Ed9290cb986e587D2541e942C;
         BackendOperationAddress = 0xb9B2c57e5428e31FFa21B302aEd689f4CA2447fE;
         priceFeed = PLSTokenPriceFeed(
             0x68d0934F1e1F0347aad5632084D153cDBfe07992
         );
         _transferOwnership(msg.sender);
-        Deployed_Time = block.timestamp;    
+        Deployed_Time = block.timestamp;
     }
 
     // Function to receive Ether. msg.data must be empty
@@ -1230,13 +1227,11 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     }
 
     function setAddresses(
-        address _oracleAddress,
         address _adminAddress,
         address _backendOperationAddress,
         address _priceFeedAddress
     ) public onlyOwner {
-        OracleWallet = _oracleAddress; // 7% fee address
-        AdminAddress = _adminAddress; // 1% fee address
+        AdminAddress = _adminAddress; // 10% fee address
         BackendOperationAddress = _backendOperationAddress; // calling backend functions
         priceFeed = PLSTokenPriceFeed(_priceFeedAddress);
     }
@@ -1255,7 +1250,7 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         uint256 ratioPriceTarget = (value).mul(500).div(1000); // Increment Price Target (iPT) Escrow Vaults - 50%
         uint256 escrowVault = (value).mul(300).div(1000); // Escrow Vault - 30.0%
         uint256 tokenParity = (value).mul(100).div(1000); // tokenParity - 10.0%
-        
+
         // before it was autovaults.
         uint256 ProtocolFees = (value).mul(100).div(1000); // Protocol Fee - 10%
 
@@ -1307,8 +1302,6 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
             uint256 ProtocolFees,
             uint256 DevelopmentFee
         ) = calculationFunction(value);
-        (bool success, ) = payable(OracleWallet).call{value: DevelopmentFee}("");
-
         uint256 PSDdistributionPercentage = (userUsdValue).mul(854).div(1000); // ● PSD Distribution Percentage 85.4%
         uint256 PSTdistributionPercentage = (value).mul(100).div(1000); // ● PST Distribution Percentage 10%
 
@@ -1344,7 +1337,7 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
 
         initializeTargetsForDeposit(msg.sender, ratioPriceTarget);
 
-        emit DepositEvent(ID, success, msg.sender, msg.value, userUsdValue);
+        emit DepositEvent(ID, msg.sender, msg.value, userUsdValue);
 
         uint256 escrowfundInUsdValue = (escrowVault.mul(price())) / 1 ether;
 
@@ -1504,8 +1497,8 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         uint256 userShare = (allRewardAmount * 99) / 100;
         // before it was 1%
         // uint256 adminShare = allRewardAmount - userShare;
-        
-        uint256 adminShare = 0;
+
+        uint256 adminShare = 0; // For all claim it is seted as 0 for now.
 
         (bool success, ) = payable(user).call{value: userShare}("");
         require(success, "User transaction failed.");
@@ -1586,82 +1579,9 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         }
     }
 
-    function getTotalReachedAmount() public view returns (uint256) {
-        uint256 totalReachedAmount = 0;
-
-        // Loop through all users with deposits
-        for (uint256 i = 0; i < usersWithDeposits.length; i++) {
-            address user = usersWithDeposits[i];
-            Target[] storage userTargets = targetMapping[user];
-
-            // Loop through all targets for the user
-            for (uint256 j = 0; j < userTargets.length; j++) {
-                if (!claimedTargets[user][j]) {
-                    // Check if the target is closed (reached) and not claimed
-                    Target storage target = userTargets[j];
-                    if (target.isClosed && price() >= target.ratioPriceTarget) {
-                        totalReachedAmount += target.TargetAmount;
-                    }
-                }
-            }
-        }
-
-        return totalReachedAmount;
-    }
-
-    function getReachedPriceTargets(
-        address user
-    ) public view returns (uint256[] memory) {
-        Target[] storage userTargets = targetMapping[user];
-        uint256[] memory reachedTargets = new uint256[](userTargets.length);
-        uint256 count = 0;
-
-        for (uint256 i = 0; i < userTargets.length; i++) {
-            if (!claimedTargets[user][i]) {
-                // Check if the target is closed (reached) and not claimed
-                Target storage target = userTargets[i];
-                if (target.isClosed && price() >= target.ratioPriceTarget) {
-                    reachedTargets[count] = target.TargetAmount;
-                    count++;
-                }
-            }
-        }
-
-        // Trim the array to remove any empty elements
-        uint256[] memory trimmedTargets = new uint256[](count);
-        for (uint256 i = 0; i < count; i++) {
-            trimmedTargets[i] = reachedTargets[i];
-        }
-
-        return trimmedTargets;
-    }
-
     struct UserTargetDistribution {
         address user;
         uint256 distributedAmount;
-    }
-
-    // View function to get the distributed tokens for all users
-    function getUsersDistributedTokens()
-        public
-        view
-        returns (UserTargetDistribution[] memory)
-    {
-        UserTargetDistribution[]
-            memory distributions = new UserTargetDistribution[](
-                usersWithDeposits.length
-            );
-
-        // Loop through all users with deposits and populate their distributed token details
-        for (uint256 i = 0; i < usersWithDeposits.length; i++) {
-            address user = usersWithDeposits[i];
-            distributions[i] = UserTargetDistribution({
-                user: user,
-                distributedAmount: userBucketBalances[user]
-            });
-        }
-
-        return distributions;
     }
 
     mapping(address => mapping(uint256 => bool)) private claimedTargets; // Mapping to track claimed targets
@@ -1756,19 +1676,9 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     function getAddresses()
         public
         view
-        returns (
-            address AdminAddr,
-            address BackendAddr,
-            address PriceFeeAddr,
-            address oracleWallet
-        )
+        returns (address AdminAddr, address BackendAddr, address PriceFeeAddr)
     {
-        return (
-            AdminAddress,
-            BackendOperationAddress,
-            address(priceFeed),
-            OracleWallet
-        );
+        return (AdminAddress, BackendOperationAddress, address(priceFeed));
     }
 
     function price() public view returns (uint256) {

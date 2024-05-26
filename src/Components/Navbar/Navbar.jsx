@@ -13,9 +13,6 @@ import { Web3WalletContext } from "../../Utils/MetamskConnect";
 import { allInOnePopup } from "../../Utils/ADDRESSES/Addresses";
 import { functionsContext } from "../../Utils/Functions";
 import { ethers } from "ethers";
-import axios from 'axios';
-import abi from "./abi.json"
-
 Modal.setAppElement("#root");
 export default function Index() {
   const { themeMode, setThemeMode, theme } = useContext(themeContext);
@@ -29,45 +26,16 @@ export default function Index() {
   } = useContext(Web3WalletContext);
   const { getPrice, socket } = useContext(functionsContext);
   const [price, setprice] = useState(0);
-  const fetchAndUpdatePrice = async () => {
-    const contractAddress = "0x68d0934F1e1F0347aad5632084D153cDBfe07992";
-    const providerURL = 'https://pulsechain-testnet-rpc.publicnode.com';
-    const privateKey = '0x8ede05ba12e23a241c12d2cad5831ec529b19e937d687527239db8f7bca38737';
+
+  const fetchPrice = async () => {
     try {
-        // Fetch price from CoinGecko
-        const response = await axios.get('https://api.coingecko.com/api/v3/simple/price', {
-            params: {
-                ids: 'pulsechain',
-                vs_currencies: 'usd'
-            }
-        });
-        const fetchedPrice = response.data.pulsechain.usd;
-
-        console.log("PLS price:", fetchedPrice);
-
-        // Update price in smart contract
-        const provider = new ethers.providers.JsonRpcProvider(providerURL);
-        const wallet = new ethers.Wallet(privateKey, provider);
-        const contract = new ethers.Contract(contractAddress, abi, wallet);
-
-        const tx = await contract.updatePrice(ethers.utils.parseEther(fetchedPrice.toString()));
-
-        // Wait for the transaction to be mined
-        const receipt = await tx.wait();
-
-        // Log the transaction receipt
-        console.log("Transaction receipt:", receipt);
-
-        // Fetch updated price from smart contract
-        const updatedPrice = await contract.getPrice();
-        const formattedPrice = ethers.utils.formatEther(updatedPrice);
-        setprice(formattedPrice);
-
+      let price = await getPrice();
+      let formattedPrice = ethers.utils.formatEther(price || "0");
+      setprice(formattedPrice);
     } catch (error) {
-        console.error("Error:", error);
+      console.error("error:", error);
     }
-};
-
+  };
 
   const [connectedIcon, setConnectedIcon] = useState(mumbaiIcon);
   const [themeIcon, setThemeIcon] = useState(
@@ -116,13 +84,12 @@ export default function Index() {
     getIcon();
     getThemeIcon();
     if (userConnected) {
-      fetchAndUpdatePrice();
-      const interval = setInterval(fetchAndUpdatePrice, 120000); // 300000ms = 5 minute
-      return () => clearInterval(interval); // Cleanup interval on component unmount
+      fetchPrice();
+      ProvidermetamaskLogin();
     }
   }, [currencyName, theme, socket, userConnected]);
-
   useEffect(() => {
+    // allInOnePopup(`info`, `Welcome to System State Protocol`, `This page is a demo page only`, `OK`, true)
     if (!userConnected) {
       ProvidermetamaskLogin();
     }
@@ -154,6 +121,9 @@ export default function Index() {
             </div>
 
             <div className={`d-flex navBar-btn me-3 ${isOnInscription}`}>
+              {/* <Link className={`nav-link my-auto docs mx-3 ${location.pathname === '/inscription' && 'ins active'}`} role="button" to={'inscription'}>
+        Inscription
+    </Link> */}
               <Link
                 className={`nav-link my-auto docs mx-3 ${
                   location.pathname === "/Create-Vaults" && "ins active"
@@ -202,6 +172,7 @@ export default function Index() {
             >
               <div className="theme-btn-main ">
                 {themeIcon}
+                {/* <i className="far fa-sun fa-fw p-0 fs-6 w-100 h-100" icon="" data-href="#fa-sun-bright" /> */}
               </div>
             </button>
             <ul
@@ -235,6 +206,7 @@ export default function Index() {
                     className="far fa-sun fa-fw dropdown-item-icon theme-icon me-1"
                     data-href="#fa-sun-bright"
                   />
+                  {/* <img className="" src={lightMode} width={'25px'} height={'25px'} alt="" /> */}
                   <span className="ms-1">Light</span>
                 </button>
               </li>
@@ -258,6 +230,11 @@ export default function Index() {
                   Dim
                 </button>
               </li>
+              {/* <li>
+                <button type="button" value={themeMode} className={`dropdown-item theme-btn ${themeMode === "dark" && "click"}`} data-bs-theme-value="dark" onClick={() => { setThemeMode("dark"); }} >
+                  <i className="far fa-moon fa-fw dropdown-item-icon theme-icon me-1" data-href="#fa-moon" ></i>  Dark
+                </button>
+              </li> */}
             </ul>
 
             <button
@@ -273,6 +250,7 @@ export default function Index() {
               aria-expanded="false"
               style={{ width: "2.375rem", height: "2.375rem" }}
             >
+              {/* <div className="theme-btn-main minLogo h-100 w-100"> */}
               <img
                 className={`w-100 h-100  ${
                   (theme === "dimTheme" && "logoDimTwo") ||
@@ -281,6 +259,7 @@ export default function Index() {
                 src={connectedIcon}
                 data-href="#fa-sun-bright"
               />
+              {/* </div> */}
             </button>
             <ul
               className={`dropdown-menu ${
