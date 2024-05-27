@@ -290,7 +290,6 @@ export default function Functions({ children }) {
                 // display a warning indicating that token parity has been reached
                 if (isParityReached && PST_DepositInNumber > 0) {
                     allInOnePopup(null, 'Token Parity Reached', null, `OK`, null);
-                    // You can trigger a pop-up or display a message to the user here
                 }
     
                 // Return whether token parity is reached
@@ -298,7 +297,6 @@ export default function Functions({ children }) {
     
             } catch (error) {
                 console.error('getParityReached error:', error);
-                // You can handle errors here as needed
             }
         }
     };

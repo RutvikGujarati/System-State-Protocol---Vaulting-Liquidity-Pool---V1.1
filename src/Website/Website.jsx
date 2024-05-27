@@ -6,7 +6,7 @@ import SystemStateLogo from "../Assets/High-Resolutions-Svg/Updated/logo.svg";
 import TwitterXIcon from "../Assets/High-Resolutions-Svg/Updated/twitterx.svg";
 import TelegramIcon from "../Assets/High-Resolutions-Svg/Updated/telegram.svg";
 import { themeContext } from "../App";
-import Quick_Guide from "../Assets/Docs/Quick Guide - System State V1.3.pdf";
+import Quick_Guide from "../Assets/Docs/Quick Guide - System State V1.5.pdf";
 import { Helmet } from "react-helmet";
 export default function Website() {
   const { navigateToDEX } = useContext(themeContext);

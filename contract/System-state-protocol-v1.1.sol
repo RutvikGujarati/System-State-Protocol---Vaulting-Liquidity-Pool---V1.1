@@ -13,6 +13,7 @@ contract PLSTokenPriceFeed {
     address private BackendOperationAddress;
 
     // in .env file there is private key of this account address to change price of PLS token.
+    // PriceFeed contract is only used for testnet
 
     constructor() {
         priceInUSD = 1000000000000000;
@@ -427,7 +428,6 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     uint256 public constant FIXED_POINT = 1e6;
     uint256 public Deployed_Time;
     uint256 public NumberOfUser;
-    uint256 public percentProfit;
     struct Deposit {
         address depositAddress;
         uint256 depositAmount; // Deposit amount in Eth.
@@ -479,7 +479,7 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     mapping(uint256 => Deposit[]) private depositMapping;
     mapping(address => uint256) public PSDSharePerUser;
     mapping(address => uint256) public PSTSharePerUser;
-    mapping(address => uint256) public userBucketBalances; // Ye users ki bucket hai
+    mapping(address => uint256) public userBucketBalances;
     mapping(address => uint256) public PSTdistributionPercentageMapping;
     mapping(address => uint256) public PSDdistributionPercentageMapping;
     mapping(address => uint256) private PSTClaimed;
@@ -590,6 +590,13 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         priceFeed = PLSTokenPriceFeed(_priceFeedAddress);
     }
 
+
+    function setPriceFeedAddress(
+        address _priceFeedAddress
+    ) public onlyOwner {
+        priceFeed = PLSTokenPriceFeed(_priceFeedAddress);
+    }
+
     uint256 public totalProtocolFeesTransferred;
 
     // Function to get the total protocol fees transferred to the admin address
@@ -601,17 +608,12 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     function calculationFunction(
         uint256 value
     ) private returns (uint256, uint256, uint256, uint256, uint256) {
-        uint256 ratioPriceTarget = (value).mul(500).div(1000); // Increment Price Target (iPT) Escrow Vaults - 50%
+        uint256 ratioPriceTarget = (value).mul(500).div(1000); // Ratio Price Target (rPT) - 50%
         uint256 escrowVault = (value).mul(300).div(1000); // Escrow Vault - 30.0%
         uint256 tokenParity = (value).mul(100).div(1000); // tokenParity - 10.0%
 
-        // before it was autovaults.
-        uint256 ProtocolFees = (value).mul(100).div(1000); // Protocol Fee - 10%
+        uint256 ProtocolFees = (value).mul(100).div(1000); //(oracle, automation, development)
 
-        // Development Fee (oracle, automation, development) - was 7%
-        // uint256 DevelopmentFee = (value).mul(700).div(10000);
-
-        //now it is 0%
         uint256 DevelopmentFee = 0;
 
         payable(AdminAddress).transfer(ProtocolFees);
@@ -647,8 +649,6 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         uint256 value = msg.value;
         require(value > 0, "Enter a valid amount");
         uint256 userUsdValue = value.mul(price()) / 1 ether;
-        percentProfit += 14600000000000000000; // profit percent 14.6%
-
         (
             uint256 ratioPriceTarget,
             uint256 escrowVault,
@@ -1078,10 +1078,6 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
 
                 // Check if the target is not closed and has been reached
                 if (!target.isClosed && price() >= target.ratioPriceTarget) {
-                    // Calculate the percentage of profit to be distributed for this target
-                    uint256 targetPercentage = (target.ratio * 1 ether) / 10;
-                    percentProfit += targetPercentage;
-
                     // Loop through all users to distribute the target rewards
                     for (uint256 k = 0; k < usersWithDeposits.length; k++) {
                         address userToDistribute = usersWithDeposits[k];
@@ -1149,8 +1145,6 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
             for (uint256 j = 0; j < targetMapping[thisUser].length; j++) {
                 Target storage target = targetMapping[thisUser][j];
                 if (!target.isClosed && price() >= target.ratioPriceTarget) {
-                    uint256 targetPercentage = (target.ratio * 1 ether) / 10;
-                    percentProfit += targetPercentage;
                     for (uint256 k = 0; k < usersWithDeposits.length; k++) {
                         address user = usersWithDeposits[k];
                         uint256 distributeEachTargetPercentage = (PSDdistributionPercentageMapping[

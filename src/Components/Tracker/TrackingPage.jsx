@@ -1164,12 +1164,12 @@ export default function TrackingPage() {
                       {/* <div className={`varSize ${spanDarkDim}`}><span className={`spanText ${spanDarkDim} fs-5`}>{perpeptualYieldLocked}</span></div> */}
                       <div className={`varSize ${spanDarkDim}`}>
                         <span
-                          className={`spanText ${spanDarkDim} fs-5`}
+                          className={`spanText ${spanDarkDim} fs-6`}
                           // onChange={(e) => addCommasForProtocolFee(e)}
                         >
                           {" "}
                           {/* $ {protocolFee} */}
-                           {0}
+                           {0} points
                         </span>
                       </div>
                     </div>
