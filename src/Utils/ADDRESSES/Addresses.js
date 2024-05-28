@@ -97,7 +97,8 @@ const PRICE_FEED_ADDRESS = '0x68d0934F1e1F0347aad5632084D153cDBfe07992'
 // const PSD_ADDRESS = "0x1F075939fccBFdF91912ECC477bdE154e215967c"// deployed for close vaults share deploy full working testing address (working with all things )
 // const PSD_ADDRESS = "0x7410F4b9612B36b268adEc1224EcD93547392841"// deployed for close vaults share deploy full working testing address (working with all things with text Updation.)
 // const PSD_ADDRESS = "0x9f90c9f98333e2bB0061f63Ff9Fb5Fc0219d3C64"// deployed for close vaults share deploy full working testing address (working with all things with text Updation.)
-const PSD_ADDRESS = "0x030F82D640eA3ec4AdbEd799B70081F6Ba190e5d"// final for live testnet
+const PSD_ADDRESS = "0xc9ddB5f78C18FF192BF81DbDd847fAf64a85c6Db"// final for live testnet
+// const PSD_ADDRESS = "0x285A2c31ecfA3FCB0545705d310d244581049FAc"//  for matic live testnet
 
 
 // const System_State_Ratio_Vaults_V1 = "0x7D58E2775b4dbdd84BCbec15A36A146a1BaDfB5f";

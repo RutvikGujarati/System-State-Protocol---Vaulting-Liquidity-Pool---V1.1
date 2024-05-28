@@ -2,39 +2,49 @@
 
 // File: PLSTokenPriceFeed.sol
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
-contract PLSTokenPriceFeed {
-    uint256 private priceInUSD;
 
-    /*
-    this BackendOperationAddress address is the main authority address. it is handle to change PLS price and used in other two functions of System_State_Ratio_Vaults-V1 contract these functions are there we want to claim tokens from there with this acocunt address: "claimTargetsByBackend" , "claimEscrowByBackend". 
-    */
-    address private BackendOperationAddress;
+// solhint-disable-next-line interface-starts-with-i
+interface AggregatorV3Interface {
+  function decimals() external view returns (uint8);
 
-    // in .env file there is private key of this account address to change price of PLS token.
-    // PriceFeed contract is only used for testnet
+  function description() external view returns (string memory);
 
-    constructor() {
-        priceInUSD = 1000000000000000;
-        // priceInUSD = 1 ether;
-        BackendOperationAddress = 0xb9B2c57e5428e31FFa21B302aEd689f4CA2447fE;
+  function version() external view returns (uint256);
+
+  function getRoundData(
+    uint80 _roundId
+  ) external view returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound);
+
+  function latestRoundData()
+    external
+    view
+    returns (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound);
+}
+
+contract PLSPriceOracle {
+    AggregatorV3Interface internal priceFeed;
+
+    // Event to log price updates
+    event PriceUpdated(uint256 price);
+
+    // Constructor to initialize the aggregator address
+    constructor(address _priceFeedAddress) {
+        priceFeed = AggregatorV3Interface(_priceFeedAddress);
     }
 
-    modifier onlyBackend() {
-        require(
-            msg.sender == BackendOperationAddress,
-            "Only backend operation can call this function."
-        );
-        _;
-    }
-
-    function updatePrice(uint256 _newPriceInUSD) external onlyBackend {
-        priceInUSD = _newPriceInUSD;
-    }
-
-    function getPrice() external view returns (uint256) {
-        return priceInUSD;
+    // Function to fetch the latest price of PLS token in USD
+    function getPLSPrice() public view returns (int256) {
+        (
+            ,
+            int256 price,
+            ,
+            ,
+            
+        ) = priceFeed.latestRoundData();
+        
+        return price;
     }
 }
 
@@ -42,7 +52,7 @@ contract PLSTokenPriceFeed {
 
 // OpenZeppelin Contracts (last updated v4.9.0) (utils/math/SafeMath.sol)
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
 // CAUTION
 // This version of SafeMath should only be used with Solidity 0.8 or later,
@@ -416,7 +426,7 @@ abstract contract Ownable is Context {
 }
 
 contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
-    PLSTokenPriceFeed private priceFeed;
+    PLSPriceOracle private priceFeed;
     address private AdminAddress;
     address private BackendOperationAddress;
     using SafeMath for uint256;
@@ -562,8 +572,8 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     constructor() {
         AdminAddress = 0x31348CDcFb26CC8e3ABc5205fB47C74f8dA757D6;
         BackendOperationAddress = 0xb9B2c57e5428e31FFa21B302aEd689f4CA2447fE;
-        priceFeed = PLSTokenPriceFeed(
-            0x68d0934F1e1F0347aad5632084D153cDBfe07992
+        priceFeed = PLSPriceOracle(
+            0x81836D4cE9c19A52dC79Ef914E7A3b61E41818B7
         );
         _transferOwnership(msg.sender);
         Deployed_Time = block.timestamp;
@@ -587,14 +597,14 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     ) public onlyOwner {
         AdminAddress = _adminAddress; // 10% fee address
         BackendOperationAddress = _backendOperationAddress; // calling backend functions
-        priceFeed = PLSTokenPriceFeed(_priceFeedAddress);
+        priceFeed = PLSPriceOracle(_priceFeedAddress);
     }
 
 
     function setPriceFeedAddress(
         address _priceFeedAddress
     ) public onlyOwner {
-        priceFeed = PLSTokenPriceFeed(_priceFeedAddress);
+        priceFeed = PLSPriceOracle(_priceFeedAddress);
     }
 
     uint256 public totalProtocolFeesTransferred;
@@ -611,7 +621,6 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         uint256 ratioPriceTarget = (value).mul(500).div(1000); // Ratio Price Target (rPT) - 50%
         uint256 escrowVault = (value).mul(300).div(1000); // Escrow Vault - 30.0%
         uint256 tokenParity = (value).mul(100).div(1000); // tokenParity - 10.0%
-
 
         uint256 ProtocolFees = (value).mul(100).div(1000); //(oracle, automation, development)
 
@@ -1037,7 +1046,7 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     }
 
     function price() public view returns (uint256) {
-        return priceFeed.getPrice();
+        return uint256(priceFeed.getPLSPrice());
     }
 
     function getPSTClaimed(address _user) public view returns (uint256) {

@@ -74,6 +74,9 @@ export default function TrackingPage() {
   const [toBeClaimed, setToBeClaimed] = useState("0.0000");
   const [parityDollardeposits, setParityDollardeposits] = useState("0");
   const [parityTokensDeposits, setParityTokensDeposits] = useState("0");
+  const [paritydeposit, setParitydeposit] = useState("0");
+  const [totalsumofPOints, setsumofPoints] = useState("0");
+  const [parityTokensDeposit, setParityTokensDeposit] = useState("0");
   const [parityDollarClaimed, setParityDollarClaimed] = useState("0");
   const [parityTokensClaimed, setParityTokensClaimed] = useState("0");
   const [IsParityReached, setIsParityReached] = useState(false);
@@ -119,11 +122,13 @@ export default function TrackingPage() {
       let formattedIptAndRptReward = ethers.utils.formatEther(
         iptAndRptReward || "0"
       );
-  
+
       // Get the user's distributed tokens
-      let userDistributedTokens = await getUserDistributedTokens(accountAddress);
+      let userDistributedTokens = await getUserDistributedTokens(
+        accountAddress
+      );
       let formattedUserDistributedTokens = parseFloat(userDistributedTokens);
-  
+
       // Get the parity share tokens claimable amount
       let parityShareTokensDetail = await getParityDollarClaimed(
         accountAddress
@@ -133,21 +138,21 @@ export default function TrackingPage() {
       let formattedParityClaimableAmount = ethers.utils.formatEther(
         parityClaimableAmount || "0"
       );
-  
+
       // Get the protocol fee
       let protocolFeeDetail = await getProtocolFee(accountAddress);
       let protocolAmount = protocolFeeDetail?.protocolAmount || 0;
-  
+
       // Calculate the total amount to be claimed
       let totalToBeClaimed =
         parseFloat(formattedIptAndRptReward) +
         parseFloat(formattedParityClaimableAmount) +
         parseFloat(formattedUserDistributedTokens) + // Use user's distributed tokens instead of reached targets
         parseFloat(protocolAmount);
-  
+
       // Format the total amount
       let formattedTotalToBeClaimed = totalToBeClaimed.toFixed(4);
-  
+
       // Update the state with the total amount to be claimed
       setToBeClaimed(formattedTotalToBeClaimed);
     } catch (error) {
@@ -155,7 +160,6 @@ export default function TrackingPage() {
       // Handle error gracefully, e.g., display an error message to the user
     }
   };
-  
 
   // Done
   // Done
@@ -198,6 +202,32 @@ export default function TrackingPage() {
       setParityTokensDeposits(fixed);
     } catch (error) {
       console.error(error);
+    }
+  };
+  const ParityTokensDepositforPoint = async () => {
+    try {
+      let ParityTokensDeposits = await getParityTokensDeposits(accountAddress);
+      let formattedParityTokensDeposits = ethers.utils.formatEther(
+        ParityTokensDeposits || "0"
+      );
+      let fixed =
+        parseFloat(formattedParityTokensDeposits)
+          .toFixed(2)
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " ";
+      setParitydeposit(fixed);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const totalsumofPoints = () => {
+    try {
+      let sum =
+        parseFloat(paritydeposit.replace(/,/g, "")) +
+        parseFloat(parityDollardeposits.replace(/,/g, ""));
+      setsumofPoints(sum.toFixed(2));
+    } catch (error) {
+      console.log(error);
     }
   };
   const PSDClaimed = async () => {
@@ -449,30 +479,33 @@ export default function TrackingPage() {
   const claimAllReward = async () => {
     console.log("Number(toBeClaimed):", Number(toBeClaimed));
     console.log("toBeClaimed:", toBeClaimed);
-  
+
     if (Number(toBeClaimed) <= 0) {
       allInOnePopup(null, "Insufficient Balance", null, `OK`, null);
       return;
     }
-  
+
     try {
       // allInOnePopup(null, 'Processing...', 'Please wait while we claim your rewards', `OK`, null);
       const allReward = await getClaimAllReward(accountAddress);
       await allReward.wait(); // Wait for the transaction to be confirmed
       setToBeClaimedReward(allReward);
-      allInOnePopup(null, 'Successfully Claimed', null, `OK`, null);
-      console.log('allReward:', allReward);
+      allInOnePopup(null, "Successfully Claimed", null, `OK`, null);
+      console.log("allReward:", allReward);
     } catch (error) {
-      if (error.code === 4001) { // MetaMask user rejected the transaction
-        allInOnePopup(null, 'Transaction Rejected', null, `OK`, null);
-        console.error('User rejected the transaction:', error.message);
+      if (error.code === 4001) {
+        // MetaMask user rejected the transaction
+        allInOnePopup(null, "Transaction Rejected", null, `OK`, null);
+        console.error("User rejected the transaction:", error.message);
       } else {
-        allInOnePopup(null, 'Transaction Rejected.', null, `OK`, null);
-        console.error('Transaction error:', error?.data?.message || error.message);
+        allInOnePopup(null, "Transaction Rejected.", null, `OK`, null);
+        console.error(
+          "Transaction error:",
+          error?.data?.message || error.message
+        );
       }
     }
   };
-  
 
   const FetchBalance = async () => {
     try {
@@ -767,6 +800,8 @@ export default function TrackingPage() {
       ToBeClaimed();
       ParityDollardeposits();
       ParityTokensDeposits();
+      ParityTokensDepositforPoint();
+      totalsumofPoints();
       PSDClaimed();
       mathPSD();
       PSTClaimed();
@@ -1164,12 +1199,12 @@ export default function TrackingPage() {
                       {/* <div className={`varSize ${spanDarkDim}`}><span className={`spanText ${spanDarkDim} fs-5`}>{perpeptualYieldLocked}</span></div> */}
                       <div className={`varSize ${spanDarkDim}`}>
                         <span
-                          className={`spanText ${spanDarkDim} fs-6`}
+                          className={`spanText ${spanDarkDim} fs-5`}
                           // onChange={(e) => addCommasForProtocolFee(e)}
                         >
                           {" "}
                           {/* $ {protocolFee} */}
-                           {0} points
+                          {totalsumofPOints} points
                         </span>
                       </div>
                     </div>

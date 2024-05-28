@@ -47,7 +47,7 @@ export default function MetamskConnect({ children }) {
       metamaskAccounts = await window?.ethereum?.request({
         method: "eth_requestAccounts",
       });
-      if (window?.ethereum?.networkVersion == '943' || window?.ethereum?.networkVersion == '11155111' || window?.ethereum?.networkVersion == '5' || window?.ethereum?.networkVersion == '69' || window?.ethereum?.networkVersion == '80001') {
+      if (window?.ethereum?.networkVersion == '943'||window?.ethereum?.networkVersion == '80002' || window?.ethereum?.networkVersion == '11155111' || window?.ethereum?.networkVersion == '5' || window?.ethereum?.networkVersion == '69' || window?.ethereum?.networkVersion == '80001' ) {
         return metamaskAccounts[0]
       } else {
         window.alert("Connect to Mumbai , Sepolia , Mumbai, Pulsechain")
@@ -81,6 +81,11 @@ export default function MetamskConnect({ children }) {
         // npm install ethers
         // console.log('Metamask Balance Decimal value' ,ethers.utils.formatEther(balance))
         if (window?.ethereum?.networkVersion == '80001') {
+          setWalletBalance(ethers?.utils?.formatEther(balance || '0'))
+          setNetworkName('Polygon Mumbai')
+          setCurrencyName(`MATIC`)
+        }
+        else if (window?.ethereum?.networkVersion == '80002') {
           setWalletBalance(ethers?.utils?.formatEther(balance || '0'))
           setNetworkName('Polygon Mumbai')
           setCurrencyName(`MATIC`)
