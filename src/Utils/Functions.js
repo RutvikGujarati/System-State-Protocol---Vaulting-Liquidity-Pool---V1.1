@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import PSD_ABI_UP from '../Utils/ABI/System-state-protocol-v1.1.json'
-import { PSD_ADDRESS, allInOnePopup } from './ADDRESSES/Addresses';
+import State_abi from '../Utils/ABI/state_token.json'
+import { PSD_ADDRESS, state_token, allInOnePopup } from './ADDRESSES/Addresses';
 import { Web3WalletContext } from './MetamskConnect';
 import { ethers } from 'ethers';
 export const functionsContext = createContext();
@@ -19,6 +20,17 @@ export default function Functions({ children }) {
             console.error('getProvider error:', error);
         }
     }
+    const getStatetokenContract = async () => {
+        try {
+            const provider = await getProvider();
+            const signer = provider.getSigner();
+            const state_token_contract = new ethers.Contract(state_token, State_abi, signer);
+            return state_token_contract
+        } catch (error) {
+            console.error('getStateToken:', error);
+        }
+    }
+
     const getPsdContract = async () => {
         try {
             const provider = await getProvider();
@@ -69,6 +81,7 @@ export default function Functions({ children }) {
             console.error('getPSDclaimed error:', error);
         }
     }
+
 
     const getTimeStampForCreateValut = async () => {
         try {
@@ -124,22 +137,22 @@ export default function Functions({ children }) {
         }
     }
 
-    const getDistributedTokens = async (accountAddress)=>{
-        try{
+    const getDistributedTokens = async (accountAddress) => {
+        try {
             let contract = await getPsdContract();
 
             const tokens = await contract.getDistributedTokens(accountAddress);
 
-             // Convert the BigNumber values to readable format
-             const PSDTokens = ethers.utils.formatUnits(tokens[0], 18); // Assuming 18 decimals for PSD token
-             const PSTTokens = ethers.utils.formatUnits(tokens[1], 18); 
+            // Convert the BigNumber values to readable format
+            const PSDTokens = ethers.utils.formatUnits(tokens[0], 18); // Assuming 18 decimals for PSD token
+            const PSTTokens = ethers.utils.formatUnits(tokens[1], 18);
 
-        return {
-            PSDTokens,
-            PSTTokens
-        };
+            return {
+                PSDTokens,
+                PSTTokens
+            };
 
-        }catch(error){
+        } catch (error) {
             console.log(error)
         }
     }
@@ -171,6 +184,107 @@ export default function Functions({ children }) {
             console.error('handleDeposit error:', error);
         }
     }
+    const BuyTokens = async (quantity,price) => {
+        try {
+            allInOnePopup(null, 'Buying....', null, `OK`, null)
+
+            const contract = await getStatetokenContract();
+            const value = ethers.utils.parseEther(price.toString());
+
+            let BuyTx = await contract.buyTokens(
+                 quantity,{value}
+            )
+            await BuyTx.wait();
+            allInOnePopup(null, 'successfully bought', null, `OK`, null)
+            setSocket(prevBool => !prevBool);
+            return true
+        } catch (error) {
+            allInOnePopup(null, 'Transaction Rejected', null, `OK`, null)
+
+            console.log(error)
+        }
+    }
+    const holdTokens = async (accountAddress) => {
+        try {
+            const contract = await getStatetokenContract();
+            if (!contract) {
+                throw new Error("Contract is not initialized");
+            }
+            const holdTokens = await contract.balanceOfUser(accountAddress); // Use balanceOf instead of balanceOfUser
+            console.log(holdTokens)
+            return holdTokens;
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    const getTotalMintedTokens = async () => {
+        try {
+            const contract = await getStatetokenContract();
+            const totalSupply = await contract.totalSupply();
+            const formattedTotalSupply = ethers.utils.formatEther(totalSupply);
+            return formattedTotalSupply;
+        } catch (error) {
+            console.error('Error getting total minted tokens:', error);
+            throw error;
+        }
+    };
+    const handleDepositAutovaults = async (amount) => {
+        console.log('amountx:', amount);
+
+        try {
+            allInOnePopup(null, 'Create a New Vault', null, `OK`, null);
+
+            const parsedAmount = await getParseEther(amount);
+            let contract = await getPsdContract();
+
+            // Estimate gas manually to get more information
+            let gasEstimate;
+            try {
+                gasEstimate = await contract.estimateGas.depositAndAutoVaults({
+                    value: parsedAmount
+                });
+                console.log('Estimated gas:', gasEstimate.toString());
+            } catch (gasError) {
+                console.error('Gas estimation failed:', gasError);
+                allInOnePopup(null, 'Gas estimation failed', null, `OK`, null);
+                return;
+            }
+
+            let depositTx = await contract.depositAndAutoVaults({
+                value: parsedAmount,
+                gasLimit: gasEstimate // Use the manually estimated gas limit
+            });
+
+            await depositTx.wait();
+            allInOnePopup(null, 'Done - Inflation Locked', null, `OK`, null);
+            console.log('depositTx:', depositTx);
+            setSocket(prevBool => !prevBool);
+            return true;
+        } catch (error) {
+            allInOnePopup(null, 'Transaction Rejected', null, `OK`, null);
+            console.error('handleDeposit error:', error);
+        }
+    }
+
+    // Fetch the Auto-Vault amount for the current user
+    const fetchAutoVaultAmount = async (address) => {
+        try {
+            if (!address) {
+                throw new Error("Address is required");
+            }
+
+            let contract = await getPsdContract(); // Replace getPsdContract with the function to get your contract instance
+            let autoVaultAmount = await contract.getAutovaults(address);
+            let parsedAmount = ethers.utils.formatEther(autoVaultAmount);
+
+            console.log("AutoVault amount:", parsedAmount);
+            return parsedAmount;
+        } catch (error) {
+            console.error('fetchAutoVaultAmount error:', error);
+            return "0"; // Return "0" as a string to indicate an error or absence of value
+        }
+    };
+
     const handle_Claim_IPT_and_RPT = async (address) => {
         if (address) {
             let bucketBalance = await getToBeClaimed(address)
@@ -274,33 +388,36 @@ export default function Functions({ children }) {
         if (address) {
             try {
                 // Get the user's deposited PST tokens
-                let PST_Deposit = await getParityTokensDeposits(accountAddress);
-                let PST_Deposit_formatted = ethers.utils.formatEther(PST_Deposit || '0');
-                let PST_DepositInNumber = Number(PST_Deposit_formatted);
-    
-                // Get the total amount of PST tokens distributed to the user
-                let ParityAmountDistributed = await getParityAmountDistributed(accountAddress);
-                let ParityAmountDistributed_formatted = await getFormatEther(ParityAmountDistributed || '0');
-                let ParityAmountDistributed_InNumer = Number(ParityAmountDistributed_formatted);
-    
-                // Check if token parity is reached
-                let isParityReached = PST_DepositInNumber === ParityAmountDistributed_InNumer;
-    
-                // If token parity is reached and the user has deposited some PST tokens,
-                // display a warning indicating that token parity has been reached
-                if (isParityReached && PST_DepositInNumber > 0) {
-                    allInOnePopup(null, 'Token Parity Reached', null, `OK`, null);
+                let contract = await getPsdContract();
+                let isParityReachedOrExceed = await contract.isParityReachedOrExceeded(address);
+                console.log(`isParityReachedOrExceed for ${address}:`, isParityReachedOrExceed);
+
+                // Get previous parity state from session storage
+                const parityStateKey = `parityState_${address}`;
+                const previousParityState = sessionStorage.getItem(parityStateKey);
+                console.log(`previousParityState for ${address}:`, previousParityState);
+
+                // Determine the new parity state
+                let newParityState = isParityReachedOrExceed ? 'reached' : 'not_reached';
+                console.log(`newParityState for ${address}:`, newParityState);
+
+                // Show the popup only if the parity state has changed to 'reached'
+                if (newParityState === 'reached' && previousParityState !== 'reached') {
+                    allInOnePopup(null, "The 10% parity fee will stop once the user reaches token parity", null, `OK`, null);
+                    sessionStorage.setItem(parityStateKey, 'reached');
+                } else if (newParityState === 'not_reached' && previousParityState !== 'not_reached') {
+                    // Clear session storage if parity is not reached or exceeded
+                    sessionStorage.setItem(parityStateKey, 'not_reached');
                 }
-    
-                // Return whether token parity is reached
-                return isParityReached;
-    
+
+                // Return whether token parity is reached or exceeded
+                return { isParityReachedOrExceed };
+
             } catch (error) {
                 console.error('getParityReached error:', error);
             }
         }
     };
-    
 
 
     const handle_Claim_Parity_Tokens = async (address) => {
@@ -379,7 +496,7 @@ export default function Functions({ children }) {
         }
     }
 
-  
+
     const isClaimed = async (accountAddress) => {
         try {
             let contract = await getPsdContract();
@@ -389,14 +506,14 @@ export default function Functions({ children }) {
             console.log(error);
         }
     }
-    const getUserDistributedTokens  = async (address) => {
+    const getUserDistributedTokens = async (address) => {
         try {
             let contract = await getPsdContract();
-           // Fetch the distributed tokens for the user
-        let distributedTokens = await contract.getUserReceivedTokens(address);
-        let formattedDistributedTokens = await getFormatEther(distributedTokens);
+            // Fetch the distributed tokens for the user
+            let distributedTokens = await contract.getUserReceivedTokens(address);
+            let formattedDistributedTokens = await getFormatEther(distributedTokens);
 
-          
+
 
             console.log("distributed amount,,...... ", formattedDistributedTokens)
 
@@ -535,17 +652,17 @@ export default function Functions({ children }) {
         }
     }
 
-   const getAndMarkReachedTarget = async (accountAddress)=>{
-    try{
-        let contract = await getPsdContract();
-        let getAndMarkReachedTarget = await contract.getAndMarkReachedTargets(accountAddress);
-        let getAndMarkReachedTarget_InStr = await getAndMarkReachedTarget.toString();
+    const getAndMarkReachedTarget = async (accountAddress) => {
+        try {
+            let contract = await getPsdContract();
+            let getAndMarkReachedTarget = await contract.getAndMarkReachedTargets(accountAddress);
+            let getAndMarkReachedTarget_InStr = await getAndMarkReachedTarget.toString();
 
             return getAndMarkReachedTarget_InStr;
-    }catch(error){
-        console.log(error)
+        } catch (error) {
+            console.log(error)
+        }
     }
-   }
     // unused
     const getParityDollarClaimed = async (address) => {
         // address = accountAddress
@@ -645,7 +762,8 @@ export default function Functions({ children }) {
     }
 
     useEffect(() => {
-        getUserDistributedTokens ()
+        getUserDistributedTokens()
+        fetchAutoVaultAmount()
         const intervalId = setInterval(() => {
             userConnected && setSocket((prevBool) => !prevBool);
         }, 5000);
@@ -662,6 +780,7 @@ export default function Functions({ children }) {
                 socket,
                 getParityReached,
                 handleDeposit,
+                fetchAutoVaultAmount,
                 handle_Claim_IPT_and_RPT,
                 handle_Claim_Protocol_Fee,
                 handle_Claim_Parity_Tokens,
@@ -669,6 +788,8 @@ export default function Functions({ children }) {
                 getPrice,
                 getDistributedTokens,
                 onlyPSDclaimed,
+                holdTokens,
+                getTotalMintedTokens,
                 getToBeClaimed,
                 getTotalValueLockedInDollar,
                 getParityDollardeposits,
@@ -687,6 +808,8 @@ export default function Functions({ children }) {
                 getClaimableAmount,
                 getOnlyProtocolFee,
                 getDepositors,
+                handleDepositAutovaults,
+                BuyTokens,
                 getUserUsdValue,
                 getTotalTokenValueInVaults,
                 contractBalance,
@@ -694,7 +817,7 @@ export default function Functions({ children }) {
                 reward,
                 getAndMarkReachedTarget,
                 isClaimed,
-                getUserDistributedTokens ,
+                getUserDistributedTokens,
                 getTimeStampForCreateValut,
                 getClaimAllReward,
                 getDepositeValues,

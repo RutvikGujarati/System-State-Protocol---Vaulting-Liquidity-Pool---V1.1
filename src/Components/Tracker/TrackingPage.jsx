@@ -1,6 +1,13 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../Tracker/TrackingPage.css";
+import Swal from "sweetalert2";
 import "../../Utils/Theme.css";
 import { themeContext } from "../../App";
 import { useLocation, Link } from "react-router-dom";
@@ -16,8 +23,11 @@ import {
   conciseAddress,
 } from "../../Utils/ADDRESSES/Addresses";
 // import {STATE_TOKEN_ADDRES}from "../../Utils/ADDRESSES/Addresses"
+const TotalSumContext = createContext();
 
-export default function TrackingPage() {
+export const useTotalSum = () => useContext(TotalSumContext);
+
+export default function TrackingPage({ children }) {
   const { theme } = useContext(themeContext);
   const textTheme =
     (theme === "darkTheme" && "darkColor") ||
@@ -44,21 +54,27 @@ export default function TrackingPage() {
     getToBeClaimed,
     getPrice,
     getFormatEther,
+    getPsdContract,
     getDepositors,
     getParityDollarClaimed,
     getParityDollardeposits,
     getParityTokensDeposits,
     get_PST_Claimed,
     getParityAmountDistributed,
+    BuyTokens,
     getRatioPriceTargets,
     getIncrementPriceTargets,
     getParityReached,
+    handleDepositAutovaults,
     getProtocolFee,
+    fetchAutoVaultAmount,
     NumberOfUser,
     getUserDistributedTokens,
     getTimeStampForCreateValut,
     getCeateVaultTime,
     getClaimAllReward,
+    holdTokens,
+    getTotalMintedTokens,
     onlyPSDclaimed,
     getTotalTokenValueInVaults,
     getNumberOfStateProtocolUsers,
@@ -76,9 +92,15 @@ export default function TrackingPage() {
   const [parityTokensDeposits, setParityTokensDeposits] = useState("0");
   const [paritydeposit, setParitydeposit] = useState("0");
   const [totalsumofPOints, setsumofPoints] = useState("0");
+  const [autovault, setAutovault] = useState("0");
+  const [search, setSearch] = useState("0");
   const [parityTokensDeposit, setParityTokensDeposit] = useState("0");
   const [parityDollarClaimed, setParityDollarClaimed] = useState("0");
   const [parityTokensClaimed, setParityTokensClaimed] = useState("0");
+  const [autoVaultAmount, setAutoVaultAmount] = useState("0");
+  const [HoldAMount, setHoldTokens] = useState("0");
+  const [totalMinted, setTotalMinted] = useState("0");
+  const [value, setValue] = useState("0");
   const [IsParityReached, setIsParityReached] = useState(false);
   const [perpeptualYieldLocked, setPerpetualYieldLocked] = useState("0");
   const [getReachedTarget, setReachedPriceTargets] = useState("0");
@@ -114,7 +136,30 @@ export default function TrackingPage() {
   };
 
   // Done
+  const containerStyle = {
+    backgroundColor:
+      theme === "darkTheme"
+        ? "#1c1c1c"
+        : theme === "dimTheme"
+        ? "#2f2f2f"
+        : "#f8f9fa",
+    color:
+      theme === "darkTheme" ? "#fff" : theme === "dimTheme" ? "#ccc" : "#000",
+    borderRadius: "15px",
+    border: "1px solid #ccc",
+    padding: "20px",
+    textAlign: "center",
+    width: "100%",
+    maxWidth: "500px",
+    margin: "0 auto",
+  };
 
+  const buttonStyle = {
+    fontSize: "10px",
+    backgroundColor: "transparent",
+    whiteSpace: "nowrap",
+    width: "100px", // Adjust width as needed
+  };
   const ToBeClaimed = async () => {
     try {
       // Get the IPT and RPT rewards
@@ -143,12 +188,19 @@ export default function TrackingPage() {
       let protocolFeeDetail = await getProtocolFee(accountAddress);
       let protocolAmount = protocolFeeDetail?.protocolAmount || 0;
 
-      // Calculate the total amount to be claimed
+      // Check if parity is reached or exceeded
+      let { isParityReachedOrExceed } = await getParityReached(accountAddress);
+
+      // Adjust the total amount to be claimed based on parity status
       let totalToBeClaimed =
         parseFloat(formattedIptAndRptReward) +
-        parseFloat(formattedParityClaimableAmount) +
-        parseFloat(formattedUserDistributedTokens) + // Use user's distributed tokens instead of reached targets
+        parseFloat(formattedUserDistributedTokens) +
         parseFloat(protocolAmount);
+
+      // Add parity claimable amount only if parity is not reached or exceeded
+      if (!isParityReachedOrExceed) {
+        totalToBeClaimed += parseFloat(formattedParityClaimableAmount);
+      }
 
       // Format the total amount
       let formattedTotalToBeClaimed = totalToBeClaimed.toFixed(4);
@@ -183,6 +235,107 @@ export default function TrackingPage() {
       }
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const fetchAutoVaultAmounts = async (address) => {
+    try {
+      let autoVaultAmount = await fetchAutoVaultAmount(accountAddress);
+
+      console.log("AutoVaultss from tracking:", autoVaultAmount);
+      // Convert the AutoVault amount to a number for comparison
+      const autoVaultAmountNumber = parseFloat(autoVaultAmount);
+
+      setAutoVaultAmount(autoVaultAmountNumber);
+      // Check if the AutoVault amount exceeds the threshold (10 ether)
+      if (autoVaultAmountNumber >= 1000) {
+        handleAutoVaultThresholdReached(address);
+      }
+    } catch (error) {
+      console.error("fetchAutoVaultAmounts error:", error);
+      setAutoVaultAmount("0");
+    }
+  };
+
+  const handleAutoVaultThresholdReached = (address, autoVaultAmountNumber) => {
+    const autoVaultStateKey = `autoVaultState_${address}`;
+    const previousAutoVaultState = sessionStorage.getItem(autoVaultStateKey);
+    console.log(
+      `previousAutoVaultState for ${address}:`,
+      previousAutoVaultState
+    );
+
+    if (previousAutoVaultState !== "created_popped") {
+      // Show the deposit popup
+      showDepositPopup(address, autoVaultAmountNumber);
+      sessionStorage.setItem(autoVaultStateKey, "created_popped");
+    } else {
+      // Check if the amount still meets the condition for reopening the popup
+      const autoVaultConfirmedKey = `autoVaultConfirmed_${address}`;
+      const autoVaultConfirmedState = sessionStorage.getItem(
+        autoVaultConfirmedKey
+      );
+      if (
+        autoVaultAmountNumber >= 1000 &&
+        autoVaultConfirmedState !== "confirmed"
+      ) {
+        showDepositPopup();
+        sessionStorage.setItem(autoVaultStateKey, "created_popped");
+      }
+    }
+  };
+  const showDepositPopup = async () => {
+    const autoVaultAmount = await fetchAutoVaultAmount(accountAddress);
+
+    Swal.fire({
+      title: "Deposit AutoVaults",
+      html: `
+          <div class="d-flex flex-column align-items-center">
+              <p id="autoVaultAmount" style="font-size: 18px; color: ${
+                theme === "darkTheme"
+                  ? "#ccc"
+                  : theme === "dimTheme"
+                  ? "#666"
+                  : "#333"
+              }; margin: 0 0 15px 0;">Auto-vault: ${autoVaultAmount} PLS</p>
+              <div class="d-flex justify-content-center pumpBoxImg">
+                  <button id="depositButton" class="first_pump_boxIcon ${
+                    (theme === "darkTheme" && "firstdumDark") ||
+                    (theme === "dimTheme" && "dimThemeBg")
+                  }">
+                      <img src="${fisrtPumpBrt}" class="w-100 h-100" alt="Deposit" />
+                  </button>
+              </div>
+          </div>
+      `,
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => {
+        document
+          .getElementById("depositButton")
+          .addEventListener("click", handleDeposit);
+      },
+      willClose: () => {
+        document
+          .getElementById("depositButton")
+          .removeEventListener("click", handleDeposit);
+      },
+    });
+  };
+
+  // console.log(autoVaultAmount)
+
+  const handleDeposit = async (address) => {
+    try {
+      let deposit = await handleDepositAutovaults(autoVaultAmount);
+      deposit.wait();
+      allInOnePopup(null, "Done - Inflation Locked", null, `OK`, null);
+      const autoVaultConfirmedKey = `autoVaultConfirmed_${address}`;
+      sessionStorage.setItem(autoVaultConfirmedKey, "confirmed");
+      Swal.close();
+    } catch (error) {
+      console.error("Deposit error:", error);
     }
   };
 
@@ -305,17 +458,12 @@ export default function TrackingPage() {
 
   const isParityReached = async () => {
     try {
-      let isReached = await getParityReached(accountAddress);
-      setIsParityReached(isReached);
-      console.log("is parity reached", isReached);
-      console.log(
-        "is parity reached for account",
-        accountAddress,
-        ":",
-        isReached
-      );
+      let { isParityReachedOrExceed } = await getParityReached(accountAddress);
+      setIsParityReached(isParityReachedOrExceed);
 
-      if (isReached && isReached === "0") {
+      console.log("is parity reached", isParityReachedOrExceed);
+
+      if (isParityReachedOrExceed) {
         // Check if the popup has been shown before
         const popupShownBefore = sessionStorage.getItem(
           `parityPopupShown_${accountAddress}`
@@ -324,7 +472,7 @@ export default function TrackingPage() {
           // Display the message only if isReached is truthy and not '0', and the popup hasn't been shown before for this account
           allInOnePopup(
             null,
-            "The 8% parity fee will stop once the user reaches token parity",
+            "The 10% parity fee will stop once the user reaches token parity",
             null,
             `OK`,
             null
@@ -428,7 +576,19 @@ export default function TrackingPage() {
       console.log("Error in getting total token value in vaults", error);
     }
   };
-
+  const HoldTokensOfUser = async (accountAddress) => {
+    try {
+        if (!accountAddress) {
+            throw new Error("Account address is undefined");
+        }
+        const holdToken = await holdTokens(accountAddress);
+        const formattedPrice = ethers.utils.formatEther(holdToken  || "0");
+        console.log("hold tokens",formattedPrice)
+        setHoldTokens(formattedPrice);
+    } catch (error) {
+        console.log(error);
+    }
+};
   const protocolFeeInDollar = async () => {
     try {
       let protocolFee = await getProtocolFee(accountAddress);
@@ -527,9 +687,15 @@ export default function TrackingPage() {
       }
     } catch (error) {}
   };
+  useEffect(() => {
+    if (accountAddress) {
+        HoldTokensOfUser(accountAddress);
+    }
+}, [accountAddress]);
 
   useEffect(() => {
     FetchBalance();
+    
     // totalReachedPriceTarget();
   }, [accountAddress, networkName]);
 
@@ -764,7 +930,18 @@ export default function TrackingPage() {
 
     return totalRTPPrice;
   };
+  useEffect(() => {
+    const fetchTotalMintedTokens = async () => {
+        try {
+            const total = await getTotalMintedTokens();
+            setTotalMinted(total);
+        } catch (error) {
+            console.error('Error fetching total minted tokens:', error);
+        }
+    };
 
+    fetchTotalMintedTokens();
+}, []);
   const TotalVaultValueLocked = () => {
     const totalvalue = totalSUm * price + TotalSum * price;
     const roundedTotal = Number(totalvalue.toFixed(3));
@@ -803,6 +980,7 @@ export default function TrackingPage() {
       ParityTokensDepositforPoint();
       totalsumofPoints();
       PSDClaimed();
+      fetchAutoVaultAmounts();
       mathPSD();
       PSTClaimed();
       ParityAmountDistributed();
@@ -825,6 +1003,9 @@ export default function TrackingPage() {
 
   return (
     <>
+      <TotalSumContext.Provider value={{ totalsumofPoints }}>
+        {children}
+      </TotalSumContext.Provider>{" "}
       <div
         className={`top-container ${
           (theme === "darkTheme" && "darkThemeTrackingBg") ||
@@ -893,7 +1074,7 @@ export default function TrackingPage() {
                                                 <div className={`varSize ${spanDarkDim}`}><span className={`spanText ${spanDarkDim}`}>$ {totalValueLocked}</span></div>
                                             </div>
                                         </div> */}
-                  <hr className="my-2" />
+                  <hr className="my-3" />
                   <div className="d-flex customeHeight">
                     <div className="margin-right">
                       <i
@@ -901,46 +1082,52 @@ export default function TrackingPage() {
                       ></i>
                     </div>
                     <div
-                      className={`flex-grow-1 newBlockAdd flex-md-column fontSize text-start ${textTheme}`}
+                      className={`flex-grow-1 fontSize text-start  ${textTheme}`}
                     >
                       <div>
-                        <div className={`${textTitle}`}>CONTRACT ADDRESS</div>
+                        <div className={`${textTitle} `}>
+                          $ TVL ( LIQUIDITY )
+                        </div>
                         <div className={`varSize ${spanDarkDim}`}>
-                          <span className={`spanTextAdd ${spanDarkDim}`}>
-                            <Link
-                              to={navigateToExplorer}
-                              target="_blank"
-                              className={`spanTextAdd ${spanDarkDim}`}
-                            >
-                              {isHome
-                                ? conciseAddress(PSD_ADDRESS)
-                                : conciseAddress}
-                            </Link>
+                          <span
+                            className={`spanText ${spanDarkDim} fs-5`}
+                            // onChange={(e) => addCommasForVaultLocked(e)}
+                          >
+                            {" "}
+                            $ {totalVaultValue}
+                            {/* here need to update the reward with totalTokens in vault * price */}
                           </span>
                         </div>
-                      </div>
-                      <div className="w-100 d-flex align-items-end justify-content-between">
                         <div>
-                          <div className={`${textTitle}`}>CONTRACT STATUS</div>
                           <div className={`varSize ${spanDarkDim}`}>
-                            <span className={`spanTextAdd ${spanDarkDim}`}>
-                              Contract Status - NOT RENOUNCED YET
+                            <span
+                              className={`spanTextAdd ${spanDarkDim}`}
+                              style={{
+                                alignItems: "center",
+                                fontSize: "10px",
+                                marginLeft: "40px",
+                                marginTop: "10px",
+                              }}
+                            >
+                              Dav tokens minted
                             </span>
                           </div>
                         </div>
-                        {/* <InfoBox data='See whitepaper under ”TokenListings”' /> */}
-
-                        <span
-                          className={`${tooltip} hoverText tooltipAlign`}
-                          data-tooltip="See whitepaper under ”Token Listings”"
-                          data-flow="bottom"
-                        >
-                          {" "}
-                          <i
-                            className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                          ></i>
-                        </span>
                       </div>
+                    </div>
+                    <div className="margin-right">
+                      {/* <i className={`iconSize fa-solid fa-vault ${theme}`}></i> */}
+                      {/* <InfoBox data='Total % rewards claimed by all users to date' /> */}
+                      <span
+                        className={`${tooltip} hoverText`}
+                        data-tooltip="The number of tokens in vaults * current price."
+                        data-flow="bottom"
+                      >
+                        {" "}
+                        <i
+                          className={`fas mx-2 fa-exclamation-circle ${theme}`}
+                        ></i>
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -1121,7 +1308,7 @@ export default function TrackingPage() {
                       {/* <InfoBox data='Days since deployment. Measuring time to reach 1000000% rewards' /> */}
                       <span
                         className={`${tooltip} hoverText`}
-                        data-tooltip="Days since deployment. Measuring time to reach 1000000% rewards"
+                        data-tooltip="FOR EXPERERIENCE CRYPTO USERS. optional and is not required to create VLP’s - SEE WHITE PAPAER"
                         data-flow="bottom"
                       >
                         {" "}
@@ -1130,26 +1317,24 @@ export default function TrackingPage() {
                         ></i>
                       </span>
                     </div>
-                    <div
-                      className={`flex-grow-1 fontSize text-start  ${textTheme}`}
-                    >
-                      <div className={`${textTitle} `}>DAY</div>
-                      {/* <div className={`${textTitle} `}>ESCROW VAULTS</div> */}
+                    <div className={`flex-grow-1  text-start  ${textTheme}`}>
+                      <div className={`${textTitle} `}>DAV</div>
                       <div className={`varSize ${spanDarkDim}`}>
-                        <span className={`spanText ${spanDarkDim} fs-5`}>
+                        <span
+                          className={`spanTextAdd ${spanDarkDim} `}
+                          style={{ fontSize: "14px" }}
+                        >
                           {" "}
-                          {DayStamp}
+                          Decentralized Autonomous Vaults
                         </span>
                       </div>
                     </div>
                   </div>
                   <div className="d-flex pt-1">
                     <div className="margin-right">
-                      {/* <i className={`iconSize fa-solid fa-vault ${theme}`}></i> */}
-                      {/* <InfoBox data='Total % rewards claimed by all users to date' /> */}
                       <span
                         className={`${tooltip} hoverText`}
-                        data-tooltip="The number of tokens in vaults * current price."
+                        data-tooltip="DAV TOKEN HOLDINGS IN THE INFORMATION"
                         data-flow="bottom"
                       >
                         {" "}
@@ -1158,19 +1343,12 @@ export default function TrackingPage() {
                         ></i>
                       </span>
                     </div>
-                    <div
-                      className={`flex-grow-1 fontSize text-start  ${textTheme}`}
-                    >
-                      <div className={`${textTitle} `}>$ TVL</div>
-                      {/* <div className={`${textTitle} `}>ESCROW VAULTS</div> */}
+                    <div className={`flex-grow-1  text-start  ${textTheme}`}>
+                      <div className={`${textTitle} `}>DAV HOLDING</div>
                       <div className={`varSize ${spanDarkDim}`}>
-                        <span
-                          className={`spanText ${spanDarkDim} fs-5`}
-                          // onChange={(e) => addCommasForVaultLocked(e)}
-                        >
+                        <span className={`spanText ${spanDarkDim} `}>
                           {" "}
-                          $ {totalVaultValue}
-                          {/* here need to update the reward with totalTokens in vault * price */}
+                          {HoldAMount} DAV token
                         </span>
                       </div>
                     </div>
@@ -1178,34 +1356,76 @@ export default function TrackingPage() {
                   <div className="d-flex pt-1">
                     <div className="margin-right">
                       {/* <i className={`iconSize fa-solid fa-vault ${theme}`}></i> */}
-                      {/* <InfoBox data='Number of active wallets opening vaults' /> */}
-                      <span
-                        className={`${tooltip} hoverText tooltipAlign`}
-                        data-tooltip="See white paper for more information"
-                        data-flow="bottom"
-                      >
-                        {" "}
-                        <i
-                          className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                        ></i>
-                      </span>
-                    </div>
-                    <div
-                      className={`flex-grow-1 fontSize text-start  ${textTheme}`}
-                    >
-                      <div className={`${textTitle} `}>STATE TOKEN AIRDROP</div>
-                      {/* <div className={`${textTitle} `}>ESCROW VAULTS</div> */}
-                      {/* <div className={`varSize ${spanDarkDim}`}><span className={`spanText ${spanDarkDim} fs-5`}>{perpeptualYieldLocked}</span></div> */}
-                      {/* <div className={`varSize ${spanDarkDim}`}><span className={`spanText ${spanDarkDim} fs-5`}>{perpeptualYieldLocked}</span></div> */}
-                      <div className={`varSize ${spanDarkDim}`}>
+                      {/* { <InfoBox data='Number of active wallets opening vaults' /> } */}
+                      {
                         <span
-                          className={`spanText ${spanDarkDim} fs-5`}
-                          // onChange={(e) => addCommasForProtocolFee(e)}
+                          className={`${tooltip} hoverText tooltipAlign`}
+                          data-tooltip="See white paper for more information"
+                          data-flow="bottom"
                         >
                           {" "}
-                          {/* $ {protocolFee} */}
-                          {totalsumofPOints} points
+                          <i
+                            className={`fas mx-2 fa-exclamation-circle ${theme}`}
+                          ></i>
                         </span>
+                      }
+                    </div>
+                    <div className=" align-items-center">
+                      <div className={`text-uppercase mb-2 ${textTitle}`}>
+                        Buy DAV Tokens
+                      </div>
+                      <div className="d-flex justify-content mb-3">
+                        <button
+                          style={{
+                            whiteSpace: "nowrap",
+                            fontSize: "10px",
+                            backgroundColor: "transparent",
+                          }}
+                          className={`box-3 ${
+                            (theme === "darkTheme" && "Theme-btn-block") ||
+                            (theme === "dimTheme" && "dimThemeBtnBg")
+                          }  mx-2`}
+                          onClick={() => BuyTokens(2,250)}
+                        >
+                          2 DAV-$250
+                        </button>
+                        <button
+                          style={{
+                            whiteSpace: "nowrap",
+                            fontSize: "10px",
+                            backgroundColor: "transparent",
+                          }}
+                          className={`box-3 ${
+                            (theme === "darkTheme" && "Theme-btn-block") ||
+                            (theme === "dimTheme" && "dimThemeBtnBg")
+                          } btn-outline-primary mx-2`}
+                          onClick={() => BuyTokens(5,500)}
+                        >
+                          5 DAV-$500
+                        </button>
+                        <button
+                          style={{
+                            whiteSpace: "nowrap",
+                            fontSize: "10px",
+                            backgroundColor: "transparent",
+                          }}
+                          className={`box-3 ${
+                            (theme === "darkTheme" && "Theme-btn-block") ||
+                            (theme === "dimTheme" && "dimThemeBtnBg")
+                          } btn-outline-primary mx-2`}
+                          onClick={() => BuyTokens(12,1000)}
+                        >
+                          12 DAV-$1000
+                        </button>
+                      </div>
+                      <div style={{ fontSize: "13px" }}>
+                        <span
+                          className={`${textTitle}`}
+                          style={{ fontSize: "15px" }}
+                        >
+                          DAV Token Mints/Minted: 40000 / {totalMinted}
+                        </span>
+                        {/* <span className={`${textTitle} fs-6`}> 40000 / 35789</span> */}
                       </div>
                     </div>
                   </div>

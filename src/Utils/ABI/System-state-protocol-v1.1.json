@@ -30,6 +30,51 @@
 		"anonymous": false,
 		"inputs": [
 			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "AutoVaultCreated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			}
+		],
+		"name": "AutoVaultThresholdReached",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "quantity",
+				"type": "uint256"
+			}
+		],
+		"name": "buyStateTokens",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
 				"indexed": false,
 				"internalType": "uint256",
 				"name": "ratioPriceTarget",
@@ -55,6 +100,25 @@
 			}
 		],
 		"name": "Calculate",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "autoVaultAmount",
+				"type": "uint256"
+			}
+		],
+		"name": "Claim",
 		"type": "event"
 	},
 	{
@@ -130,6 +194,13 @@
 	{
 		"inputs": [],
 		"name": "claimTargetsByBackend",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "createAutoVault",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -283,7 +354,7 @@
 			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "DevelopmentFee",
+				"name": "AutoVaultFee",
 				"type": "uint256"
 			},
 			{
@@ -397,36 +468,6 @@
 		"type": "event"
 	},
 	{
-		"inputs": [],
-		"name": "renounceOwnership",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_adminAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_backendOperationAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_priceFeedAddress",
-				"type": "address"
-			}
-		],
-		"name": "setAddresses",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"anonymous": false,
 		"inputs": [
 			{
@@ -521,6 +562,43 @@
 		"type": "event"
 	},
 	{
+		"inputs": [],
+		"name": "depositAndAutoVaults",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_adminAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_backendOperationAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_priceFeedAddress",
+				"type": "address"
+			}
+		],
+		"name": "setAddresses",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -542,6 +620,13 @@
 			}
 		],
 		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "withdrawStuckETH",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -620,6 +705,25 @@
 				"internalType": "address",
 				"name": "PriceFeeAddr",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "getAutovaults",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -1033,6 +1137,38 @@
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "IS",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "user",
+				"type": "address"
+			}
+		],
+		"name": "isParityReachedOrExceeded",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -1173,7 +1309,52 @@
 	},
 	{
 		"inputs": [],
+		"name": "stateToken",
+		"outputs": [
+			{
+				"internalType": "contract StateToken",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "statetokenAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "totalProtocolFeesTransferred",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "userAutoVault",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -1211,7 +1392,7 @@
 				"type": "address"
 			}
 		],
-		"name": "userDistributedTokens",
+		"name": "userDistribution",
 		"outputs": [
 			{
 				"internalType": "uint256",

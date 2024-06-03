@@ -97,13 +97,19 @@ const PRICE_FEED_ADDRESS = '0x68d0934F1e1F0347aad5632084D153cDBfe07992'
 // const PSD_ADDRESS = "0x1F075939fccBFdF91912ECC477bdE154e215967c"// deployed for close vaults share deploy full working testing address (working with all things )
 // const PSD_ADDRESS = "0x7410F4b9612B36b268adEc1224EcD93547392841"// deployed for close vaults share deploy full working testing address (working with all things with text Updation.)
 // const PSD_ADDRESS = "0x9f90c9f98333e2bB0061f63Ff9Fb5Fc0219d3C64"// deployed for close vaults share deploy full working testing address (working with all things with text Updation.)
-const PSD_ADDRESS = "0xc9ddB5f78C18FF192BF81DbDd847fAf64a85c6Db"// final for live testnet
+// const PSD_ADDRESS = "0xc9ddB5f78C18FF192BF81DbDd847fAf64a85c6Db"// final for live testnet
 // const PSD_ADDRESS = "0x285A2c31ecfA3FCB0545705d310d244581049FAc"//  for matic live testnet
+// const PSD_ADDRESS = "0x7b88336DEDa87bA7A455E1C6C3a04b5d158A2a88"//  for [arity solved  live testnet
+// const PSD_ADDRESS = "0xA51bEa69c54702bd69A287CeF7c7aAb68d53187F"// all things working (autovaults also) - for me
+const PSD_ADDRESS = "0xb424DA92b1C2b13A877269124b84EAC4e84fA228"// all things working (autovaults also) - for live testnet
 
+
+// const state_token = "0x14a568BA33AeF6f8Cc484E918e1638E597AC9fC1"  // for me
+const state_token = "0x543eDa9782131007FC061cC17E1fC95E826361E4"  // for live testnet
 
 // const System_State_Ratio_Vaults_V1 = "0x7D58E2775b4dbdd84BCbec15A36A146a1BaDfB5f";
 
-const allInOnePopup = (icon, title, text, button, confirmBtn, cancelBtn) => {
+const allInOnePopup = (icon, title, text, button, confirmBtn, callback) => {
     return (
         Swal.fire({
             icon: icon == null ? null : icon,
@@ -115,6 +121,7 @@ const allInOnePopup = (icon, title, text, button, confirmBtn, cancelBtn) => {
             showConfirmButton: confirmBtn == null ? null : confirmBtn,
             onBeforeOpen: () => {
                 Swal.showLoading();
+                if (callback) callback();
             },
         })
     )
@@ -129,4 +136,4 @@ export const conciseAddress = (address, startSlice = 7, endSlice = 5) => {
     }
     return '';
 };
-export { PRICE_FEED_ADDRESS, PSD_ADDRESS, allInOnePopup }
+export { PRICE_FEED_ADDRESS, PSD_ADDRESS,state_token, allInOnePopup }

@@ -226,21 +226,6 @@ export default function IncrementPriceTarget() {
               } `}
             >
               <div></div>
-              <div className="view-container">
-                <Link
-                  onClick={() => setSeeFullPage(!seeFullPage)}
-                  className={`view-link ${
-                    (theme === "darkTheme" && "text-white") ||
-                    (theme === "dimTheme" && "dimThemeBlockView")
-                  }`}
-                  style={{ textDecoration: 'none', color: 'inherit', marginLeft: "-350px" }}>
-                
-                  VIEW ALL TRANSACTIONS{" "}
-                  {seeFullPage ? <span> &uarr;</span> : <span> &darr;</span>}
-                </Link>
-                <div style={{ marginLeft: "auto" }}></div>{" "}
-                {/* Hidden element for alignment */}
-              </div>
 
               <div
                 className={`table_pageIndex ${
@@ -279,6 +264,7 @@ export default function IncrementPriceTarget() {
           </div>
         </div>
       </div>
+      
     </>
   );
 }

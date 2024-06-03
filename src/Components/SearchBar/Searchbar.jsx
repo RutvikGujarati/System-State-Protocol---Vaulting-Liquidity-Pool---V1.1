@@ -64,6 +64,7 @@ export default function Searchbar() {
   const [protocolFee, setProtocolFee] = useState("0");
   const [placeHolder, setPlaceHolder] = useState("");
   const [allRewardAmount, setAllRewardAmount] = useState("");
+  const [price, setprice] = useState(0);
 
   const {
     socket,
@@ -76,6 +77,7 @@ export default function Searchbar() {
     getParityDollarClaimed,
     getFormatEther,
     getProtocolFee,
+    getPrice,
   } = useContext(functionsContext);
   const {
     accountAddress,
@@ -101,7 +103,15 @@ export default function Searchbar() {
       handle_Claim_All_Reward_Amount(accountAddress);
     }
   };
-
+  const fetchPrice = async () => {
+    try {
+      let price = await getPrice();
+      let formattedPrice = ethers.utils.formatEther(price || "0");
+      setprice(formattedPrice);
+    } catch (error) {
+      console.error("error:", error);
+    }
+  };
   const getPlaceHolder = async () => {
     if (isHome) {
       if (selectedValue === "Deposit") {
@@ -296,6 +306,7 @@ export default function Searchbar() {
       setBalance(fixedBalance);
       ToBeClaimed();
       getClaimParityTokens();
+      fetchPrice();
       getPlaceHolder();
       ProtocolFee();
       AllRewardAmount();
@@ -305,105 +316,142 @@ export default function Searchbar() {
   return (
     <>
       <div
-  className={`main-search p-0 lightBg darkBg ${
-    (theme === "darkTheme" && "seachThemeBgDark") ||
-    (theme === "dimTheme" && "seachThemeBgDim")
-  }`}
->
-  <div className="d-flex serach-container container-xxl">
-    <div className="d-flex w-100 my-auto">
-      <div className="d-flex flex-wrap justify-content-between w-100 searchBar">
-        <div className="input-search firstSeach_small col-md-7 py-3">
-          <div
-            style={{
-              fontSize: "14px",
-              color: "#ffffff",
-              marginBottom: "15px",
-              marginLeft: "10px",
-              marginTop: "-30px",
-            }}
-          >
-         Vaulting Liquidity Pools (VLP) is the process through which a smart contract employs ratio vaults to mitigate token inflation-erosion and directly create multiple copies of your crypto assets over natural market cycles.
-          </div>
-          {isHome ? (
-            <div
-              className={`search ${theme} ${
-                theme === "lightTheme" && "text-dark"
-              } ${
-                (theme === "darkTheme" && "Theme-block-container") ||
-                (theme === "dimTheme" && "dimThemeBg")
-              }`}
-            >
-              <p
-                className={`m-0 ms-3 tokenSize d-none d-md-block ${
-                  block + dark
-                } ${
-                  (theme === "lightTheme" && "depositInputLight") ||
-                  (theme === "dimTheme" && "depositInputGrey darkColor")
-                } ${
-                  theme === "darkTheme" && "depositInputDark darkColor"
-                }`}
-              >
-                {currencyName}&nbsp;<span>(Pulsechain)</span>
-              </p>
-              <form className="w-100 search-form">
-                <input
-                  className={`w-75 ms-3 me-4 form-control inputactive ${block} ${
-                    (theme === "lightTheme" && "depositInputLight") ||
-                    (theme === "dimTheme" && "depositInputGrey darkColor")
-                  } ${
-                    theme === "darkTheme" && "depositInputDark darkColor"
-                  }`}
-                  pattern={`[0-9,.]*`} // Only allow digits, commas, and dots
-                  type="text"
-                  disabled={isDashboardInputDisabled}
-                  onBlur={handleBlur}
-                  value={search}
-                  placeholder={placeHolder}
-                  onChange={(e) => addCommasAsYouType(e)}
-                />
-                <button
-                  disabled={
-                    selectedValue === "Deposit" &&
-                    (Number(search) <= 0 && search === "" ? true : false)
-                  }
-                  className={`fist-pump-img first_pump_serchbar ${
-                    (theme === "darkTheme" && "firstdumDark") ||
-                    (theme === "dimTheme" && "dimThemeBg")
-                  } `}
-                  onClick={(e) => {
-                    isHandleDeposit(e);
+        className={`main-search p-0 lightBg darkBg ${
+          (theme === "darkTheme" && "seachThemeBgDark") ||
+          (theme === "dimTheme" && "seachThemeBgDim")
+        }`}
+      >
+        <div className="d-flex serach-container container-xxl">
+          <div className="d-flex w-100 my-auto">
+            <div className="d-flex flex-wrap justify-content-between w-100 searchBar">
+              <div className="input-search firstSeach_small col-md-7 py-3">
+                <div
+                  style={{
+                    fontSize: "14px",
+                    color: "#ffffff",
+                    marginBottom: "15px",
+                    marginLeft: "10px",
+                    marginTop: "-30px",
                   }}
                 >
-                  <img src={fistPump} className="w-100 h-100" />
-                </button>
-              </form>
+                  Vaulting Liquidity Pools (VLP) is the process through which a
+                  smart contract employs ratio vaults to mitigate token
+                  inflation-erosion and directly create multiple copies of your
+                  crypto assets over natural market cycles.
+                </div>
+                {isHome ? (
+                  <>
+                    <div
+                      className={`search ${theme} ${
+                        theme === "lightTheme" && "text-dark"
+                      } ${
+                        (theme === "darkTheme" && "Theme-block-container") ||
+                        (theme === "dimTheme" && "dimThemeBg")
+                      }`}
+                    >
+                      <p
+                        className={`m-0 ms-3 tokenSize d-none d-md-block ${
+                          block + dark
+                        } ${
+                          (theme === "lightTheme" && "depositInputLight") ||
+                          (theme === "dimTheme" && "depositInputGrey darkColor")
+                        } ${
+                          theme === "darkTheme" && "depositInputDark darkColor"
+                        }`}
+                      >
+                        {currencyName}&nbsp;<span>(Pulsechain)</span>
+                      </p>
+                      <form className="w-100 search-form">
+                        <input
+                          className={`w-75 ms-3 me-4 form-control inputactive ${block} ${
+                            (theme === "lightTheme" && "depositInputLight") ||
+                            (theme === "dimTheme" &&
+                              "depositInputGrey darkColor")
+                          } ${
+                            theme === "darkTheme" &&
+                            "depositInputDark darkColor"
+                          }`}
+                          pattern={`[0-9,.]*`} // Only allow digits, commas, and dots
+                          type="text"
+                          disabled={isDashboardInputDisabled}
+                          onBlur={handleBlur}
+                          value={search}
+                          placeholder={placeHolder}
+                          onChange={(e) => addCommasAsYouType(e)}
+                        />
+                        <button
+                          disabled={
+                            selectedValue === "Deposit" &&
+                            (Number(search) <= 0 && search === ""
+                              ? true
+                              : false)
+                          }
+                          className={`fist-pump-img first_pump_serchbar ${
+                            (theme === "darkTheme" && "firstdumDark") ||
+                            (theme === "dimTheme" && "dimThemeBg")
+                          } `}
+                          onClick={(e) => {
+                            isHandleDeposit(e);
+                          }}
+                        >
+                          <img src={fistPump} className="w-100 h-100" />
+                        </button>
+                      </form>
+                    </div>
+                    <div
+                      className={`box-3 ${
+                        (theme === "darkTheme" && "Theme-btn-block") ||
+                        (theme === "dimTheme" && "dimThemeBtnBg")
+                      }`}
+                      style={{ paddingTop: "10px", marginTop: "10px" }}
+                    >
+                      <span
+                        style={{
+                          paddingTop: "10px",
+                          margin: "10px",
+                          fontSize: "13px",
+                        }}
+                      >
+                        {currencyName} Price :
+                      </span>
+                      <span className="mx-1" style={{ fontSize: "13px" }}>
+                        $ {price} {""}
+                        
+                        <span
+                          data-bs-toggle="tooltip"
+                          data-bs-placement="top"
+                        ></span>
+                      </span>
+                      <span
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                      ></span>
+                    </div>
+                  </>
+                ) : (
+                  <div></div>
+                )}
+              </div>
+              <a
+                href="/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="serachIconLink State searchBar2_small d-flex flex-wrap justify-content-lg-center justify-content-md-start justify-content-sm-start"
+              >
+                <div className="under-state">
+                  <img
+                    src={SystemStateLogo}
+                    alt="SystemStateLogo"
+                    className="SystemStateLogo"
+                  />
+                </div>
+                <p className="state-dex-txt">System State</p>
+              </a>
             </div>
-          ) : (
-            <div></div>
-          )}
-        </div>
-        <a
-          href="/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="serachIconLink State searchBar2_small d-flex flex-wrap justify-content-lg-center justify-content-md-start justify-content-sm-start"
-        >
-          <div className="under-state">
-            <img
-              src={SystemStateLogo}
-              alt="SystemStateLogo"
-              className="SystemStateLogo"
-            />
           </div>
-          <p className="state-dex-txt">System State</p>
-        </a>
+        </div>
+        <div className="future-box"></div>
       </div>
-    </div>
-  </div>
-  <div className="future-box"></div>
-</div>
-
     </>
   );
 }

@@ -3,25 +3,113 @@ import "./RatioPriceTargets.css";
 import "../../Utils/Theme.css";
 import { Link } from "react-router-dom";
 import { themeContext } from "../../App";
+// import { TotalSumProvider  } from "../../Components/Tracker/TrackingPage";
 import { Web3WalletContext } from "../../Utils/MetamskConnect";
 import { functionsContext } from "../../Utils/Functions";
 import { ethers } from "ethers";
+import {
+  PSD_ADDRESS,
+  conciseAddress,
+  state_token,
+} from "../../Utils/ADDRESSES/Addresses";
 
 export default function RatioPriceTargets() {
+  // const {setsumofPoints} = useContext(airdrop)
   const { theme } = useContext(themeContext);
   const shadow =
     (theme === "lightTheme" && "lightSh") ||
     (theme === "dimTheme" && "dimSh") ||
     (theme === "darkTheme" && "darkSh");
+  const spanDarkDim =
+    (theme === "darkTheme" && "TrackSpanText") ||
+    (theme === "dimTheme" && "TrackSpanText");
   const { accountAddress, currencyName, userConnected } =
     useContext(Web3WalletContext);
-  const { socket, getRatioPriceTargets, getPrice, getDepositors } =
-    useContext(functionsContext);
+  const {
+    socket,
+    getRatioPriceTargets,
+    getPrice,
+    getDepositors,
+    getTimeStampForCreateValut,
+    getParityTokensDeposits,
+    getParityDollardeposits,
+  } = useContext(functionsContext);
   const [ratioPriceTargets, setRatioPriceTargets] = useState([]);
   const [price, setPrice] = useState("0");
   const [seeFullPage, setseeFullPage] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredArray, setFilteredArray] = useState([]);
+  const [DayStamp, setDayStamp] = useState("0");
+  const [paritydeposit, setParitydeposit] = useState("0");
+  const [parityDollardeposits, setParityDollardeposits] = useState("0");
+  const [parityTokensDeposits, setParityTokensDeposits] = useState("0");
+  const [totalsumofPOints, setsumofPoints] = useState("0");
+
+  const ParityDollardeposits = async () => {
+    try {
+      let ParityDollardeposits = await getParityDollardeposits(accountAddress);
+      let formattedParityDollardeposits = ethers.utils.formatEther(
+        ParityDollardeposits || "0"
+      );
+      let fixed = Number(formattedParityDollardeposits).toFixed(2);
+
+      // setDepositAmount(inputValue);
+      if (/^[0-9,.]*$/.test(fixed)) {
+        const numericValue = fixed.replace(/,/g, "");
+        const formattedValue = numericValue.replace(
+          /\B(?=(\d{3})+(?!\d))/g,
+          ","
+        );
+        const formattedWithDecimals = `${formattedValue} .00`;
+        setParityDollardeposits(formattedValue);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const ParityTokensDeposits = async () => {
+    try {
+      let ParityTokensDeposits = await getParityTokensDeposits(accountAddress);
+      let formattedParityTokensDeposits = ethers.utils.formatEther(
+        ParityTokensDeposits || "0"
+      );
+      let fixed =
+        parseFloat(formattedParityTokensDeposits)
+          .toFixed(2)
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
+        " " +
+        currencyName;
+      setParityTokensDeposits(fixed);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const ParityTokensDepositforPoint = async () => {
+    try {
+      let ParityTokensDeposits = await getParityTokensDeposits(accountAddress);
+      let formattedParityTokensDeposits = ethers.utils.formatEther(
+        ParityTokensDeposits || "0"
+      );
+      let fixed =
+        parseFloat(formattedParityTokensDeposits)
+          .toFixed(2)
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " ";
+      setParitydeposit(fixed);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const totalsumofPoints = () => {
+    try {
+      let sum =
+        parseFloat(paritydeposit.replace(/,/g, "")) +
+        parseFloat(parityDollardeposits.replace(/,/g, ""));
+      setsumofPoints(sum.toFixed(2));
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const itemsPerPage = 25;
 
   const RatioPriceTargets = async () => {
@@ -68,7 +156,10 @@ export default function RatioPriceTargets() {
       }
     }
   };
-
+  const getDay = async () => {
+    const Day = await getTimeStampForCreateValut();
+    setDayStamp(Day);
+  };
   const updateCurrentPageItems = async (array, page) => {
     const startIndex = (page - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -178,6 +269,11 @@ export default function RatioPriceTargets() {
   useEffect(() => {
     if (userConnected) {
       RatioPriceTargets();
+      ParityDollardeposits();
+      ParityTokensDeposits();
+      ParityTokensDepositforPoint();
+      totalsumofPoints();
+      getDay();
     }
   }, [accountAddress, currencyName, theme, socket]);
 
@@ -228,22 +324,6 @@ export default function RatioPriceTargets() {
             >
               <div></div>
 
-              <div className="view-container">
-                <Link
-                  onClick={() => setseeFullPage(!seeFullPage)}
-                  className={`view-link ${
-                    (theme === "darkTheme" && "text-white") ||
-                    (theme === "dimTheme" && "dimThemeBlockView")
-                  }`}
-                  style={{ textDecoration: "none", color: "inherit",marginLeft: "-350px" }}
-                >
-                  VIEW ALL TRANSACTIONS{" "}
-                  {seeFullPage ? <span> &uarr;</span> : <span> &darr;</span>}
-                </Link>
-                <div style={{ marginLeft: "auto" }}></div>{" "}
-                {/* Hidden element for alignment */}
-              </div>
-
               <div
                 className={`table_pageIndex ${
                   theme === "dimTheme" && "text-white"
@@ -280,6 +360,47 @@ export default function RatioPriceTargets() {
             </div>
           </div>
         </div>
+      </div>
+      <div
+        className={` ${theme === "dimTheme" && "text-white"}`}
+        style={{
+          fontSize: "14px",
+          fontWeight: "bold",
+        }}
+      >
+        <p>
+          Day -{" "}
+          <span className={`spanText ${spanDarkDim} fs-6`}> {DayStamp}</span>
+        </p>
+        <p>
+          VLP Contract Address - {""}
+          <span className={` ${spanDarkDim}`}>
+            {conciseAddress(PSD_ADDRESS)}
+          </span>
+        </p>
+        <p>
+          DAV Contract Address -{" "}
+          <span className={` ${spanDarkDim}`}>
+            {conciseAddress(state_token)}
+          </span>
+        </p>
+        <p>
+          Documentation{" "}
+          <a
+            href="https://system-state-documentation.gitbook.io/"
+            className="link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <i className="fas fa-external-link-alt"></i>
+          </a>
+        </p>
+        <p>
+          Future airdrop points{" "}
+          <span className={`spanText ${spanDarkDim} fs-6`}>
+            {totalsumofPOints} points
+          </span>
+        </p>
       </div>
     </>
   );

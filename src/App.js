@@ -25,6 +25,7 @@ function App() {
   const navigateToDEX = async () => {
     navigate('/Create-Vaults')
   }
+
   const navigateToDocs = async () => {
     navigate('/')
   }
@@ -44,8 +45,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Website />} />
               <Route path="/" element={<Layout />}>
-                <Route path="Create-Vaults" element={<Index />} />
-        
+                <Route path="Create-Vaults" element={<Index />} />        
               </Route>
 
             </Routes>

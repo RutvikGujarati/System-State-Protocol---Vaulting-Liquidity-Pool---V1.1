@@ -84,7 +84,7 @@ export default function Index() {
     getIcon();
     getThemeIcon();
     if (userConnected) {
-      fetchPrice();
+      // fetchPrice();
       ProvidermetamaskLogin();
     }
   }, [currencyName, theme, socket, userConnected]);
@@ -100,25 +100,42 @@ export default function Index() {
 
   return (
     <>
-      <div
-        className={` nav-pr py-1 sticky-top sticky-lg-top d-flex flex-row ${theme} ${
-          (theme === "darkTheme" && "DarkThemeBorderBtm") ||
-          (theme === "dimTheme" && "themeTrackBorderBtm") ||
-          "border-bottom"
-        }`}
-        id="Nav-top"
-      >
-        <div className="container-xxl d-flex justify-content-between">
-          <div
-            id="ethPrice"
-            className="d-flex my-auto w-100 justify-content-between align-items-sm-center gap-3 sm-font"
-            style={{ fontSize: "14px" }} // Set font size here
-          >
-            <div className={`  docs  ${theme}`}>
-              <span className="">{currencyName} Price:</span>
-              <span className=" mx-1">$ {price}</span>
-              <span data-bs-toggle="tooltip" data-bs-placement="top"></span>
+ <div
+      className={`nav-pr py-1 sticky-top sticky-lg-top d-flex flex-row ${theme} ${
+        (theme === "darkTheme" && "DarkThemeBorderBtm") ||
+        (theme === "dimTheme" && "themeTrackBorderBtm") ||
+        "border-bottom"
+      }`}
+      id="Nav-top"
+    >
+      <div className="container-xxl d-flex justify-content-between">
+        <div
+          id="ethPrice"
+          className="d-flex my-auto w-100 justify-content-between align-items-sm-center gap-3 sm-font"
+          style={{ fontSize: "14px" }}
+        >
+          <div className={`d-flex align-items-center ${theme}`}>
+            <div className="token-price me-3">
+              <img src={LogoTransparent} alt="PLS" width="20" height="20" />
+              <span className="mx-1">PLS</span>
             </div>
+            <div className="token-price me-3">
+              <img src={mumbaiIcon} alt="Matic" width="20" height="20" />
+              <span className="mx-1">Matic</span>
+            </div>
+            <div className="token-price me-3">
+              <img src={lightETH_Icon} alt="BNB" width="20" height="20" />
+              <span className="mx-1">BNB</span>
+            </div>
+            <div className="token-price me-3">
+              <img src={lightETH_Icon} alt="PPLS" width="20" height="20" />
+              <span className="mx-1">PPLS </span>
+            </div>
+            <div className="token-price">
+              <img src={lightETH_Icon} alt="AVAX" width="20" height="20" />
+              <span className="mx-1">AVAX </span>
+            </div>
+          </div>
 
             <div className={`d-flex navBar-btn me-3 ${isOnInscription}`}>
               {/* <Link className={`nav-link my-auto docs mx-3 ${location.pathname === '/inscription' && 'ins active'}`} role="button" to={'inscription'}>
@@ -133,14 +150,14 @@ export default function Index() {
               >
                 Create Vault
               </Link>
-              <Link
+              {/* <Link
                 className="nav-link my-auto docs mx-2"
                 role="button"
                 target="_blank"
                 to={"https://system-state-documentation.gitbook.io/"}
               >
                 Documentation
-              </Link>
+              </Link> */}
               <div className={`${theme}`}>
                 <span className="connected-wallet-text docs ">
                   {userConnected
