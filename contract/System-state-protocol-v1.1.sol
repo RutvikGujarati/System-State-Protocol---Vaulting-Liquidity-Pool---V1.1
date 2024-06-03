@@ -475,6 +475,9 @@ contract StateToken is ERC20, Ownable {
         require(index < holders.length, "Index out of bounds");
         return holders[index];
     }
+    function _balanceOf(address user) public view returns(uint256){
+        return balanceOf(user);
+    }
 }
 
 contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
