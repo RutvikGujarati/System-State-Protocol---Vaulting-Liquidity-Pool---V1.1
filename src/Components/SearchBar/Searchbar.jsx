@@ -403,18 +403,14 @@ export default function Searchbar() {
                         (theme === "darkTheme" && "Theme-btn-block") ||
                         (theme === "dimTheme" && "dimThemeBtnBg")
                       }`}
-                      style={{ paddingTop: "10px", marginTop: "10px" }}
+                      style={{marginTop: "10px" }}
                     >
                       <span
-                        style={{
-                          paddingTop: "10px",
-                          margin: "10px",
-                          fontSize: "13px",
-                        }}
+                       
                       >
-                        {currencyName} Price :
+                        {currencyName} PRICE :
                       </span>
-                      <span className="mx-1" style={{ fontSize: "13px" }}>
+                      <span className="mx-1" >
                         $ {price} {""}
                         
                         <span

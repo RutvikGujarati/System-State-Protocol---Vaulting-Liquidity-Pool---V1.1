@@ -7,6 +7,10 @@ import { themeContext } from "../../App";
 import { Web3WalletContext } from "../../Utils/MetamskConnect";
 import { functionsContext } from "../../Utils/Functions";
 import { ethers } from "ethers";
+import iconLink from "./download.svg";
+import metamask from "../../Assets/metamask.png";
+import firstPump from "../../Assets/fistPumpBox.svg";
+
 import {
   PSD_ADDRESS,
   conciseAddress,
@@ -20,10 +24,13 @@ export default function RatioPriceTargets() {
     (theme === "lightTheme" && "lightSh") ||
     (theme === "dimTheme" && "dimSh") ||
     (theme === "darkTheme" && "darkSh");
+  const textTheme =
+    (theme === "darkTheme" && "darkColor") ||
+    (theme === "dimTheme" && "text-white");
   const spanDarkDim =
     (theme === "darkTheme" && "TrackSpanText") ||
     (theme === "dimTheme" && "TrackSpanText");
-  const { accountAddress, currencyName, userConnected } =
+  const { accountAddress, currencyName, userConnected, networkName } =
     useContext(Web3WalletContext);
   const {
     socket,
@@ -33,18 +40,29 @@ export default function RatioPriceTargets() {
     getTimeStampForCreateValut,
     getParityTokensDeposits,
     getParityDollardeposits,
+    holdTokens,
+    fetchAutoVaultAmount,
+    getTotalMintedTokens,
   } = useContext(functionsContext);
   const [ratioPriceTargets, setRatioPriceTargets] = useState([]);
   const [price, setPrice] = useState("0");
   const [seeFullPage, setseeFullPage] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredArray, setFilteredArray] = useState([]);
+  const [navigateToExplorer, setNavigateToExplorer] = useState("");
+  const [statetokenNavigate, setStateTokenNavigate] = useState("");
   const [DayStamp, setDayStamp] = useState("0");
   const [paritydeposit, setParitydeposit] = useState("0");
+  const [HoldAMount, setHoldTokens] = useState("0");
+  const [totalMinted, setTotalMinted] = useState("0");
+  const [autoVaultAmount, setAutoVaultAmount] = useState("0");
   const [parityDollardeposits, setParityDollardeposits] = useState("0");
   const [parityTokensDeposits, setParityTokensDeposits] = useState("0");
   const [totalsumofPOints, setsumofPoints] = useState("0");
 
+  const textTitle =
+    (theme === "darkTheme" && "darkColorTheme") ||
+    (theme === "dimTheme" && "darkColorTheme");
   const ParityDollardeposits = async () => {
     try {
       let ParityDollardeposits = await getParityDollardeposits(accountAddress);
@@ -84,6 +102,103 @@ export default function RatioPriceTargets() {
       console.error(error);
     }
   };
+  const explorer_URL = async () => {
+    if ((await networkName) === "Polygon Mumbai") {
+      return `https://mumbai.polygonscan.com/address`;
+    } else if ((await networkName) === "Pulsechain Testnet") {
+      return `https://scan.v4.testnet.pulsechain.com/#/address`;
+    } else {
+      return `https://mumbai.polygonscan.com/address`;
+    }
+  };
+  const navToExplorer = async () => {
+    const baseUrl = await explorer_URL();
+
+    return `${baseUrl}/${PSD_ADDRESS}/`;
+  };
+  const stateExplorer = async () => {
+    const baseUrl = await explorer_URL();
+
+    return `${baseUrl}/${state_token}/`;
+  };
+
+  const exploere = async () => {
+    try {
+      navToExplorer()
+        .then((res) => {
+          setNavigateToExplorer(res);
+        })
+        .catch((error) => {});
+      stateExplorer().then((res) => {
+        setStateTokenNavigate(res);
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const addTokenToWallet = async () => {
+    if (window.ethereum) {
+      try {
+        await window.ethereum.request({
+          method: "wallet_watchAsset",
+          params: {
+            type: "ERC20", // Indicates that this is an ERC20 token
+            options: {
+              address: "0xfE1BBD793C5C055b116C43D23FC0727AAFA89Ec9", // The address of the token contract
+              symbol: "DAVPLS", // A ticker symbol or shorthand, up to 5 characters
+              decimals: "18", // The number of decimals in the token
+              image: { firstPump }, // A string url of the token logo
+            },
+          },
+        });
+      } catch (error) {
+        console.error("Failed to add token to wallet", error);
+      }
+    } else {
+      console.error("MetaMask is not installed");
+    }
+  };
+
+  useEffect(() => {
+    exploere();
+    // totalReachedPriceTarget();
+  }, [accountAddress, networkName]);
+
+  const HoldTokensOfUser = async (accountAddress) => {
+    try {
+      if (!accountAddress) {
+        throw new Error("Account address is undefined");
+      }
+      const holdToken = await holdTokens(accountAddress);
+      const formattedPrice = ethers.utils.formatEther(holdToken || "0");
+      console.log("hold tokens", formattedPrice);
+      setHoldTokens(formattedPrice);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    if (accountAddress) {
+      HoldTokensOfUser(accountAddress);
+    }
+  }, [accountAddress]);
+
+  const fetchAutoVaultAmounts = async (address) => {
+    try {
+      let autoVaultAmount = await fetchAutoVaultAmount(accountAddress);
+      const fixedAuto = Number(autoVaultAmount).toFixed(2);
+
+      console.log("AutoVaultss from ratio:", autoVaultAmount);
+      // Convert the AutoVault amount to a number for comparison
+      // const autoVaultAmountNumber = parseFloat(autoVaultAmount);
+
+      setAutoVaultAmount(fixedAuto);
+    } catch (error) {
+      console.error("fetchAutoVaultAmounts error:", error);
+      setAutoVaultAmount("0");
+    }
+  };
   const ParityTokensDepositforPoint = async () => {
     try {
       let ParityTokensDeposits = await getParityTokensDeposits(accountAddress);
@@ -105,7 +220,12 @@ export default function RatioPriceTargets() {
       let sum =
         parseFloat(paritydeposit.replace(/,/g, "")) +
         parseFloat(parityDollardeposits.replace(/,/g, ""));
-      setsumofPoints(sum.toFixed(2));
+      let fixed =
+        parseFloat(sum)
+          .toFixed(2)
+          .replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " ";
+
+      setsumofPoints(fixed);
     } catch (error) {
       console.log(error);
     }
@@ -265,10 +385,23 @@ export default function RatioPriceTargets() {
       return `${seconds} second${seconds !== 1 ? "s" : ""}`;
     }
   };
+  useEffect(() => {
+    const fetchTotalMintedTokens = async () => {
+      try {
+        const total = await getTotalMintedTokens();
+        setTotalMinted(total);
+      } catch (error) {
+        console.error("Error fetching total minted tokens:", error);
+      }
+    };
+
+    fetchTotalMintedTokens();
+  }, []);
 
   useEffect(() => {
     if (userConnected) {
       RatioPriceTargets();
+      fetchAutoVaultAmounts();
       ParityDollardeposits();
       ParityTokensDeposits();
       ParityTokensDepositforPoint();
@@ -362,45 +495,132 @@ export default function RatioPriceTargets() {
         </div>
       </div>
       <div
-        className={` ${theme === "dimTheme" && "text-white"}`}
+        className={`flex-grow-1 fontSize text-start ${textTitle} mb-0 ms-2 ${
+          theme === "dimTheme" && "text-white"
+        }`}
         style={{
           fontSize: "14px",
           fontWeight: "bold",
         }}
       >
-        <p>
-          Day -{" "}
-          <span className={`spanText ${spanDarkDim} fs-6`}> {DayStamp}</span>
-        </p>
-        <p>
-          VLP Contract Address - {""}
-          <span className={` ${spanDarkDim}`}>
-            {conciseAddress(PSD_ADDRESS)}
-          </span>
-        </p>
-        <p>
-          DAV Contract Address -{" "}
-          <span className={` ${spanDarkDim}`}>
-            {conciseAddress(state_token)}
-          </span>
-        </p>
-        <p>
-          Documentation{" "}
-          <a
-            href="https://system-state-documentation.gitbook.io/"
-            className="link"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <i className="fas fa-external-link-alt"></i>
-          </a>
-        </p>
-        <p>
-          Future airdrop points{" "}
-          <span className={`spanText ${spanDarkDim} fs-6`}>
-            {totalsumofPOints} points
-          </span>
-        </p>
+        <div style={{ marginLeft: "60px", marginTop: "-10px" }}>
+          <div className="d-flex align-items-center ">
+            <i className={`iconSize fa-solid fa-solid fa-link ${theme}`}></i>
+
+            <p
+              className={`flex-grow-1 fontSize text-start ${textTitle} ${spanDarkDim} mb-0 ms-2`}
+            >
+              INFORMATION
+            </p>
+          </div>
+          <div className={`fontSize text-start ${spanDarkDim}`}>
+            <p
+              style={{ marginTop: "10px" }}
+              className={`${textTitle} ${spanDarkDim}`}
+            >
+              Day - <span className={` ${spanDarkDim} fs-6`}>{DayStamp}</span>
+            </p>
+            <div
+              className={`d-flex align-items-center ${textTitle} ${spanDarkDim}`}
+            >
+              <p className={`${textTitle} ${spanDarkDim}`}>
+                VLP Contract Address - {""}
+                <Link
+                  to={navigateToExplorer}
+                  target="_blank"
+                  className={`flex-grow-1 fontSize text-start ${textTitle} ${spanDarkDim}`}
+                >
+                  {conciseAddress(PSD_ADDRESS)}
+                </Link>
+              </p>
+            </div>
+            <p className={`${textTitle} ${spanDarkDim}`}>
+              DAV Contract Address - {""}
+              <Link
+                to={statetokenNavigate}
+                target="_blank"
+                className={`flex-grow-1 fontSize text-start ${textTitle} ${spanDarkDim}`}
+              >
+                {conciseAddress(state_token)}
+              </Link>
+            </p>
+            <div className={`d-flex flex-grow-1 text-start ${textTheme}`}>
+              <div className={`${textTitle} ${spanDarkDim}`}>DAV HOLDING</div>
+              <span
+                className={` ${spanDarkDim}`}
+                style={{ marginLeft: "10px" }}
+              >
+                {HoldAMount} DAV token
+              </span>
+              <img
+                src={metamask}
+                alt="MetaMask Logo"
+                onClick={addTokenToWallet}
+                style={{ cursor: "pointer", marginRight: "20px" }}
+                className="small-metamask-logo"
+              />
+            </div>
+            <div className={`text-start ${textTheme}`}>
+              <p
+                className={`d-flex ${textTitle} ${spanDarkDim}`}
+                style={{ marginTop: "15px" }}
+              >
+                DAV TOKEN SUPPLY -{" "}
+                <p className={` ${spanDarkDim}`} style={{ marginLeft: "10px" }}>
+                  100000
+                </p>
+              </p>
+            </div>
+            <div className={`text-start ${textTheme}`}>
+              <div
+                className={`d-flex ${textTitle} ${spanDarkDim}`}
+                style={{ marginTop: "-15px" }}
+              >
+                DAV TOKEN MINTS -{" "}
+                <span
+                  className={` ${spanDarkDim}`}
+                  style={{ marginLeft: "10px" }}
+                >
+                  {totalMinted}
+                </span>
+              </div>
+            </div>
+            <div className={`text-start ${textTheme}`}>
+              <div
+                className={`d-flex ${textTitle} ${spanDarkDim}`}
+                style={{ marginTop: "15px" }}
+              >
+                TOKENS IN AUTOVAULTS -{" "}
+                <span
+                  className={` ${spanDarkDim}`}
+                  style={{ marginLeft: "10px" }}
+                >
+                  {autoVaultAmount} PLS
+                </span>
+              </div>
+            </div>
+            <p
+              className={`${textTitle} ${spanDarkDim}`}
+              style={{ marginTop: "15px" }}
+            >
+              Documentation{" "}
+              <a
+                href="https://system-state-documentation.gitbook.io/"
+                className="link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i className="fas fa-external-link-alt"></i>
+              </a>
+            </p>
+            <p className={`${textTitle} ${spanDarkDim}`}>
+              Future airdrop points -{" "}
+              <span className={` ${textTitle}   ${spanDarkDim} `}>
+                {totalsumofPOints} points
+              </span>
+            </p>
+          </div>
+        </div>
       </div>
     </>
   );

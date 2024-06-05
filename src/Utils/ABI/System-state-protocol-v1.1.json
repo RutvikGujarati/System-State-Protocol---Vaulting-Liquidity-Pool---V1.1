@@ -30,19 +30,6 @@
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "user",
-				"type": "address"
-			}
-		],
-		"name": "AutoVaultCreated",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
 				"indexed": false,
 				"internalType": "address",
 				"name": "user",
@@ -100,25 +87,6 @@
 			}
 		],
 		"name": "Calculate",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "user",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "autoVaultAmount",
-				"type": "uint256"
-			}
-		],
-		"name": "Claim",
 		"type": "event"
 	},
 	{
@@ -200,16 +168,16 @@
 	},
 	{
 		"inputs": [],
-		"name": "createAutoVault",
+		"name": "deposit",
 		"outputs": [],
-		"stateMutability": "nonpayable",
+		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
 		"inputs": [],
-		"name": "deposit",
+		"name": "depositAndAutoVaults",
 		"outputs": [],
-		"stateMutability": "payable",
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -560,13 +528,6 @@
 		],
 		"name": "claimOwnEscrowEvent",
 		"type": "event"
-	},
-	{
-		"inputs": [],
-		"name": "depositAndAutoVaults",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
 	},
 	{
 		"inputs": [],

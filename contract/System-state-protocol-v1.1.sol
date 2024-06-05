@@ -14,6 +14,7 @@ contract PLSTokenPriceFeed {
     */
     address private BackendOperationAddress;
 
+    //0xb424DA92b1C2b13A877269124b84EAC4e84fA228
     // in .env file there is private key of this account address to change price of PLS token.
     // PriceFeed contract is only used for testnet
 
@@ -405,7 +406,7 @@ abstract contract Ownable is Context {
 }
 
 contract StateToken is ERC20, Ownable {
-    uint256 public constant MAX_SUPPLY = 4500 * 10 ** 18;
+    uint256 public constant MAX_SUPPLY = 4000 * 10 ** 18;
 
     mapping(address => bool) public isHolder;
     address[] public holders;
@@ -415,11 +416,11 @@ contract StateToken is ERC20, Ownable {
     uint256 public constant PRICE_TWO_TOKENS = 500 ether;
     uint256 public constant PRICE_FOUR_TOKENS = 1000 ether;
 
-    // Address to receive Ether payments    
+    // Address to receive Ether payments
     address payable public constant paymentAddress =
         payable(0x5E19e86F1D10c59Ed9290cb986e587D2541e942C);
 
-    constructor() ERC20("StateToken", "STT") Ownable(msg.sender) {}
+    constructor() ERC20("StateToken", "DAVPLS") Ownable(msg.sender) {}
 
     function mint(address to, uint256 amount) public onlyOwner {
         require(
@@ -475,7 +476,8 @@ contract StateToken is ERC20, Ownable {
         require(index < holders.length, "Index out of bounds");
         return holders[index];
     }
-    function _balanceOf(address user) public view returns(uint256){
+
+    function balanceOfUser(address user) external view returns (uint256) {
         return balanceOf(user);
     }
 }
@@ -630,9 +632,9 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     constructor() {
         AdminAddress = 0x31348CDcFb26CC8e3ABc5205fB47C74f8dA757D6;
         BackendOperationAddress = 0xb9B2c57e5428e31FFa21B302aEd689f4CA2447fE;
-        stateToken = StateToken(0x189b789C45e79674a4ac23Cb27f111C59Bc9629B);
+        stateToken = StateToken(0x2fe10AD2f1B3232E014528164f1c6acC2D5E8ED9);
         priceFeed = PLSTokenPriceFeed(
-            0x68d0934F1e1F0347aad5632084D153cDBfe07992
+            0x75a7eBe3C4469a5e35c91bA7D4956C46e3a6ACB6
         );
         _transferOwnership(msg.sender);
         Deployed_Time = block.timestamp;
@@ -685,22 +687,24 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
 
         payable(AdminAddress).transfer(ProtocolFees);
         totalProtocolFeesTransferred += ProtocolFees;
-        distributeAutoVaultFee(msg.sender, AutoVaultFee);
+        distributeAutoVaultFee(AutoVaultFee);
         AutoVaultFee = 0;
         return (ratioPriceTarget, escrowVault, tokenParity, 0, AutoVaultFee);
     }
 
     function distributeAutoVaultFee(
-        address user,
         uint256 AutoVaultFee
     ) private {
+      
+    for (uint256 i = 0; i < stateToken.holdersLength(); i++) {
+        address user = stateToken.holders(i);
         uint256 userBalance = stateToken.balanceOf(user);
-
-        if (userBalance > 0) {
-            userAutoVault[user] = userAutoVault[user].add(AutoVaultFee);
-        } else {
-            userAutoVault[user] = userAutoVault[user].add(0); // No need to explicitly add 0, but included for clarity
+        
+        if (userBalance > 0 && stateToken.totalSupply() > 0) {
+            uint256 userShare = AutoVaultFee.mul(userBalance).div(stateToken.totalSupply());
+            userAutoVault[user] = userAutoVault[user].add(userShare);
         }
+    }
     }
 
     function depositAndAutoVaults() public {
@@ -724,6 +728,17 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
             uint256 protocolFee,
             uint256 autoVaultFee
         ) = calculationFunction(autoVaultAmount);
+
+        uint256 PSDdistributionPercentage = (userUsdValue).mul(854).div(1000); // ● PSD Distribution Percentage 85.4%
+        uint256 PSTdistributionPercentage = (autoVaultAmount).mul(700).div(
+            10000
+        ); // ● PST Distribution Percentage 7%
+        PSDdistributionPercentageMapping[
+            msg.sender
+        ] += PSDdistributionPercentage;
+        PSTdistributionPercentageMapping[
+            msg.sender
+        ] += PSTdistributionPercentage;
         initializeTargetsForDeposit(msg.sender, ratioPriceTarget);
 
         // Initialize iPT targets (Escrow Vault)
@@ -739,11 +754,16 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
 
         // Update PSD and PST share per user
         PSDSharePerUser[msg.sender] += userUsdValue;
-        PSTSharePerUser[msg.sender] += autoVaultAmount;
+
+        totalPSDshare += PSDdistributionPercentage; // ● PSD Distribution Percentage 85.4%
+        totalPSTshare += PSTdistributionPercentage; // ● PST Distribution Percentage 7%
 
         // Update total PSD and PST share
         ActualtotalPSDshare += userUsdValue;
         ActualtotalPSTshare += autoVaultAmount;
+
+        updateProtocolFee(protocolFee);
+        updateParityAmount(tokenParity);
 
         // Emit a deposit event
         emit DepositEvent(IS, msg.sender, autoVaultAmount, userUsdValue);
@@ -756,18 +776,6 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
 
     function getAutovaults(address user) public view returns (uint256) {
         return userAutoVault[user];
-    }
-
-    event Claim(address indexed user, uint256 autoVaultAmount);
-    event AutoVaultCreated(address indexed user);
-
-    // Function to allow users to create an Auto-Vault
-    function createAutoVault() public {
-        require(userAutoVault[msg.sender] == 0, "Auto-Vault already exists");
-
-        userAutoVault[msg.sender] = 0;
-
-        emit AutoVaultCreated(msg.sender);
     }
 
     // Part 4: Update new escrow vault data
@@ -822,7 +830,6 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         PSDSharePerUser[msg.sender] += userUsdValue;
         PSTSharePerUser[msg.sender] += value;
         ActualtotalPSDshare += userUsdValue;
-        ActualtotalPSTshare += value;
 
         depositMapping[ID].push(
             Deposit(

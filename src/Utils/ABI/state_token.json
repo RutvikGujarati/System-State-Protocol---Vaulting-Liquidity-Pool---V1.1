@@ -196,7 +196,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "PRICE_FOUR_TOKENS",
+		"name": "PRICE_FIVE_TOKENS",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -209,7 +209,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "PRICE_ONE_TOKEN",
+		"name": "PRICE_TWELVE_TOKENS",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -222,7 +222,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "PRICE_TWO_TOKENS",
+		"name": "PRICE_TWO_TOKEN",
 		"outputs": [
 			{
 				"internalType": "uint256",

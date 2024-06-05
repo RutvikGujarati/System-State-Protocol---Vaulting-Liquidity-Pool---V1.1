@@ -186,7 +186,7 @@ export default function Functions({ children }) {
     }
     const BuyTokens = async (quantity,price) => {
         try {
-            allInOnePopup(null, 'Buying....', null, `OK`, null)
+            allInOnePopup(null, 'Buying DAV Tokens', null, `OK`, null)
 
             const contract = await getStatetokenContract();
             const value = ethers.utils.parseEther(price.toString());
@@ -195,7 +195,7 @@ export default function Functions({ children }) {
                  quantity,{value}
             )
             await BuyTx.wait();
-            allInOnePopup(null, 'successfully bought', null, `OK`, null)
+            allInOnePopup(null, 'Successfully Bought', null, `OK`, null)
             setSocket(prevBool => !prevBool);
             return true
         } catch (error) {
@@ -403,7 +403,7 @@ export default function Functions({ children }) {
 
                 // Show the popup only if the parity state has changed to 'reached'
                 if (newParityState === 'reached' && previousParityState !== 'reached') {
-                    allInOnePopup(null, "The 10% parity fee will stop once the user reaches token parity", null, `OK`, null);
+                    // allInOnePopup(null, "The 10% parity fee will stop once the user reaches token parity", null, `OK`, null);
                     sessionStorage.setItem(parityStateKey, 'reached');
                 } else if (newParityState === 'not_reached' && previousParityState !== 'not_reached') {
                     // Clear session storage if parity is not reached or exceeded

@@ -4,6 +4,9 @@ import "./Navbar.css";
 import { Link, useLocation } from "react-router-dom";
 import { themeContext } from "../../App";
 import LogoTransparent from "../../Assets/LogoTransparent.png";
+import bnblogo from "../../Assets/bnb.png";
+import baseIcon from "../../Assets/base.png";
+import AvaxIcon from "../../Assets/avax.png";
 import mumbaiIcon from "../../Assets/Token List Icon/chain-light.svg";
 import lightETH_Icon from "../../Assets/Token List Icon/ethereum.svg";
 import lightMode from "../../Assets/Icons/light-mode.png";
@@ -100,48 +103,123 @@ export default function Index() {
 
   return (
     <>
- <div
-      className={`nav-pr py-1 sticky-top sticky-lg-top d-flex flex-row ${theme} ${
-        (theme === "darkTheme" && "DarkThemeBorderBtm") ||
-        (theme === "dimTheme" && "themeTrackBorderBtm") ||
-        "border-bottom"
-      }`}
-      id="Nav-top"
-    >
-      <div className="container-xxl d-flex justify-content-between">
-        <div
-          id="ethPrice"
-          className="d-flex my-auto w-100 justify-content-between align-items-sm-center gap-3 sm-font"
-          style={{ fontSize: "14px" }}
-        >
-          <div className={`d-flex align-items-center ${theme}`}>
-            <div className="token-price me-3">
-              <img src={LogoTransparent} alt="PLS" width="20" height="20" />
-              <span className="mx-1">PLS</span>
+      <div
+        className={`nav-pr py-1 sticky-top sticky-lg-top d-flex flex-row ${theme} ${
+          (theme === "darkTheme" && "DarkThemeBorderBtm") ||
+          (theme === "dimTheme" && "themeTrackBorderBtm") ||
+          "border-bottom"
+        }`}
+        id="Nav-top"
+      >
+        <div className="container-xxl d-flex justify-content-between">
+          <div
+            id="ethPrice"
+            className="d-flex my-auto w-100 justify-content-between align-items-sm-center gap-3 sm-font"
+            style={{ fontSize: "14px" }}
+          >
+            <div className={`d-flex align-items-center ${theme}`}>
+              <div className="token-price me-0.1">
+                <Link
+                  className={`btn btn-lg btn-white mx-1 content-center p-0 ${
+                    (theme === "lightTheme" && "icon-btnLight") ||
+                    (theme === "dimTheme" && theme + " icon-btnDim") ||
+                    (theme === "darkTheme" && "icon-btnDark")
+                  }`}
+                  to="/Create-Vaults"
+                >
+                  <div className="theme-btn-main">
+                    <img
+                      src={LogoTransparent}
+                      alt="pls"
+                      width="20"
+                      height="20"
+                    />
+                  </div>
+                </Link>
+              </div>
+              <div className="token-price me-0.1">
+                <button
+                  className={`btn btn-lg btn-white mx-1 content-center  p-0  ${
+                    (theme === "lightTheme" && " icon-btnLight") ||
+                    (theme === "dimTheme" && theme + " icon-btnDim") ||
+                    (theme === "darkTheme" && " icon-btnDark")
+                  } `}
+                  type="button"
+                >
+                  <div className="theme-btn-main ">
+                    <img
+                      src={bnblogo}
+                      alt="pls"
+                      width="20"
+                      height="20"
+                    />
+                  </div>
+                </button>{" "}
+              </div>
+              <div className="token-price me-0.1">
+                <button
+                  className={`btn btn-lg btn-white mx-1 content-center  p-0  ${
+                    (theme === "lightTheme" && " icon-btnLight") ||
+                    (theme === "dimTheme" && theme + " icon-btnDim") ||
+                    (theme === "darkTheme" && " icon-btnDark")
+                  } `}
+                  type="button"
+                >
+                  <div className="theme-btn-main ">
+                    <img
+                      src={mumbaiIcon}
+                      alt="pls"
+                      width="20"
+                      height="20"
+                    />
+                  </div>
+                </button>{" "}
+              </div>
+              <div className="token-price me-0.1">
+                <button
+                  className={`btn btn-lg btn-white mx-1 content-center  p-0  ${
+                    (theme === "lightTheme" && " icon-btnLight") ||
+                    (theme === "dimTheme" && theme + " icon-btnDim") ||
+                    (theme === "darkTheme" && " icon-btnDark")
+                  } `}
+                  type="button"
+                >
+                  <div className="theme-btn-main ">
+                    <img
+                      src={AvaxIcon}
+                      alt="pls"
+                      width="20"
+                      height="20"
+                    />
+                  </div>
+                </button>{" "}
+              </div>
+              <div className="token-price me-0.1">
+                <button
+                  className={`btn btn-lg btn-white mx-1 content-center  p-0  ${
+                    (theme === "lightTheme" && " icon-btnLight") ||
+                    (theme === "dimTheme" && theme + " icon-btnDim") ||
+                    (theme === "darkTheme" && " icon-btnDark")
+                  } `}
+                  type="button"
+                >
+                  <div className="theme-btn-main ">
+                    <img
+                      src={baseIcon}
+                      alt="pls"
+                      width="20"
+                      height="20"
+                    />
+                  </div>
+                </button>{" "}
+              </div>
             </div>
-            <div className="token-price me-3">
-              <img src={mumbaiIcon} alt="Matic" width="20" height="20" />
-              <span className="mx-1">Matic</span>
-            </div>
-            <div className="token-price me-3">
-              <img src={lightETH_Icon} alt="BNB" width="20" height="20" />
-              <span className="mx-1">BNB</span>
-            </div>
-            <div className="token-price me-3">
-              <img src={lightETH_Icon} alt="PPLS" width="20" height="20" />
-              <span className="mx-1">PPLS </span>
-            </div>
-            <div className="token-price">
-              <img src={lightETH_Icon} alt="AVAX" width="20" height="20" />
-              <span className="mx-1">AVAX </span>
-            </div>
-          </div>
 
             <div className={`d-flex navBar-btn me-3 ${isOnInscription}`}>
               {/* <Link className={`nav-link my-auto docs mx-3 ${location.pathname === '/inscription' && 'ins active'}`} role="button" to={'inscription'}>
         Inscription
     </Link> */}
-              <Link
+              {/* <Link
                 className={`nav-link my-auto docs mx-3 ${
                   location.pathname === "/Create-Vaults" && "ins active"
                 }`}
@@ -149,7 +227,7 @@ export default function Index() {
                 to={"Create-Vaults"}
               >
                 Create Vault
-              </Link>
+              </Link> */}
               {/* <Link
                 className="nav-link my-auto docs mx-2"
                 role="button"
@@ -158,15 +236,21 @@ export default function Index() {
               >
                 Documentation
               </Link> */}
-              <div className={`${theme}`}>
-                <span className="connected-wallet-text docs ">
+              <div
+                className={`box-3 ${
+                  (theme === "darkTheme" && "Theme-btn-block") ||
+                  (theme === "dimTheme" && "dimThemeBtnBg")
+                }`}
+                style={{ marginTop: "3px", fontSize: "10px" }}
+              >
+                <span className=" ">
                   {userConnected
-                    ? `[${accountAddress.substring(
+                    ? `${accountAddress.substring(
                         0,
                         4
                       )}...${accountAddress.substring(
                         accountAddress.length - 4
-                      )}]`
+                      )}`
                     : "Not Connected"}
                 </span>
                 <span data-bs-toggle="tooltip" data-bs-placement="top"></span>

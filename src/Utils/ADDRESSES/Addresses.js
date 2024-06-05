@@ -101,11 +101,14 @@ const PRICE_FEED_ADDRESS = '0x68d0934F1e1F0347aad5632084D153cDBfe07992'
 // const PSD_ADDRESS = "0x285A2c31ecfA3FCB0545705d310d244581049FAc"//  for matic live testnet
 // const PSD_ADDRESS = "0x7b88336DEDa87bA7A455E1C6C3a04b5d158A2a88"//  for [arity solved  live testnet
 // const PSD_ADDRESS = "0xA51bEa69c54702bd69A287CeF7c7aAb68d53187F"// all things working (autovaults also) - for me
-const PSD_ADDRESS = "0xb424DA92b1C2b13A877269124b84EAC4e84fA228"// all things working (autovaults also) - for live testnet
+const PSD_ADDRESS = "0x3d04815036093fbCB02b59e2C165A5725aE5A6e5"// all things working (autovaults also) - for me - full working ....
+// const PSD_ADDRESS = "0x20e53e5d0221daEF793bcb7BdB6Ee08C3314CE88"// all things working (autovaults also) - for live testnet - full working ....
+// const PSD_ADDRESS = "0x8323BA81A4f84B763C191D362c58f3fe8e17e119"// all things working (autovaults also) - for final live testnet - full working ....
 
 
 // const state_token = "0x14a568BA33AeF6f8Cc484E918e1638E597AC9fC1"  // for me
-const state_token = "0x543eDa9782131007FC061cC17E1fC95E826361E4"  // for live testnet
+const state_token = "0x0348b818712D5248d7E5013F29378EDB5Ee0b842"  // for me.
+// const state_token = "0xfE1BBD793C5C055b116C43D23FC0727AAFA89Ec9"  // for final live testnet.
 
 // const System_State_Ratio_Vaults_V1 = "0x7D58E2775b4dbdd84BCbec15A36A146a1BaDfB5f";
 

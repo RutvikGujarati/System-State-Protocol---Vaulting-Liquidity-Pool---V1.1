@@ -2,6 +2,7 @@ import React, {
   createContext,
   useCallback,
   useContext,
+  useRef,
   useEffect,
   useState,
 } from "react";
@@ -17,6 +18,7 @@ import { BigNumber, errors, ethers } from "ethers";
 import InfoBox from "../InfoIconBox/InfoBox";
 import firstPump from "../../Assets/fistPumpBox.svg";
 import fisrtPumpBrt from "../../Assets/High-Resolutions-Svg/Updated/fist pump small.svg";
+import tb from "./tb.svg";
 import {
   PSD_ADDRESS,
   allInOnePopup,
@@ -98,6 +100,8 @@ export default function TrackingPage({ children }) {
   const [parityDollarClaimed, setParityDollarClaimed] = useState("0");
   const [parityTokensClaimed, setParityTokensClaimed] = useState("0");
   const [autoVaultAmount, setAutoVaultAmount] = useState("0");
+  const [isPopupOpen, setIsPopupOpen] = useState(false); // State to track popup open status
+
   const [HoldAMount, setHoldTokens] = useState("0");
   const [totalMinted, setTotalMinted] = useState("0");
   const [value, setValue] = useState("0");
@@ -116,24 +120,6 @@ export default function TrackingPage({ children }) {
   const [NumberOfStateProtocolUsers, setNumberOfStateProtocolUsers] =
     useState(0);
   const [totalVaultValue, setTotalVaultSum] = useState("0");
-
-  const explorer_URL = async () => {
-    if ((await networkName) === "Polygon Mumbai") {
-      return `https://mumbai.polygonscan.com/address`;
-    } else if ((await networkName) === "Pulsechain Testnet") {
-      return `https://scan.v4.testnet.pulsechain.com/#/address`;
-    } else {
-      return `https://mumbai.polygonscan.com/address`;
-    }
-  };
-  const navToExplorer = async () => {
-    const baseUrl = await explorer_URL();
-    if (isHome) {
-      return `${baseUrl}/${PSD_ADDRESS}`;
-    } else {
-      // return `${baseUrl}/${STATE_TOKEN_ADDRES}`
-    }
-  };
 
   // Done
   const containerStyle = {
@@ -237,18 +223,22 @@ export default function TrackingPage({ children }) {
       console.error(error);
     }
   };
+  const popupOpenRef = useRef(false);
+
+  let AutoAMount = 0;
 
   const fetchAutoVaultAmounts = async (address) => {
     try {
       let autoVaultAmount = await fetchAutoVaultAmount(accountAddress);
 
-      console.log("AutoVaultss from tracking:", autoVaultAmount);
-      // Convert the AutoVault amount to a number for comparison
+      console.log("AutoVaults from tracking:", autoVaultAmount);
       const autoVaultAmountNumber = parseFloat(autoVaultAmount);
 
-      setAutoVaultAmount(autoVaultAmountNumber);
-      // Check if the AutoVault amount exceeds the threshold (10 ether)
-      if (autoVaultAmountNumber >= 1000) {
+      AutoAMount += autoVaultAmountNumber;
+
+      setAutoVaultAmount(autoVaultAmountNumber.toFixed(2));
+      sessionStorage.setItem("AutoAMount", AutoAMount);
+      if (AutoAMount >= 5 && !isPopupOpen) {
         handleAutoVaultThresholdReached(address);
       }
     } catch (error) {
@@ -257,7 +247,7 @@ export default function TrackingPage({ children }) {
     }
   };
 
-  const handleAutoVaultThresholdReached = (address, autoVaultAmountNumber) => {
+  const handleAutoVaultThresholdReached = (address) => {
     const autoVaultStateKey = `autoVaultState_${address}`;
     const previousAutoVaultState = sessionStorage.getItem(autoVaultStateKey);
     console.log(
@@ -267,7 +257,7 @@ export default function TrackingPage({ children }) {
 
     if (previousAutoVaultState !== "created_popped") {
       // Show the deposit popup
-      showDepositPopup(address, autoVaultAmountNumber);
+      showDepositPopup(address);
       sessionStorage.setItem(autoVaultStateKey, "created_popped");
     } else {
       // Check if the amount still meets the condition for reopening the popup
@@ -275,20 +265,19 @@ export default function TrackingPage({ children }) {
       const autoVaultConfirmedState = sessionStorage.getItem(
         autoVaultConfirmedKey
       );
-      if (
-        autoVaultAmountNumber >= 1000 &&
-        autoVaultConfirmedState !== "confirmed"
-      ) {
-        showDepositPopup();
+      if (AutoAMount >= 5 && autoVaultConfirmedState !== "confirmed") {
+        showDepositPopup(address);
         sessionStorage.setItem(autoVaultStateKey, "created_popped");
       }
     }
   };
-  const showDepositPopup = async () => {
-    const autoVaultAmount = await fetchAutoVaultAmount(accountAddress);
+
+  const showDepositPopup = async (address) => {
+    popupOpenRef.current = true; // Set popup state to open
+    setIsPopupOpen(true); // Set popup state to open
 
     Swal.fire({
-      title: "Deposit AutoVaults",
+      title: "Deposit Auto-Vault",
       html: `
           <div class="d-flex flex-column align-items-center">
               <p id="autoVaultAmount" style="font-size: 18px; color: ${
@@ -297,7 +286,7 @@ export default function TrackingPage({ children }) {
                   : theme === "dimTheme"
                   ? "#666"
                   : "#333"
-              }; margin: 0 0 15px 0;">Auto-vault: ${autoVaultAmount} PLS</p>
+              }; margin: 0 0 15px 0;"> ${AutoAMount.toFixed(0)} PLS</p>
               <div class="d-flex justify-content-center pumpBoxImg">
                   <button id="depositButton" class="first_pump_boxIcon ${
                     (theme === "darkTheme" && "firstdumDark") ||
@@ -314,17 +303,17 @@ export default function TrackingPage({ children }) {
       didOpen: () => {
         document
           .getElementById("depositButton")
-          .addEventListener("click", handleDeposit);
+          .addEventListener("click", () => handleDeposit(address));
       },
       willClose: () => {
         document
           .getElementById("depositButton")
           .removeEventListener("click", handleDeposit);
+        popupOpenRef.current = false; // Set popup state to closed
+        setIsPopupOpen(false); // Set popup state to closed
       },
     });
   };
-
-  // console.log(autoVaultAmount)
 
   const handleDeposit = async (address) => {
     try {
@@ -334,12 +323,31 @@ export default function TrackingPage({ children }) {
       const autoVaultConfirmedKey = `autoVaultConfirmed_${address}`;
       sessionStorage.setItem(autoVaultConfirmedKey, "confirmed");
       Swal.close();
+      // Reset AutoAMount to 0 after successful deposit
+      AutoAMount = 0;
+      setAutoVaultAmount("0");
+      sessionStorage.removeItem("AutoAMount");
     } catch (error) {
       console.error("Deposit error:", error);
     }
   };
 
-  // Done
+  useEffect(() => {
+    const storedAutoAMount = sessionStorage.getItem("AutoAMount");
+    if (storedAutoAMount) {
+      AutoAMount = parseFloat(storedAutoAMount);
+      if (AutoAMount >= 5 && !popupOpenRef.current && !isPopupOpen) {
+        handleAutoVaultThresholdReached(accountAddress);
+      }
+    }
+
+    const interval = setInterval(() => {
+      fetchAutoVaultAmounts(accountAddress);
+    }, 60000); // 60000 ms = 1 minute
+
+    return () => clearInterval(interval);
+  }, [accountAddress, isPopupOpen]);
+
   const ParityTokensDeposits = async () => {
     try {
       let ParityTokensDeposits = await getParityTokensDeposits(accountAddress);
@@ -357,6 +365,7 @@ export default function TrackingPage({ children }) {
       console.error(error);
     }
   };
+  
   const ParityTokensDepositforPoint = async () => {
     try {
       let ParityTokensDeposits = await getParityTokensDeposits(accountAddress);
@@ -460,27 +469,6 @@ export default function TrackingPage({ children }) {
     try {
       let { isParityReachedOrExceed } = await getParityReached(accountAddress);
       setIsParityReached(isParityReachedOrExceed);
-
-      console.log("is parity reached", isParityReachedOrExceed);
-
-      if (isParityReachedOrExceed) {
-        // Check if the popup has been shown before
-        const popupShownBefore = sessionStorage.getItem(
-          `parityPopupShown_${accountAddress}`
-        );
-        if (!popupShownBefore) {
-          // Display the message only if isReached is truthy and not '0', and the popup hasn't been shown before for this account
-          allInOnePopup(
-            null,
-            "The 10% parity fee will stop once the user reaches token parity",
-            null,
-            `OK`,
-            null
-          );
-          // Set the flag to indicate that the popup has been shown for this account
-          sessionStorage.setItem(`parityPopupShown_${accountAddress}`, "true");
-        }
-      }
     } catch (error) {
       console.error("error: ", error);
     }
@@ -578,17 +566,17 @@ export default function TrackingPage({ children }) {
   };
   const HoldTokensOfUser = async (accountAddress) => {
     try {
-        if (!accountAddress) {
-            throw new Error("Account address is undefined");
-        }
-        const holdToken = await holdTokens(accountAddress);
-        const formattedPrice = ethers.utils.formatEther(holdToken  || "0");
-        console.log("hold tokens",formattedPrice)
-        setHoldTokens(formattedPrice);
+      if (!accountAddress) {
+        throw new Error("Account address is undefined");
+      }
+      const holdToken = await holdTokens(accountAddress);
+      const formattedPrice = ethers.utils.formatEther(holdToken || "0");
+      console.log("hold tokens", formattedPrice);
+      setHoldTokens(formattedPrice);
     } catch (error) {
-        console.log(error);
+      console.log(error);
     }
-};
+  };
   const protocolFeeInDollar = async () => {
     try {
       let protocolFee = await getProtocolFee(accountAddress);
@@ -669,11 +657,6 @@ export default function TrackingPage({ children }) {
 
   const FetchBalance = async () => {
     try {
-      navToExplorer()
-        .then((res) => {
-          setNavigateToExplorer(res);
-        })
-        .catch((error) => {});
       if (userConnected) {
         let fixedBalance = Number(WalletBalance || "0").toFixed(4);
 
@@ -689,13 +672,13 @@ export default function TrackingPage({ children }) {
   };
   useEffect(() => {
     if (accountAddress) {
-        HoldTokensOfUser(accountAddress);
+      HoldTokensOfUser(accountAddress);
     }
-}, [accountAddress]);
+  }, [accountAddress]);
 
   useEffect(() => {
     FetchBalance();
-    
+
     // totalReachedPriceTarget();
   }, [accountAddress, networkName]);
 
@@ -932,16 +915,16 @@ export default function TrackingPage({ children }) {
   };
   useEffect(() => {
     const fetchTotalMintedTokens = async () => {
-        try {
-            const total = await getTotalMintedTokens();
-            setTotalMinted(total);
-        } catch (error) {
-            console.error('Error fetching total minted tokens:', error);
-        }
+      try {
+        const total = await getTotalMintedTokens();
+        setTotalMinted(total);
+      } catch (error) {
+        console.error("Error fetching total minted tokens:", error);
+      }
     };
 
     fetchTotalMintedTokens();
-}, []);
+  }, []);
   const TotalVaultValueLocked = () => {
     const totalvalue = totalSUm * price + TotalSum * price;
     const roundedTotal = Number(totalvalue.toFixed(3));
@@ -1074,8 +1057,8 @@ export default function TrackingPage({ children }) {
                                                 <div className={`varSize ${spanDarkDim}`}><span className={`spanText ${spanDarkDim}`}>$ {totalValueLocked}</span></div>
                                             </div>
                                         </div> */}
-                  <hr className="my-3" />
-                  <div className="d-flex customeHeight">
+                  <hr className="my-4" />
+                  <div className="d-flex h-50">
                     <div className="margin-right">
                       <i
                         className={`iconSize fa-solid fa-comments-dollar ${theme}`}
@@ -1085,7 +1068,7 @@ export default function TrackingPage({ children }) {
                       className={`flex-grow-1 fontSize text-start  ${textTheme}`}
                     >
                       <div>
-                        <div className={`${textTitle} `}>
+                        <div className={`${textTitle}  `}>
                           $ TVL ( LIQUIDITY )
                         </div>
                         <div className={`varSize ${spanDarkDim}`}>
@@ -1098,28 +1081,11 @@ export default function TrackingPage({ children }) {
                             {/* here need to update the reward with totalTokens in vault * price */}
                           </span>
                         </div>
-                        <div>
-                          <div className={`varSize ${spanDarkDim}`}>
-                            <span
-                              className={`spanTextAdd ${spanDarkDim}`}
-                              style={{
-                                alignItems: "center",
-                                fontSize: "10px",
-                                marginLeft: "40px",
-                                marginTop: "10px",
-                              }}
-                            >
-                              Dav tokens minted
-                            </span>
-                          </div>
-                        </div>
                       </div>
                     </div>
-                    <div className="margin-right">
-                      {/* <i className={`iconSize fa-solid fa-vault ${theme}`}></i> */}
-                      {/* <InfoBox data='Total % rewards claimed by all users to date' /> */}
+                    <div className="d-flex align-items-end pb-3">
                       <span
-                        className={`${tooltip} hoverText`}
+                        className={`${tooltip} heightfixBug hoverText tooltipAlign`}
                         data-tooltip="The number of tokens in vaults * current price."
                         data-flow="bottom"
                       >
@@ -1188,6 +1154,19 @@ export default function TrackingPage({ children }) {
                           <span className={`spanText ${spanDarkDim}`}>
                             {" "}
                             {parityTokensDeposits}
+                            {IsParityReached && (
+                              <span
+                                className={`${tooltip} hoverText hoverText`}
+                                style={{ color: "red" }}
+                                data-tooltip="Token Parity Achieved"
+                                data-flow="bottom"
+                              >
+                                {" "}
+                                <i
+                                  className={`fas mx-2 fa-exclamation-circle ${theme}`}
+                                ></i>
+                              </span>
+                            )}
                           </span>
                         </div>
                       </div>
@@ -1196,8 +1175,7 @@ export default function TrackingPage({ children }) {
                       <div className="d-flex align-items-end pb-3">
                         <span
                           className={`${tooltip} heightfixBug hoverText tooltipAlign`}
-                          data-tooltip="Parity Shares in Tokens. Indicating the total number of tokens
-                                                    deposited"
+                          data-tooltip="Parity Shares in Tokens. Indicating the total number of tokens deposited"
                           data-flow="bottom"
                         >
                           {" "}
@@ -1266,10 +1244,11 @@ export default function TrackingPage({ children }) {
                           <span className={`spanText ${spanDarkDim}`}>
                             {parityTokensClaimed}
 
-                            {IsParityReached && IsParityReached === "0" && (
+                            {IsParityReached && (
                               <span
                                 className={`${tooltip} hoverText hoverText`}
-                                data-tooltip="You reached maximum claim for parity tokens. Deposit more tokens to get parity token reward again."
+                                style={{ color: "red" }}
+                                data-tooltip="Token Parity Achieved"
                                 data-flow="bottom"
                               >
                                 {" "}
@@ -1304,20 +1283,13 @@ export default function TrackingPage({ children }) {
                   <hr className="d-lg-none d-block my-3" />
                   <div className="d-flex pt-1">
                     <div className="margin-right">
-                      {/* <i className={`iconSize fa-solid fa-vault ${theme}`}></i> */}
-                      {/* <InfoBox data='Days since deployment. Measuring time to reach 1000000% rewards' /> */}
-                      <span
-                        className={`${tooltip} hoverText`}
-                        data-tooltip="FOR EXPERERIENCE CRYPTO USERS. optional and is not required to create VLP’s - SEE WHITE PAPAER"
-                        data-flow="bottom"
-                      >
-                        {" "}
-                        <i
-                          className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                        ></i>
-                      </span>
+                      <i
+                        className={`iconSize fa-solid fa-cubes-stacked ${theme}`}
+                      ></i>
                     </div>
-                    <div className={`flex-grow-1  text-start  ${textTheme}`}>
+                    <div
+                      className={`flex-grow-1 fontSize text-start justify-content-between ${textTheme}`}
+                    >
                       <div className={`${textTitle} `}>DAV</div>
                       <div className={`varSize ${spanDarkDim}`}>
                         <span
@@ -1329,12 +1301,11 @@ export default function TrackingPage({ children }) {
                         </span>
                       </div>
                     </div>
-                  </div>
-                  <div className="d-flex pt-1">
-                    <div className="margin-right">
+                    <div className="d-flex align-items-end pb-3">
                       <span
-                        className={`${tooltip} hoverText`}
-                        data-tooltip="DAV TOKEN HOLDINGS IN THE INFORMATION"
+                        className={`${tooltip} hoverText tooltipAlign`}
+                        style={{ marginTop: "70px", paddingBottom: "5px" }}
+                        data-tooltip="optional and is not required to create VLP’s - SEE WHITE PAPER"
                         data-flow="bottom"
                       >
                         {" "}
@@ -1343,91 +1314,91 @@ export default function TrackingPage({ children }) {
                         ></i>
                       </span>
                     </div>
-                    <div className={`flex-grow-1  text-start  ${textTheme}`}>
-                      <div className={`${textTitle} `}>DAV HOLDING</div>
-                      <div className={`varSize ${spanDarkDim}`}>
-                        <span className={`spanText ${spanDarkDim} `}>
-                          {" "}
-                          {HoldAMount} DAV token
-                        </span>
-                      </div>
-                    </div>
                   </div>
+
                   <div className="d-flex pt-1">
                     <div className="margin-right">
-                      {/* <i className={`iconSize fa-solid fa-vault ${theme}`}></i> */}
-                      {/* { <InfoBox data='Number of active wallets opening vaults' /> } */}
-                      {
-                        <span
-                          className={`${tooltip} hoverText tooltipAlign`}
-                          data-tooltip="See white paper for more information"
-                          data-flow="bottom"
-                        >
-                          {" "}
-                          <i
-                            className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                          ></i>
-                        </span>
-                      }
+                      <i
+                        className={`iconSize fa-solid fa-coins fa-money-bill-transfer ${theme}`}
+                      ></i>
                     </div>
-                    <div className=" align-items-center">
-                      <div className={`text-uppercase mb-2 ${textTitle}`}>
-                        Buy DAV Tokens
+                    <div className="d-flex flex-column align-items-start">
+                      <div
+                        className={`fontSize text-uppercase mb-0.1 ${textTheme}`}
+                      >
+                        <p className={`${textTitle}`}>Buy DAV Tokens</p>
                       </div>
-                      <div className="d-flex justify-content mb-3">
+                      <div className="d-flex flex-column mb-0.1 button-group">
                         <button
                           style={{
                             whiteSpace: "nowrap",
-                            fontSize: "10px",
+                            marginLeft: "10px",
                             backgroundColor: "transparent",
+                            fontWeight: "bold",
+                            marginBottom: "5px",
+                            width: "110px",
+                            height: "30px", // Set a fixed width for all buttons
                           }}
-                          className={`box-3 ${
+                          className={`box-3 fontSize  mx-2 glowing-button ${
                             (theme === "darkTheme" && "Theme-btn-block") ||
                             (theme === "dimTheme" && "dimThemeBtnBg")
-                          }  mx-2`}
-                          onClick={() => BuyTokens(2,250)}
+                          } `}
+                          onClick={() => BuyTokens(2, 100)}
                         >
-                          2 DAV-$250
+                          2 DAV - $100
                         </button>
                         <button
                           style={{
                             whiteSpace: "nowrap",
-                            fontSize: "10px",
                             backgroundColor: "transparent",
+                            fontWeight: "bold",
+                            marginBottom: "5px",
+                            width: "110px",
+                            height: "30px", // Set a fixed width for all buttons
                           }}
-                          className={`box-3 ${
+                          className={`box-3 fontSize ${textTitle} ${
                             (theme === "darkTheme" && "Theme-btn-block") ||
                             (theme === "dimTheme" && "dimThemeBtnBg")
-                          } btn-outline-primary mx-2`}
-                          onClick={() => BuyTokens(5,500)}
+                          }  glowing-button mx-2`}
+                          onClick={() => BuyTokens(5, 300)}
                         >
-                          5 DAV-$500
+                          5 DAV - $300
                         </button>
                         <button
                           style={{
                             whiteSpace: "nowrap",
-                            fontSize: "10px",
                             backgroundColor: "transparent",
+                            fontWeight: "bold",
+                            marginBottom: "5px",
+                            width: "110px",
+                            height: "30px", // Set a fixed width for all buttons
                           }}
-                          className={`box-3 ${
+                          className={`box-3 fontSize ${textTitle} ${
                             (theme === "darkTheme" && "Theme-btn-block") ||
                             (theme === "dimTheme" && "dimThemeBtnBg")
-                          } btn-outline-primary mx-2`}
-                          onClick={() => BuyTokens(12,1000)}
+                          }  glowing-button mx-2`}
+                          onClick={() => BuyTokens(12, 500)}
                         >
-                          12 DAV-$1000
+                          12 DAV - $500
                         </button>
-                      </div>
-                      <div style={{ fontSize: "13px" }}>
-                        <span
-                          className={`${textTitle}`}
-                          style={{ fontSize: "15px" }}
-                        >
-                          DAV Token Mints/Minted: 40000 / {totalMinted}
-                        </span>
-                        {/* <span className={`${textTitle} fs-6`}> 40000 / 35789</span> */}
                       </div>
                     </div>
+                    <span
+                      className={`${tooltip} hoverText tooltipAlign`}
+                      style={{
+                        position: "absolute",
+                        bottom: "10px",
+                        paddingBottom: "20px",
+                        marginRight: "6px",
+                        right: "10px",
+                      }}
+                      data-tooltip="See white paper for more information"
+                      data-flow="bottom"
+                    >
+                      <i
+                        className={`fas mx-2 fa-exclamation-circle ${theme}`}
+                      ></i>
+                    </span>
                   </div>
                 </div>
               </div>
