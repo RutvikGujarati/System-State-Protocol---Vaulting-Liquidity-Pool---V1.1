@@ -131,8 +131,8 @@ export default function Index() {
                     <img
                       src={LogoTransparent}
                       alt="pls"
-                      width="20"
-                      height="20"
+                      width="30"
+                      height="30"
                     />
                   </div>
                 </Link>
@@ -147,12 +147,7 @@ export default function Index() {
                   type="button"
                 >
                   <div className="theme-btn-main ">
-                    <img
-                      src={bnblogo}
-                      alt="pls"
-                      width="20"
-                      height="20"
-                    />
+                    <img src={bnblogo} alt="pls" width="20" height="20" />
                   </div>
                 </button>{" "}
               </div>
@@ -166,12 +161,7 @@ export default function Index() {
                   type="button"
                 >
                   <div className="theme-btn-main ">
-                    <img
-                      src={mumbaiIcon}
-                      alt="pls"
-                      width="20"
-                      height="20"
-                    />
+                    <img src={mumbaiIcon} alt="pls" width="20" height="20" />
                   </div>
                 </button>{" "}
               </div>
@@ -185,12 +175,7 @@ export default function Index() {
                   type="button"
                 >
                   <div className="theme-btn-main ">
-                    <img
-                      src={AvaxIcon}
-                      alt="pls"
-                      width="20"
-                      height="20"
-                    />
+                    <img src={AvaxIcon} alt="pls" width="20" height="20" />
                   </div>
                 </button>{" "}
               </div>
@@ -204,12 +189,7 @@ export default function Index() {
                   type="button"
                 >
                   <div className="theme-btn-main ">
-                    <img
-                      src={baseIcon}
-                      alt="pls"
-                      width="20"
-                      height="20"
-                    />
+                    <img src={baseIcon} alt="pls" width="20" height="20" />
                   </div>
                 </button>{" "}
               </div>
@@ -353,11 +333,16 @@ export default function Index() {
             >
               {/* <div className="theme-btn-main minLogo h-100 w-100"> */}
               <img
-                className={`w-100 h-100  ${
+                className={`w-200 h-200   ${
+                  (theme === "lightTheme") ||
                   (theme === "dimTheme" && "logoDimTwo") ||
-                  (theme === "darkTheme" && "logoDarkTwo")
+                  (theme === "darkTheme" && "logoDarkTwo") ||
+                  (connectedIcon === LogoTransparent && "small-logo")
                 }`}
                 src={connectedIcon}
+                alt="logo"
+                width="30"
+                height="30"
                 data-href="#fa-sun-bright"
               />
               {/* </div> */}

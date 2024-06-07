@@ -238,7 +238,7 @@ export default function TrackingPage({ children }) {
 
       setAutoVaultAmount(autoVaultAmountNumber.toFixed(2));
       sessionStorage.setItem("AutoAMount", AutoAMount);
-      if (AutoAMount >= 5 && !isPopupOpen) {
+      if (AutoAMount >= 500 && !isPopupOpen) {
         handleAutoVaultThresholdReached(address);
       }
     } catch (error) {
@@ -265,7 +265,7 @@ export default function TrackingPage({ children }) {
       const autoVaultConfirmedState = sessionStorage.getItem(
         autoVaultConfirmedKey
       );
-      if (AutoAMount >= 5 && autoVaultConfirmedState !== "confirmed") {
+      if (AutoAMount >= 500 && autoVaultConfirmedState !== "confirmed") {
         showDepositPopup(address);
         sessionStorage.setItem(autoVaultStateKey, "created_popped");
       }

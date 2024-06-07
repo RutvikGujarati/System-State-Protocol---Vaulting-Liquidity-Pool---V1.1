@@ -5,7 +5,11 @@
 .sm-font {
     font-size: small;
 }
-
+.small-logo {
+    width: 30px;
+    height: 30px;
+  }
+  
 .anchor {
     text-decoration: none;
     opacity: 1;
