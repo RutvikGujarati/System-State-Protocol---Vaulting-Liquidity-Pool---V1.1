@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import Searchbar from "../../Components/SearchBar/Searchbar";
 import RatioPriceTargets from "../Ratio Price Targets/RatioPriceTargets";
 import IncrementPriceTarget from "../Increment Price Target/IncrementPriceTarget";
+import DAV from "../bottom/dav";
 import "./Style.css";
 import { themeContext } from "../../App";
 import "../../Utils/Theme.css";
@@ -37,7 +38,7 @@ export default function Index() {
             </div>
           </div>
         </div>
-        {/* <CreateVaultGraph/> */}
+        <DAV/>
       </div>
     </div>
   );

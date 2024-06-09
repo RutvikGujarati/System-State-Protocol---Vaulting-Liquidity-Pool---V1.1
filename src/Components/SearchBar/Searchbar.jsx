@@ -403,16 +403,11 @@ export default function Searchbar() {
                         (theme === "darkTheme" && "Theme-btn-block") ||
                         (theme === "dimTheme" && "dimThemeBtnBg")
                       }`}
-                      style={{marginTop: "10px" }}
+                      style={{ marginTop: "10px" }}
                     >
-                      <span
-                       
-                      >
-                        {currencyName} PRICE :
-                      </span>
-                      <span className="mx-1" >
+                      <span>{currencyName} PRICE :</span>
+                      <span className="mx-1">
                         $ {price} {""}
-                        
                         <span
                           data-bs-toggle="tooltip"
                           data-bs-placement="top"

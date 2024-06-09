@@ -9,6 +9,12 @@ import { ethers } from "ethers";
 
 export default function IncrementPriceTarget() {
   const { theme } = useContext(themeContext);
+  const textTitle =
+    (theme === "darkTheme" && "darkColorTheme") ||
+    (theme === "dimTheme" && "darkColorTheme");
+  const spanDarkDim =
+    (theme === "darkTheme" && "TrackSpanText") ||
+    (theme === "dimTheme" && "TrackSpanText");
   const shadow =
     (theme === "lightTheme" && "lightSh") ||
     (theme === "dimTheme" && "dimSh") ||
@@ -264,7 +270,18 @@ export default function IncrementPriceTarget() {
           </div>
         </div>
       </div>
-      
+
+      {/* <div style={{ marginLeft: "600px", marginTop: "-10px" }}>
+        <div className="d-flex align-items-center ">
+          <i className={`iconSize fa-solid fa-solid fa-link ${theme}`}></i>
+
+          <p
+            className={`flex-grow-1 fontSize text-start ${textTitle} ${spanDarkDim} mb-0 ms-2`}
+          >
+            INFORMATION
+          </p>
+        </div>
+      </div> */}
     </>
   );
 }

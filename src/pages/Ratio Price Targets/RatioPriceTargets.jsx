@@ -20,6 +20,12 @@ import {
 export default function RatioPriceTargets() {
   // const {setsumofPoints} = useContext(airdrop)
   const { theme } = useContext(themeContext);
+  let block =
+    (theme === "lightTheme" && theme + " translite") ||
+    (theme === "darkTheme" && theme + " transdark") ||
+    (theme === "dimTheme" && theme + " transdim");
+  let dark = theme === "lightTheme" && "text-dark";
+
   const shadow =
     (theme === "lightTheme" && "lightSh") ||
     (theme === "dimTheme" && "dimSh") ||
@@ -491,134 +497,6 @@ export default function RatioPriceTargets() {
                 </span>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-      <div
-        className={`flex-grow-1 fontSize text-start ${textTitle} mb-0 ms-2 ${
-          theme === "dimTheme" && "text-white"
-        }`}
-        style={{
-          fontSize: "14px",
-          fontWeight: "bold",
-        }}
-      >
-        <div style={{ marginLeft: "60px", marginTop: "-10px" }}>
-          <div className="d-flex align-items-center ">
-            <i className={`iconSize fa-solid fa-solid fa-link ${theme}`}></i>
-
-            <p
-              className={`flex-grow-1 fontSize text-start ${textTitle} ${spanDarkDim} mb-0 ms-2`}
-            >
-              INFORMATION
-            </p>
-          </div>
-          <div className={`fontSize text-start ${spanDarkDim}`}>
-            <p
-              style={{ marginTop: "10px" }}
-              className={`${textTitle} ${spanDarkDim}`}
-            >
-              Day - <span className={` ${spanDarkDim} fs-6`}>{DayStamp}</span>
-            </p>
-            <div
-              className={`d-flex align-items-center ${textTitle} ${spanDarkDim}`}
-            >
-              <p className={`${textTitle} ${spanDarkDim}`}>
-                VLP Contract Address - {""}
-                <Link
-                  to={navigateToExplorer}
-                  target="_blank"
-                  className={`flex-grow-1 fontSize text-start ${textTitle} ${spanDarkDim}`}
-                >
-                  {conciseAddress(PSD_ADDRESS)}
-                </Link>
-              </p>
-            </div>
-            <p className={`${textTitle} ${spanDarkDim}`}>
-              DAV Contract Address - {""}
-              <Link
-                to={statetokenNavigate}
-                target="_blank"
-                className={`flex-grow-1 fontSize text-start ${textTitle} ${spanDarkDim}`}
-              >
-                {conciseAddress(state_token)}
-              </Link>
-            </p>
-            <div className={`d-flex flex-grow-1 text-start ${textTheme}`}>
-              <div className={`${textTitle} ${spanDarkDim}`}>DAV HOLDING</div>
-              <span
-                className={` ${spanDarkDim}`}
-                style={{ marginLeft: "10px" }}
-              >
-                {HoldAMount} DAV token
-              </span>
-              <img
-                src={metamask}
-                alt="MetaMask Logo"
-                onClick={addTokenToWallet}
-                style={{ cursor: "pointer", marginRight: "20px" }}
-                className="small-metamask-logo"
-              />
-            </div>
-            <div className={`text-start ${textTheme}`}>
-              <p
-                className={`d-flex ${textTitle} ${spanDarkDim}`}
-                style={{ marginTop: "15px" }}
-              >
-                DAV TOKEN SUPPLY -{" "}
-                <p className={` ${spanDarkDim}`} style={{ marginLeft: "10px" }}>
-                  100000
-                </p>
-              </p>
-            </div>
-            <div className={`text-start ${textTheme}`}>
-              <div
-                className={`d-flex ${textTitle} ${spanDarkDim}`}
-                style={{ marginTop: "-15px" }}
-              >
-                DAV TOKEN MINTS -{" "}
-                <span
-                  className={` ${spanDarkDim}`}
-                  style={{ marginLeft: "10px" }}
-                >
-                  {totalMinted}
-                </span>
-              </div>
-            </div>
-            <div className={`text-start ${textTheme}`}>
-              <div
-                className={`d-flex ${textTitle} ${spanDarkDim}`}
-                style={{ marginTop: "15px" }}
-              >
-                TOKENS IN AUTOVAULTS -{" "}
-                <span
-                  className={` ${spanDarkDim}`}
-                  style={{ marginLeft: "10px" }}
-                >
-                  {autoVaultAmount} PLS
-                </span>
-              </div>
-            </div>
-            <p
-              className={`${textTitle} ${spanDarkDim}`}
-              style={{ marginTop: "15px" }}
-            >
-              Documentation{" "}
-              <a
-                href="https://system-state-documentation.gitbook.io/"
-                className="link"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <i className="fas fa-external-link-alt"></i>
-              </a>
-            </p>
-            <p className={`${textTitle} ${spanDarkDim}`}>
-              Future airdrop points -{" "}
-              <span className={` ${textTitle}   ${spanDarkDim} `}>
-                {totalsumofPOints} points
-              </span>
-            </p>
           </div>
         </div>
       </div>

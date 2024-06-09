@@ -100,8 +100,9 @@ export default function TrackingPage({ children }) {
   const [parityDollarClaimed, setParityDollarClaimed] = useState("0");
   const [parityTokensClaimed, setParityTokensClaimed] = useState("0");
   const [autoVaultAmount, setAutoVaultAmount] = useState("0");
-  const [isPopupOpen, setIsPopupOpen] = useState(false); // State to track popup open status
+  const [PercentageSeted, setPercentage] = useState("0");
 
+  const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [HoldAMount, setHoldTokens] = useState("0");
   const [totalMinted, setTotalMinted] = useState("0");
   const [value, setValue] = useState("0");
@@ -201,6 +202,7 @@ export default function TrackingPage({ children }) {
 
   // Done
   // Done
+
   const ParityDollardeposits = async () => {
     try {
       let ParityDollardeposits = await getParityDollardeposits(accountAddress);
@@ -223,7 +225,6 @@ export default function TrackingPage({ children }) {
       console.error(error);
     }
   };
-  const popupOpenRef = useRef(false);
 
   let AutoAMount = 0;
 
@@ -235,11 +236,11 @@ export default function TrackingPage({ children }) {
       const autoVaultAmountNumber = parseFloat(autoVaultAmount);
 
       AutoAMount += autoVaultAmountNumber;
-
       setAutoVaultAmount(autoVaultAmountNumber.toFixed(2));
-      sessionStorage.setItem("AutoAMount", AutoAMount);
-      if (AutoAMount >= 500 && !isPopupOpen) {
-        handleAutoVaultThresholdReached(address);
+      if (AutoAMount > 1000) {
+        setIsButtonEnabled(true);
+      } else {
+        setIsButtonEnabled(false);
       }
     } catch (error) {
       console.error("fetchAutoVaultAmounts error:", error);
@@ -247,106 +248,21 @@ export default function TrackingPage({ children }) {
     }
   };
 
-  const handleAutoVaultThresholdReached = (address) => {
-    const autoVaultStateKey = `autoVaultState_${address}`;
-    const previousAutoVaultState = sessionStorage.getItem(autoVaultStateKey);
-    console.log(
-      `previousAutoVaultState for ${address}:`,
-      previousAutoVaultState
-    );
-
-    if (previousAutoVaultState !== "created_popped") {
-      // Show the deposit popup
-      showDepositPopup(address);
-      sessionStorage.setItem(autoVaultStateKey, "created_popped");
-    } else {
-      // Check if the amount still meets the condition for reopening the popup
-      const autoVaultConfirmedKey = `autoVaultConfirmed_${address}`;
-      const autoVaultConfirmedState = sessionStorage.getItem(
-        autoVaultConfirmedKey
-      );
-      if (AutoAMount >= 500 && autoVaultConfirmedState !== "confirmed") {
-        showDepositPopup(address);
-        sessionStorage.setItem(autoVaultStateKey, "created_popped");
-      }
-    }
-  };
-
-  const showDepositPopup = async (address) => {
-    popupOpenRef.current = true; // Set popup state to open
-    setIsPopupOpen(true); // Set popup state to open
-
-    Swal.fire({
-      title: "Deposit Auto-Vault",
-      html: `
-          <div class="d-flex flex-column align-items-center">
-              <p id="autoVaultAmount" style="font-size: 18px; color: ${
-                theme === "darkTheme"
-                  ? "#ccc"
-                  : theme === "dimTheme"
-                  ? "#666"
-                  : "#333"
-              }; margin: 0 0 15px 0;"> ${AutoAMount.toFixed(0)} PLS</p>
-              <div class="d-flex justify-content-center pumpBoxImg">
-                  <button id="depositButton" class="first_pump_boxIcon ${
-                    (theme === "darkTheme" && "firstdumDark") ||
-                    (theme === "dimTheme" && "dimThemeBg")
-                  }">
-                      <img src="${fisrtPumpBrt}" class="w-100 h-100" alt="Deposit" />
-                  </button>
-              </div>
-          </div>
-      `,
-      showConfirmButton: false,
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      didOpen: () => {
-        document
-          .getElementById("depositButton")
-          .addEventListener("click", () => handleDeposit(address));
-      },
-      willClose: () => {
-        document
-          .getElementById("depositButton")
-          .removeEventListener("click", handleDeposit);
-        popupOpenRef.current = false; // Set popup state to closed
-        setIsPopupOpen(false); // Set popup state to closed
-      },
-    });
-  };
-
   const handleDeposit = async (address) => {
     try {
-      let deposit = await handleDepositAutovaults(autoVaultAmount);
+      allInOnePopup(null, "Create a new Vault", null, `OK`, null);
+
+      let deposit = await handleDepositAutovaults(AutoAMount);
       deposit.wait();
       allInOnePopup(null, "Done - Inflation Locked", null, `OK`, null);
-      const autoVaultConfirmedKey = `autoVaultConfirmed_${address}`;
-      sessionStorage.setItem(autoVaultConfirmedKey, "confirmed");
-      Swal.close();
       // Reset AutoAMount to 0 after successful deposit
       AutoAMount = 0;
       setAutoVaultAmount("0");
-      sessionStorage.removeItem("AutoAMount");
+      setIsButtonEnabled(false);
     } catch (error) {
       console.error("Deposit error:", error);
     }
   };
-
-  useEffect(() => {
-    const storedAutoAMount = sessionStorage.getItem("AutoAMount");
-    if (storedAutoAMount) {
-      AutoAMount = parseFloat(storedAutoAMount);
-      if (AutoAMount >= 5 && !popupOpenRef.current && !isPopupOpen) {
-        handleAutoVaultThresholdReached(accountAddress);
-      }
-    }
-
-    const interval = setInterval(() => {
-      fetchAutoVaultAmounts(accountAddress);
-    }, 60000); // 60000 ms = 1 minute
-
-    return () => clearInterval(interval);
-  }, [accountAddress, isPopupOpen]);
 
   const ParityTokensDeposits = async () => {
     try {
@@ -365,7 +281,7 @@ export default function TrackingPage({ children }) {
       console.error(error);
     }
   };
-  
+
   const ParityTokensDepositforPoint = async () => {
     try {
       let ParityTokensDeposits = await getParityTokensDeposits(accountAddress);
@@ -947,10 +863,23 @@ export default function TrackingPage({ children }) {
     }
   };
 
+  let p = 0;
+  const percentage = async () => {
+    const deposits = Number(parityDollardeposits);
+    const vaultValue = Number(totalVaultValue);
+
+    if (!isNaN(deposits) && !isNaN(vaultValue) && vaultValue !== 0) {
+      let division = deposits / vaultValue;
+      setPercentage(division.toFixed(4));
+    } else {
+      setPercentage("0.00");
+    }
+  };
   useEffect(() => {
     if (userConnected) {
       RatioPriceTargets();
       RTPpmultiplySumWithPrice();
+      percentage();
       TotalVaultValueLocked();
     }
   }, [accountAddress, currencyName, theme, socket]);
@@ -1042,13 +971,17 @@ export default function TrackingPage({ children }) {
                           (theme === "dimTheme" && "dimThemeBg")
                         } `}
                       >
-                        <img src={fisrtPumpBrt} className="w-100 h-100" />
+                        <img
+                          src={fisrtPumpBrt}
+                          alt="firstpump"
+                          className="w-100 h-100"
+                        />
                       </button>
                     </div>
                   </div>
-                  {/*for showing total locked value. */}
+                  {/* for showing total locked value. */}
                   {/* <hr className="my-2" />
-                                        <div className="d-flex">
+                                        <div classN ame="d-flex">
                                             <div className='margin-right'>
                                                 <i className={`iconSize fa-solid fa-comments-dollar ${theme}`}></i>
                                             </div>
@@ -1057,36 +990,64 @@ export default function TrackingPage({ children }) {
                                                 <div className={`varSize ${spanDarkDim}`}><span className={`spanText ${spanDarkDim}`}>$ {totalValueLocked}</span></div>
                                             </div>
                                         </div> */}
-                  <hr className="my-4" />
+                  <div className="hrp" >
+                    <hr className="my-3" />
+                  </div>
                   <div className="d-flex h-50">
                     <div className="margin-right">
                       <i
-                        className={`iconSize fa-solid fa-comments-dollar ${theme}`}
+                        className={`iconSize fa-solid fa-cubes-stacked ${theme}`}
                       ></i>
                     </div>
                     <div
                       className={`flex-grow-1 fontSize text-start  ${textTheme}`}
                     >
                       <div>
-                        <div className={`${textTitle}  `}>
-                          $ TVL ( LIQUIDITY )
+                        <div
+                          className={`${textTitle} `}
+                          style={{ fontSize: "11px" }}
+                        >
+                          Decentralized Autonomous Vaults
                         </div>
                         <div className={`varSize ${spanDarkDim}`}>
-                          <span
-                            className={`spanText ${spanDarkDim} fs-5`}
-                            // onChange={(e) => addCommasForVaultLocked(e)}
-                          >
+                          <span className={`spanText ${spanDarkDim} `}>
                             {" "}
-                            $ {totalVaultValue}
-                            {/* here need to update the reward with totalTokens in vault * price */}
+                            {autoVaultAmount} PLS
                           </span>
                         </div>
+                      </div>
+                      <div
+                        className="d-flex align-items-center pumpBoxImg deposit-bt"
+                        // style={{ marginLeft: "-40px", marginTop: "10px" }}
+                      >
+                        <button
+                          onClick={() => {
+                            if (isButtonEnabled) {
+                              handleDeposit(); // Ensure handleDeposit doesn't require an argument if not needed
+                            }
+                          }}
+                          className={`first_pump_boxIcon ${
+                            (theme === "darkTheme" && "firstdumDark") ||
+                            (theme === "dimTheme" && "dimThemeBg")
+                          } ${!isButtonEnabled ? "disabled-button" : ""}`}
+                          disabled={!isButtonEnabled}
+                          style={{
+                            cursor: isButtonEnabled ? "pointer" : "not-allowed",
+                          }}
+                        >
+                          <img
+                            src={fisrtPumpBrt}
+                            alt="firstpump"
+                            className="w-100 h-100"
+                          />
+                        </button>
                       </div>
                     </div>
                     <div className="d-flex align-items-end pb-3">
                       <span
+                        // style={{ marginTop: "30px" }}
                         className={`${tooltip} heightfixBug hoverText tooltipAlign`}
-                        data-tooltip="The number of tokens in vaults * current price."
+                        data-tooltip="ONLY APPLICABLE TO DAV TOKEN HOLDERS."
                         data-flow="bottom"
                       >
                         {" "}
@@ -1110,22 +1071,35 @@ export default function TrackingPage({ children }) {
                     <div
                       className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
                     >
-                      <div>
-                        <div className={`${textTitle}`}>
-                          <div className={`varSize`}> PSD</div>
-                        </div>
+                      <div className={`${textTitle}`}>
+                        <div className={` ${textTitle} `}> PSD</div>
                         <div className={`varSize `}>
                           <span className={`spanText ${spanDarkDim}`}>
                             {" "}
-                            $ {parityDollardeposits}
+                            $ {parityDollardeposits} ({PercentageSeted} %)
                           </span>
+                        </div>
+
+                        <div>
+                          <div
+                            className={`${textTitle}`}
+                            style={{ marginTop: "10px" }}
+                          >
+                            {/* <div className={`varSize`}> PSD Rewards </div> */}
+                          </div>
+                          <div className={`varSize ${spanDarkDim}`}>
+                            <span className={`spanText ${spanDarkDim} fs-5`}>
+                              $ {parityDollarClaimed}
+                            </span>
+                          </div>
                         </div>
                       </div>
                       {/* <InfoBox data='Parity Shares in Dollars. Indicating the total $ value deposited' /> */}
                       <div className="d-flex align-items-end pb-3">
                         <span
+                          // style={{ marginTop: "110px" }}
                           className={`${tooltip} heightfixBug hoverText tooltipAlign`}
-                          data-tooltip="Parity Shares in Dollars. Indicating the total $ value deposited"
+                          data-tooltip="Parity Shares in Dollars. Indicating the total $ value deposited  AND CLAIMED"
                           data-flow="bottom"
                         >
                           {" "}
@@ -1140,7 +1114,7 @@ export default function TrackingPage({ children }) {
                   <div className="d-flex h-50">
                     <div className="margin-right">
                       <i
-                        className={`iconSize fa-solid fa-circle-dollar-to-slot ${theme} `}
+                        className={`iconSize fa-solid fa-coins fa-money-bill-transfer ${theme} `}
                       ></i>
                     </div>
                     <div
@@ -1148,42 +1122,69 @@ export default function TrackingPage({ children }) {
                     >
                       <div>
                         <div className={`${textTitle}`}>
-                          <div className={`varSize `}> PST </div>
+                          <div className={` `}> BUY DAV TOKENS </div>
                         </div>
-                        <div className={`varSize ${spanDarkDim}`}>
-                          <span className={`spanText ${spanDarkDim}`}>
-                            {" "}
-                            {parityTokensDeposits}
-                            {IsParityReached && (
-                              <span
-                                className={`${tooltip} hoverText hoverText`}
-                                style={{ color: "red" }}
-                                data-tooltip="Token Parity Achieved"
-                                data-flow="bottom"
-                              >
-                                {" "}
-                                <i
-                                  className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                                ></i>
-                              </span>
-                            )}
-                          </span>
+                        <div className="d-flex flex-column mb-0.1 button-group">
+                          <button
+                            // style={{
+                            //   whiteSpace: "nowrap",
+                            //   marginLeft: "10px",
+                            //   marginTop: "10px",
+                            //   left: "-8px",
+                            //   backgroundColor: "transparent",
+                            //   fontWeight: "bold",
+                            //   marginBottom: "5px",
+                            //   width: "210px",
+                            //   height: "30px", // Set a fixed width for all buttons
+                            // }}
+                            className={`box-3 fontSize  mx-2 glowing-button buy-btn ${
+                              (theme === "darkTheme" && "Theme-btn-block") ||
+                              (theme === "dimTheme" && "dimThemeBtnBg")
+                            } `}
+                            onClick={() => BuyTokens(2, 100)}
+                          >
+                            BUy 2 DAV tokens for 100 pls
+                          </button>
                         </div>
+                        <div className="d-flex flex-column mb-0.1 button-group">
+                          <button
+                            // style={{
+                            //   whiteSpace: "nowrap",
+                            //   marginLeft: "10px",
+                            //   left: "-8px",
+                            //   marginTop: "10px",
+                            //   backgroundColor: "transparent",
+                            //   fontWeight: "bold",
+                            //   marginBottom: "5px",
+                            //   width: "110px",
+                            //   height: "30px", // Set a fixed width for all buttons
+                            // }}
+                            className={`box-3 fontSize  mx-2 glowing-button claim-btn ${
+                              (theme === "darkTheme" && "Theme-btn-block") ||
+                              (theme === "dimTheme" && "dimThemeBtnBg")
+                            } `}
+                            // onClick={() => BuyTokens(2, 100)}
+                          >
+                            claim refund
+                          </button>
+                        </div>
+                      
                       </div>
                       {/* <InfoBox data='Parity Shares in Tokens. Indicating the total number of tokens
                                                     deposited'/> */}
-                      <div className="d-flex align-items-end pb-3">
-                        <span
-                          className={`${tooltip} heightfixBug hoverText tooltipAlign`}
-                          data-tooltip="Parity Shares in Tokens. Indicating the total number of tokens deposited"
-                          data-flow="bottom"
-                        >
-                          {" "}
-                          <i
-                            className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                          ></i>
-                        </span>
-                      </div>
+                    </div>
+                    <div className="d-flex align-items-end pb-3">
+                      <span
+                        style={{ marginTop: "90px" }}
+                        className={`${tooltip} heightfixBug hoverText tooltipAlign`}
+                        data-tooltip="SEE WHITEPAPER FOR MORE INFO"
+                        data-flow="bottom"
+                      >
+                        {" "}
+                        <i
+                          className={`fas mx-2 fa-exclamation-circle ${theme}`}
+                        ></i>
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -1203,19 +1204,42 @@ export default function TrackingPage({ children }) {
                     >
                       <div>
                         <div className={`${textTitle}`}>
-                          <div className={`varSize`}> PSD Rewards </div>
+                          <div className={``}> PST </div>
                         </div>
                         <div className={`varSize ${spanDarkDim}`}>
                           <span className={`spanText ${spanDarkDim}`}>
-                            $ {parityDollarClaimed}
+                            {" "}
+                            {parityTokensDeposits}
                           </span>
+                          <div
+                            className={`varSize ${spanDarkDim}`}
+                            style={{ marginTop: "10px" }}
+                          >
+                            <span className={`spanText ${spanDarkDim} fs-5`}>
+                              {parityTokensClaimed}
+
+                              {IsParityReached && (
+                                <span
+                                  className={`${tooltip} hoverText hoverText`}
+                                  style={{ color: "red" }}
+                                  data-tooltip="Token Parity Achieved"
+                                  data-flow="bottom"
+                                >
+                                  {" "}
+                                  <i
+                                    className={`fas mx-2 fa-exclamation-circle ${theme}`}
+                                  ></i>
+                                </span>
+                              )}
+                            </span>
+                          </div>
                         </div>
                       </div>
                       {/* <InfoBox data='Indicating the total $ value claimed' /> */}
                       <div className="d-flex align-items-end pb-3">
                         <span
                           className={`${tooltip} hoverText tooltipAlign`}
-                          data-tooltip="Indicating the total $ value claimed"
+                          data-tooltip="Parity Shares in Tokens. Indicating the total tokens deposited  AND CLAIMED"
                           data-flow="bottom"
                         >
                           {" "}
@@ -1227,10 +1251,10 @@ export default function TrackingPage({ children }) {
                     </div>
                   </div>
                   <hr className="my-3" />
-                  <div className="d-flex h-50">
+                  <div className="d-flex h-70" style={{ height: "-100px" }}>
                     <div className="margin-right">
                       <i
-                        className={`iconSize fa-solid fa-money-check-dollar ${theme}`}
+                        className={`iconSize fa-solid fa-coins fa-money-bill-transfer ${theme}`}
                       ></i>
                     </div>
                     <div
@@ -1238,74 +1262,61 @@ export default function TrackingPage({ children }) {
                     >
                       <div>
                         <div className={`${textTitle}`}>
-                          <div className={`varSize`}>PST Rewards </div>
+                          <div className={` `}> BUY DAV TOKENS </div>
                         </div>
-                        <div className={`varSize ${spanDarkDim}`}>
-                          <span className={`spanText ${spanDarkDim}`}>
-                            {parityTokensClaimed}
-
-                            {IsParityReached && (
-                              <span
-                                className={`${tooltip} hoverText hoverText`}
-                                style={{ color: "red" }}
-                                data-tooltip="Token Parity Achieved"
-                                data-flow="bottom"
-                              >
-                                {" "}
-                                <i
-                                  className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                                ></i>
-                              </span>
-                            )}
-                          </span>
+                        <div className="d-flex flex-column mb-0.1 button-group">
+                          <button
+                            // style={{
+                            //   whiteSpace: "nowrap",
+                            //   marginLeft: "10px",
+                            //   marginTop: "10px",
+                            //   left: "-8px",
+                            //   backgroundColor: "transparent",
+                            //   fontWeight: "bold",
+                            //   marginBottom: "5px",
+                            //   width: "210px",
+                            //   height: "30px", // Set a fixed width for all buttons
+                            // }}
+                            className={`box-3 fontSize  mx-2 glowing-button buy-btn ${
+                              (theme === "darkTheme" && "Theme-btn-block") ||
+                              (theme === "dimTheme" && "dimThemeBtnBg")
+                            } `}
+                            onClick={() => BuyTokens(5, 250)}
+                          >
+                            BUy 5 DAV tokens for 250 pls
+                          </button>
                         </div>
-                        {/* <div className={`varSize parity-distributed ${spanDarkDim}`}><span className={`spanText parity-distributed ${spanDarkDim}`}>
-                                                        {parityAmountDistributed}
-                                                    </span></div> */}
+                        <div className="d-flex flex-column mb-0.1 button-group">
+                          <button
+                            // style={{
+                            //   whiteSpace: "nowrap",
+                            //   marginLeft: "10px",
+                            //   left: "-8px",
+                            //   marginTop: "10px",
+                            //   backgroundColor: "transparent",
+                            //   fontWeight: "bold",
+                            //   marginBottom: "5px",
+                            //   width: "110px",
+                            //   height: "30px", // Set a fixed width for all buttons
+                            // }}
+                            className={`box-3 fontSize  mx-2 glowing-button claim-btn ${
+                              (theme === "darkTheme" && "Theme-btn-block") ||
+                              (theme === "dimTheme" && "dimThemeBtnBg")
+                            } `}
+                            // onClick={() => BuyTokens(2, 100)}
+                          >
+                            claim refund
+                          </button>
+                        </div>
+                       
                       </div>
                       {/* <InfoBox data='Indicating the total number of tokens claimed' /> */}
-                      <div className="d-flex align-items-end pb-3">
-                        <span
-                          className={`${tooltip} hoverText tooltipAlign`}
-                          data-tooltip="Indicating the total number of tokens claimed"
-                          data-flow="bottom"
-                        >
-                          {" "}
-                          <i
-                            className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                          ></i>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className=" col-lg-3 extraFlex">
-                  <hr className="d-lg-none d-block my-3" />
-                  <div className="d-flex pt-1">
-                    <div className="margin-right">
-                      <i
-                        className={`iconSize fa-solid fa-cubes-stacked ${theme}`}
-                      ></i>
-                    </div>
-                    <div
-                      className={`flex-grow-1 fontSize text-start justify-content-between ${textTheme}`}
-                    >
-                      <div className={`${textTitle} `}>DAV</div>
-                      <div className={`varSize ${spanDarkDim}`}>
-                        <span
-                          className={`spanTextAdd ${spanDarkDim} `}
-                          style={{ fontSize: "14px" }}
-                        >
-                          {" "}
-                          Decentralized Autonomous Vaults
-                        </span>
-                      </div>
                     </div>
                     <div className="d-flex align-items-end pb-3">
                       <span
+                        style={{ marginTop: "90px" }}
                         className={`${tooltip} hoverText tooltipAlign`}
-                        style={{ marginTop: "70px", paddingBottom: "5px" }}
-                        data-tooltip="optional and is not required to create VLP’s - SEE WHITE PAPER"
+                        data-tooltip="SEE WHITEPAPER FOR MORE INFO"
                         data-flow="bottom"
                       >
                         {" "}
@@ -1315,90 +1326,119 @@ export default function TrackingPage({ children }) {
                       </span>
                     </div>
                   </div>
+                </div>
+                <div className=" col-lg-3 extraFlex">
+                  <hr className="d-lg-none d-block my-3" />
 
                   <div className="d-flex pt-1">
+                    <div className="margin-right">
+                      <i
+                        className={`iconSize fa-solid fa-comments-dollar ${theme}`}
+                      ></i>
+                    </div>
+                    <div
+                      className={`flex-grow-1 fontSize text-start justify-content-between ${textTheme}`}
+                    >
+                      <div className={`${textTitle}  `}>
+                        $ TVL ( LIQUIDITY )
+                      </div>
+                      <div className={`varSize ${spanDarkDim}`}>
+                        <span className={`spanText ${spanDarkDim} fs-5`}>
+                          {" "}
+                          $ {totalVaultValue}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="d-flex align-items-end pb-3">
+                      <span
+                        className={`${tooltip} hoverText tooltipAlign`}
+                        style={{ marginTop: "65px" }}
+                        data-tooltip="The number of tokens in vaults * current price."
+                        data-flow="bottom"
+                      >
+                        {" "}
+                        <i
+                          className={`fas mx-2 fa-exclamation-circle ${theme}`}
+                        ></i>
+                      </span>
+                    </div>
+                  </div>
+                  <div style={{ marginTop: "-1px" }}>
+                    <hr className="my-3" />
+                  </div>
+                  <div className="d-flex  h-50">
                     <div className="margin-right">
                       <i
                         className={`iconSize fa-solid fa-coins fa-money-bill-transfer ${theme}`}
                       ></i>
                     </div>
-                    <div className="d-flex flex-column align-items-start">
-                      <div
-                        className={`fontSize text-uppercase mb-0.1 ${textTheme}`}
-                      >
-                        <p className={`${textTitle}`}>Buy DAV Tokens</p>
-                      </div>
-                      <div className="d-flex flex-column mb-0.1 button-group">
-                        <button
-                          style={{
-                            whiteSpace: "nowrap",
-                            marginLeft: "10px",
-                            backgroundColor: "transparent",
-                            fontWeight: "bold",
-                            marginBottom: "5px",
-                            width: "110px",
-                            height: "30px", // Set a fixed width for all buttons
-                          }}
-                          className={`box-3 fontSize  mx-2 glowing-button ${
-                            (theme === "darkTheme" && "Theme-btn-block") ||
-                            (theme === "dimTheme" && "dimThemeBtnBg")
-                          } `}
-                          onClick={() => BuyTokens(2, 100)}
-                        >
-                          2 DAV - $100
-                        </button>
-                        <button
-                          style={{
-                            whiteSpace: "nowrap",
-                            backgroundColor: "transparent",
-                            fontWeight: "bold",
-                            marginBottom: "5px",
-                            width: "110px",
-                            height: "30px", // Set a fixed width for all buttons
-                          }}
-                          className={`box-3 fontSize ${textTitle} ${
-                            (theme === "darkTheme" && "Theme-btn-block") ||
-                            (theme === "dimTheme" && "dimThemeBtnBg")
-                          }  glowing-button mx-2`}
-                          onClick={() => BuyTokens(5, 300)}
-                        >
-                          5 DAV - $300
-                        </button>
-                        <button
-                          style={{
-                            whiteSpace: "nowrap",
-                            backgroundColor: "transparent",
-                            fontWeight: "bold",
-                            marginBottom: "5px",
-                            width: "110px",
-                            height: "30px", // Set a fixed width for all buttons
-                          }}
-                          className={`box-3 fontSize ${textTitle} ${
-                            (theme === "darkTheme" && "Theme-btn-block") ||
-                            (theme === "dimTheme" && "dimThemeBtnBg")
-                          }  glowing-button mx-2`}
-                          onClick={() => BuyTokens(12, 500)}
-                        >
-                          12 DAV - $500
-                        </button>
+                    <div
+                      className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
+                    >
+                      <div>
+                        <div className={`${textTitle}`}>
+                          <p className={` `}> BUY DAV TOKENS </p>
+                        </div>
+                        <div className="d-flex flex-column mb-0.1 button-group">
+                          <button
+                            // style={{
+                            //   whiteSpace: "nowrap",
+                            //   marginLeft: "10px",
+                            //   // marginTop: "1px",
+                            //   left: "-8px",
+                            //   // top:"-20px",
+                            //   backgroundColor: "transparent",
+                            //   fontWeight: "bold",
+                            //   marginBottom: "5px",
+                            //   width: "210px",
+                            //   height: "30px", // Set a fixed width for all buttons
+                            // }}
+                            className={`box-3 fontSize  mx-2 glowing-button buy-btn2 ${
+                              (theme === "darkTheme" && "Theme-btn-block") ||
+                              (theme === "dimTheme" && "dimThemeBtnBg")
+                            } `}
+                            onClick={() => BuyTokens(12, 500)}
+                          >
+                            BUy 12 DAV tokens for 500 pls
+                          </button>
+                        </div>
+                        <div className="d-flex flex-column mb-0.1 button-group">
+                          <button
+                            // style={{
+                            //   whiteSpace: "nowrap",
+                            //   marginLeft: "10px",
+                            //   left: "-8px",
+                            //   marginTop: "10px",
+                            //   backgroundColor: "transparent",
+                            //   fontWeight: "bold",
+                            //   marginBottom: "15px",
+                            //   width: "110px",
+                            //   height: "30px", // Set a fixed width for all buttons
+                            // }}
+                            className={`box-3 fontSize  mx-2 glowing-button claim-btn2 ${
+                              (theme === "darkTheme" && "Theme-btn-block") ||
+                              (theme === "dimTheme" && "dimThemeBtnBg")
+                            } `}
+                            // onClick={() => BuyTokens(12, 500)}
+                          >
+                            claim refund
+                          </button>
+                        </div>
                       </div>
                     </div>
-                    <span
-                      className={`${tooltip} hoverText tooltipAlign`}
-                      style={{
-                        position: "absolute",
-                        bottom: "10px",
-                        paddingBottom: "20px",
-                        marginRight: "6px",
-                        right: "10px",
-                      }}
-                      data-tooltip="See white paper for more information"
-                      data-flow="bottom"
-                    >
-                      <i
-                        className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                      ></i>
-                    </span>
+                    <div className="d-flex align-items-end pb-3">
+                      <span
+                        className={`${tooltip} hoverText tooltipAlign`}
+                        // style={{ marginTop: "60px" }}
+                        data-tooltip="SEE WHITEPAPER FOR MORE INFO"
+                        data-flow="bottom"
+                      >
+                        {" "}
+                        <i
+                          className={`fas mx-2 fa-exclamation-circle ${theme}`}
+                        ></i>
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>

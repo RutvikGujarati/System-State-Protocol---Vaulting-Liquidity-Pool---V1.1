@@ -6,6 +6,12 @@ import { themeContext } from "../../App";
 import LogoTransparent from "../../Assets/LogoTransparent.png";
 import bnblogo from "../../Assets/bnb.png";
 import baseIcon from "../../Assets/base.png";
+import ton from "../../Assets/ton.png";
+import fantom from "../../Assets//fantom.png";
+import tron from "../../Assets/tron.png";
+import solana from "../../Assets/solana.png";
+import arbitrum from "../../Assets/arbitrum.png";
+import optimism from "../../Assets/optimism.png";
 import AvaxIcon from "../../Assets/avax.png";
 import mumbaiIcon from "../../Assets/Token List Icon/chain-light.svg";
 import lightETH_Icon from "../../Assets/Token List Icon/ethereum.svg";
@@ -99,6 +105,23 @@ export default function Index() {
   }, [currencyName, userConnected]);
 
   const location = useLocation();
+  const currentPath = location.pathname;
+  const isCreateVaultsPage = currentPath === "/Create-Vaults";
+
+  let backgroundColor = "transparent";
+  if (isCreateVaultsPage) {
+    if (theme === 'lightTheme') {
+      backgroundColor = '#000'; // Black for light theme
+    } else if (theme === 'dimTheme') {
+      backgroundColor = '#fff'; // White for dark theme
+    }
+  }
+
+  const buttonClass = 
+  theme === "lightTheme" ? "icon-btnLight" :
+  theme === "dimTheme" ? "icon-btnDim" :
+  theme === "darkTheme" ? "icon-btnDark" : "";
+
   const isOnInscription = "active"; // const isOnInscription = location.pathname === '/inscription' ? 'active' : ''
 
   return (
@@ -120,12 +143,9 @@ export default function Index() {
             <div className={`d-flex align-items-center ${theme}`}>
               <div className="token-price me-0.1">
                 <Link
-                  className={`btn btn-lg btn-white mx-1 content-center p-0 ${
-                    (theme === "lightTheme" && "icon-btnLight") ||
-                    (theme === "dimTheme" && theme + " icon-btnDim") ||
-                    (theme === "darkTheme" && "icon-btnDark")
-                  }`}
+                  className={`btn btn-lg btn-white mx-1 content-center p-0 ${buttonClass}`}
                   to="/Create-Vaults"
+                  style={{ backgroundColor }}
                 >
                   <div className="theme-btn-main">
                     <img
@@ -147,7 +167,7 @@ export default function Index() {
                   type="button"
                 >
                   <div className="theme-btn-main ">
-                    <img src={bnblogo} alt="pls" width="20" height="20" />
+                    <img src={bnblogo} alt="pls" width="25" height="25" />
                   </div>
                 </button>{" "}
               </div>
@@ -161,7 +181,7 @@ export default function Index() {
                   type="button"
                 >
                   <div className="theme-btn-main ">
-                    <img src={mumbaiIcon} alt="pls" width="20" height="20" />
+                    <img src={mumbaiIcon} alt="pls" width="25" height="25" />
                   </div>
                 </button>{" "}
               </div>
@@ -175,7 +195,7 @@ export default function Index() {
                   type="button"
                 >
                   <div className="theme-btn-main ">
-                    <img src={AvaxIcon} alt="pls" width="20" height="20" />
+                    <img src={AvaxIcon} alt="pls" width="25" height="25" />
                   </div>
                 </button>{" "}
               </div>
@@ -189,7 +209,91 @@ export default function Index() {
                   type="button"
                 >
                   <div className="theme-btn-main ">
-                    <img src={baseIcon} alt="pls" width="20" height="20" />
+                    <img src={baseIcon} alt="pls" width="25" height="25" />
+                  </div>
+                </button>{" "}
+              </div>
+              <div className="token-price me-0.1">
+                <button
+                  className={`btn btn-lg btn-white mx-1 content-center  p-0  ${
+                    (theme === "lightTheme" && " icon-btnLight") ||
+                    (theme === "dimTheme" && theme + " icon-btnDim") ||
+                    (theme === "darkTheme" && " icon-btnDark")
+                  } `}
+                  type="button"
+                >
+                  <div className="theme-btn-main ">
+                    <img src={ton} alt="pls" width="25" height="25" />
+                  </div>
+                </button>{" "}
+              </div>
+              <div className="token-price me-0.1">
+                <button
+                  className={`btn btn-lg btn-white mx-1 content-center  p-0  ${
+                    (theme === "lightTheme" && " icon-btnLight") ||
+                    (theme === "dimTheme" && theme + " icon-btnDim") ||
+                    (theme === "darkTheme" && " icon-btnDark")
+                  } `}
+                  type="button"
+                >
+                  <div className="theme-btn-main ">
+                    <img src={fantom} alt="pls" width="55" height="35" />
+                  </div>
+                </button>{" "}
+              </div>
+              <div className="token-price me-0.1">
+                <button
+                  className={`btn btn-lg btn-white mx-1 content-center  p-0  ${
+                    (theme === "lightTheme" && " icon-btnLight") ||
+                    (theme === "dimTheme" && theme + " icon-btnDim") ||
+                    (theme === "darkTheme" && " icon-btnDark")
+                  } `}
+                  type="button"
+                >
+                  <div className="theme-btn-main ">
+                    <img src={tron} alt="pls" width="25" height="25" />
+                  </div>
+                </button>{" "}
+              </div>
+              <div className="token-price me-0.1">
+                <button
+                  className={`btn btn-lg btn-white mx-1 content-center  p-0  ${
+                    (theme === "lightTheme" && " icon-btnLight") ||
+                    (theme === "dimTheme" && theme + " icon-btnDim") ||
+                    (theme === "darkTheme" && " icon-btnDark")
+                  } `}
+                  type="button"
+                >
+                  <div className="theme-btn-main ">
+                    <img src={solana} alt="pls" width="30" height="30" />
+                  </div>
+                </button>{" "}
+              </div>
+              <div className="token-price me-0.1">
+                <button
+                  className={`btn btn-lg btn-white mx-1 content-center  p-0  ${
+                    (theme === "lightTheme" && " icon-btnLight") ||
+                    (theme === "dimTheme" && theme + " icon-btnDim") ||
+                    (theme === "darkTheme" && " icon-btnDark")
+                  } `}
+                  type="button"
+                >
+                  <div className="theme-btn-main ">
+                    <img src={optimism} alt="pls" width="25" height="25" />
+                  </div>
+                </button>{" "}
+              </div>
+              <div className="token-price me-0.1">
+                <button
+                  className={`btn btn-lg btn-white mx-1 content-center  p-0  ${
+                    (theme === "lightTheme" && " icon-btnLight") ||
+                    (theme === "dimTheme" && theme + " icon-btnDim") ||
+                    (theme === "darkTheme" && " icon-btnDark")
+                  } `}
+                  type="button"
+                >
+                  <div className="theme-btn-main ">
+                    <img src={arbitrum} alt="pls" width="25" height="25" />
                   </div>
                 </button>{" "}
               </div>
@@ -334,7 +438,7 @@ export default function Index() {
               {/* <div className="theme-btn-main minLogo h-100 w-100"> */}
               <img
                 className={`w-200 h-200   ${
-                  (theme === "lightTheme") ||
+                  theme === "lightTheme" ||
                   (theme === "dimTheme" && "logoDimTwo") ||
                   (theme === "darkTheme" && "logoDarkTwo") ||
                   (connectedIcon === LogoTransparent && "small-logo")
