@@ -186,7 +186,7 @@ export default function Functions({ children }) {
     }
     const BuyTokens = async (quantity,price) => {
         try {
-            allInOnePopup(null, 'Buying DAV Tokens', null, `OK`, null)
+            allInOnePopup(null, 'Minting DAV Tokens', null, `OK`, null)
 
             const contract = await getStatetokenContract();
             const value = ethers.utils.parseEther(price.toString());
@@ -195,7 +195,7 @@ export default function Functions({ children }) {
                  quantity,{value}
             )
             await BuyTx.wait();
-            allInOnePopup(null, 'Successfully Bought', null, `OK`, null)
+            allInOnePopup(null, 'Successfully Minted', null, `OK`, null)
             setSocket(prevBool => !prevBool);
             return true
         } catch (error) {

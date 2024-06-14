@@ -8,6 +8,7 @@ import { themeContext } from "../../App";
 import "../../Utils/Theme.css";
 import TrackingPage from "../../Components/Tracker/TrackingPage";
 import CreateVaultGraph from "./CreateVaultGraph/CreateVaultGraph";
+import Layout from "../../Protected Route/Layout";
 export default function Index() {
   const { theme } = useContext(themeContext);
 
@@ -21,6 +22,7 @@ export default function Index() {
 
   return (
     <div className={`${theme === "lightTheme" && "light-bg-for-theme"}`}>
+       <Layout />
       <Searchbar />
       <TrackingPage />
       <div

@@ -269,13 +269,10 @@ export default function DAV() {
   return (
     <>
       <div
-        className={`flex-grow-1 fontSize text-start ${textTitle} mb-0 ms-2 ${
+        className={`flex-grow-1 fontSize text-start ${textTitle} mb-0 ms-3 ${
           theme === "dimTheme" && "text-white"
         }`}
-        style={{
-          fontSize: "14px",
-          fontWeight: "bold",
-        }}
+      
       >
         <div style={{ marginLeft: "170px", marginTop: "-10px" }}>
           <div
@@ -290,190 +287,119 @@ export default function DAV() {
               INFORMATION
             </p>
           </div>
-          <div className={`fontSize text-start ${spanDarkDim}`}>
-            <div
-              className={`d-flex flex-column mb-0.1 button-group
-                         box-3 fontSize   ${
-                           (theme === "darkTheme" && "Theme-btn-block") ||
-                           (theme === "dimTheme" && "dimThemeBtnBg")
-                         } `}
-              style={{
-                whiteSpace: "nowrap",
-                marginLeft: "10px",
-                backgroundColor: "transparent",
-                fontWeight: "bold",
-                // textAlign: "center",
-                marginTop: "20px",
-                padding: "10px",
-                fontSize: "10px",
-                // position: "relative",
-                marginBottom: "5px",
-                width: "300px",
-                height: "35px", // Set a fixed width for all buttons
-              }}
-            >
-              <p style={{ marginLeft: "-250px" }}>DAy {DayStamp}</p>
-            </div>
-            <div
-              className={`d-flex align-items-center ${textTitle} ${spanDarkDim}`}
-            >
+          <div className="pad">
+          <div className={`info-content `}>
+            <div className="info-column column-left">
               <div
-                className={`d-flex flex-column mb-0.1 button-group
-                         box-3 fontSize   ${
-                           (theme === "darkTheme" && "Theme-btn-block") ||
-                           (theme === "dimTheme" && "dimThemeBtnBg")
-                         } `}
-                style={{
-                  whiteSpace: "nowrap",
-                  marginLeft: "10px",
-                  backgroundColor: "transparent",
-                  fontWeight: "bold",
-                  marginTop: "10px",
-                  padding: "7px",
-                  fontSize: "10px",
-                  position: "relative",
-                  marginBottom: "5px",
-                  width: "300px",
-                  height: "35px", // Set a fixed width for all buttons
-                }}
+                className={`info-item  ${
+                  (theme === "darkTheme" && "Theme-btn-block") ||
+                  (theme === "dimTheme" && "dimThemeBtnBg")
+                } `}
               >
-                <p
-                  className={`${textTitle} ${spanDarkDim}`}
-                  style={{ marginLeft: "-40px" }}
-                >
-                  VLP Contract Address - {""}
+                <p>DAY {DayStamp}</p>
+              </div>
+              <div
+                className={`info-item  ${
+                  (theme === "darkTheme" && "Theme-btn-block") ||
+                  (theme === "dimTheme" && "dimThemeBtnBg")
+                } `}
+              >
+                
+                <p>
+                  VLP Contract Address -{" "}
                   <Link
                     to={navigateToExplorer}
                     target="_blank"
-                    className={`flex-grow-1 fontSize text-start ${textTitle} ${spanDarkDim}`}
+                    className={`info-link ${textTitle} ${spanDarkDim}`}
                   >
                     {conciseAddress(PSD_ADDRESS)}
                   </Link>
                 </p>
               </div>
-            </div>
-            <div>
               <div
-                className={`d-flex flex-column mb-0.1 button-group
-                         box-3 fontSize   ${
-                           (theme === "darkTheme" && "Theme-btn-block") ||
-                           (theme === "dimTheme" && "dimThemeBtnBg")
-                         } `}
-                style={{
-                  whiteSpace: "nowrap",
-                  marginTop: "-91px",
-                  marginLeft: "450px",
-                  backgroundColor: "transparent",
-                  fontWeight: "bold",
-                  // textAlign: "center",
-                  padding: "7px",
-                  fontSize: "10px",
-                  marginBottom: "5px",
-                  width: "300px",
-                  height: "35px", // Set a fixed width for all buttons
-                }}
+                className={`info-item  ${
+                  (theme === "darkTheme" && "Theme-btn-block") ||
+                  (theme === "dimTheme" && "dimThemeBtnBg")
+                } `}
               >
-                <p
-                  className={`${textTitle} ${spanDarkDim}`}
-                  style={{ marginLeft: "-70px" }}
-                >
-                  DAV HOLDING - {HoldAMount} DAV token
+                <p>
+                  DAV Contract Address -{" "}
+                  <Link
+                    to={statetokenNavigate}
+                    target="_blank"
+                    className={`info-link ${textTitle} ${spanDarkDim}`}
+                  >
+                    {conciseAddress(state_token)}
+                  </Link>
+                </p>
+              </div>
+            </div>
+            <div className="info-column column-center">
+            <div
+                className={`info-item  ${
+                  (theme === "darkTheme" && "Theme-btn-block") ||
+                  (theme === "dimTheme" && "dimThemeBtnBg")
+                } `}
+              >
+                <p>
+                  DAV Holding - {HoldAMount} DAV token{" "}
                   <img
                     src={metamask}
                     alt="MetaMask Logo"
                     onClick={addTokenToWallet}
-                    style={{ cursor: "pointer", marginRight: "20px" }}
-                    className="small-metamask-logo"
+                    className="metamask-logo"
                   />
                 </p>
               </div>
-            </div>
-            <div className={`d-flex flex-grow-1 text-start ${textTheme}`}>
               <div
-                className={`d-flex flex-column mb-0.1 button-group
-                         box-3 fontSize   ${
-                           (theme === "darkTheme" && "Theme-btn-block") ||
-                           (theme === "dimTheme" && "dimThemeBtnBg")
-                         } `}
-                style={{
-                  whiteSpace: "nowrap",
-                  marginLeft: "450px",
-                  backgroundColor: "transparent",
-                  fontWeight: "bold",
-                  marginTop: "10px",
-                  padding: "10px",
-                  fontSize: "10px",
-                  position: "relative",
-                  marginBottom: "5px",
-                  width: "300px",
-                  height: "35px", // Set a fixed width for all buttons
-                }}
+                className={`info-item  ${
+                  (theme === "darkTheme" && "Theme-btn-block") ||
+                  (theme === "dimTheme" && "dimThemeBtnBg")
+                } `}
               >
-                <p
-                  className={` ${textTitle} ${spanDarkDim}`}
-                  style={{ marginLeft: "-150px" }}
-                >
-                  DAV TOKEN MINTS - {totalMinted}
+               
+                <p>
+                  DAV Token Mints -{" "}
+                  <span className={`info-data ${textTitle} ${spanDarkDim}`}>
+                    {totalMinted}
+                  </span>
                 </p>
               </div>
-            </div>
-            <div className={`text-start ${textTheme}`}>
               <div
-                className={`d-flex flex-column mb-0.1 button-group
-                         box-3 fontSize   ${
-                           (theme === "darkTheme" && "Theme-btn-block") ||
-                           (theme === "dimTheme" && "dimThemeBtnBg")
-                         } `}
-                style={{
-                  whiteSpace: "nowrap",
-                  marginLeft: "900px",
-                  backgroundColor: "transparent",
-                  fontWeight: "bold",
-                  marginTop: "-90px",
-                  padding: "10px",
-                  fontSize: "10px",
-                  position: "relative",
-                  marginBottom: "5px",
-                  width: "300px",
-                  height: "35px", // Set a fixed width for all buttons
-                }}
+                className={`info-item  ${
+                  (theme === "darkTheme" && "Theme-btn-block") ||
+                  (theme === "dimTheme" && "dimThemeBtnBg")
+                } `}
               >
-                <p
-                  className={`${textTitle} ${spanDarkDim}`}
-                  style={{ marginLeft: "-50px" }}
-                >
-                  Future airdrop points -{" "}
-                  <span className={` ${textTitle}   ${spanDarkDim} `}>
-                    {totalsumofPOints} points
+                <p>
+                  DAV Token Supply -{" "}
+                  <span className={`info-data ${textTitle} ${spanDarkDim}`}>
+                    100000
                   </span>
                 </p>
               </div>
             </div>
-            <div className={`text-start ${textTheme}`}>
-              <div
-                className={`d-flex flex-column mb-0.1 button-group
-                         box-3 fontSize   ${
-                           (theme === "darkTheme" && "Theme-btn-block") ||
-                           (theme === "dimTheme" && "dimThemeBtnBg")
-                         } `}
-                style={{
-                  whiteSpace: "nowrap",
-                  marginLeft: "900px",
-                  backgroundColor: "transparent",
-                  fontWeight: "bold",
-                  marginTop: "10px",
-                  padding: "10px",
-                  fontSize: "10px",
-                  position: "relative",
-                  marginBottom: "5px",
-                  width: "300px",
-                  height: "35px", // Set a fixed width for all buttons
-                }}
+            <div className="info-column column-right">
+            <div
+                className={`info-item  ${
+                  (theme === "darkTheme" && "Theme-btn-block") ||
+                  (theme === "dimTheme" && "dimThemeBtnBg")
+                } `}
               >
-                <p
-                  className={`${textTitle} ${spanDarkDim}`}
-                  style={{ marginLeft: "-170px" }}
-                >
+                <p>
+                  Future Airdrop Points -{" "}
+                  <span className={`info-data ${textTitle} ${spanDarkDim}`}>
+                    {totalsumofPOints} points
+                  </span>
+                </p> 
+              </div>
+              <div
+                className={`info-item  ${
+                  (theme === "darkTheme" && "Theme-btn-block") ||
+                  (theme === "dimTheme" && "dimThemeBtnBg")
+                } `}
+              >
+                <p>
                   Documentation{" "}
                   <a
                     href="https://system-state-documentation.gitbook.io/"
@@ -486,69 +412,7 @@ export default function DAV() {
                 </p>
               </div>
             </div>
-            <div className={`text-start ${textTheme}`}>
-              <div
-                className={`d-flex flex-column mb-0.1 button-group
-                         box-3 fontSize   ${
-                           (theme === "darkTheme" && "Theme-btn-block") ||
-                           (theme === "dimTheme" && "dimThemeBtnBg")
-                         } `}
-                style={{
-                  whiteSpace: "nowrap",
-                  marginLeft: "10px",
-                  backgroundColor: "transparent",
-                  fontWeight: "bold",
-                  marginTop: "15px",
-                  padding: "10px",
-                  fontSize: "10px",
-                  position: "relative",
-                  marginBottom: "5px",
-                  width: "300px",
-                  height: "35px", // Set a fixed width for all buttons
-                }}
-              >
-                <p
-                  className={`${textTitle} ${spanDarkDim}`}
-                  style={{ marginLeft: "-35px" }}
-                >
-                  DAV Contract Address - {""}
-                  <Link
-                    to={statetokenNavigate}
-                    target="_blank"
-                    className={`flex-grow-1 fontSize text-start ${textTitle} ${spanDarkDim}`}
-                  >
-                    {conciseAddress(state_token)}
-                  </Link>
-                </p>
-              </div>
-            </div>
-            <div
-              className={`d-flex flex-column mb-0.1 button-group
-                         box-3 fontSize   ${
-                           (theme === "darkTheme" && "Theme-btn-block") ||
-                           (theme === "dimTheme" && "dimThemeBtnBg")
-                         } `}
-              style={{
-                whiteSpace: "nowrap",
-                marginLeft: "450px",
-                backgroundColor: "transparent",
-                fontWeight: "bold",
-                marginTop: "-40px",
-                padding: "10px",
-                fontSize: "10px",
-                position: "relative",
-                marginBottom: "5px",
-                width: "300px",
-                height: "35px", // Set a fixed width for all buttons
-              }}
-            >
-              <p
-                className={` ${textTitle} ${spanDarkDim}`}
-                style={{ marginLeft: "-130px" }}
-              >
-                DAV TOKEN SUPPLY - 100000
-              </p>
-            </div>
+          </div>
           </div>
         </div>
       </div>

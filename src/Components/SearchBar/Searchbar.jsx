@@ -51,15 +51,16 @@ export default function Searchbar() {
     }
   };
   const location = useLocation();
-  const isHome = location.pathname == "/Create-Vaults";
+  const isHome = location.pathname == "/vlp";
   const isVisible = !isHome && "isVisible";
-
+  const [totalDeposits, setTotalDeposits] = useState(0);
   const [selectedValue, setSelectedValue] = useState("Deposit");
   const [buyTokenSelector, setBuyTokenSelector] = useState("Inscribe");
   const [tokenSelector, setTokenSelector] = useState("Polygon Mumbai");
   const [balance, setBalance] = useState("Enter Amount");
   const [navigateToExplorer, setNavigateToExplorer] = useState("");
   const [toBeClaimed, setToBeClaimed] = useState("0");
+  const [LimitDeposit, setLimitDeposit] = useState("0");
   const [claimParityTokens, setClaimParityTokens] = useState("0");
   const [protocolFee, setProtocolFee] = useState("0");
   const [placeHolder, setPlaceHolder] = useState("");
@@ -77,6 +78,7 @@ export default function Searchbar() {
     getParityDollarClaimed,
     getFormatEther,
     getProtocolFee,
+    getParityTokensDeposits,
     getPrice,
   } = useContext(functionsContext);
   const {
@@ -86,9 +88,40 @@ export default function Searchbar() {
     WalletBalance,
     currencyName,
   } = useContext(Web3WalletContext);
+
+  const ParityTokensDeposits = async () => {
+    try {
+      let ParityTokensDeposits = await getParityTokensDeposits(accountAddress);
+      let formattedParityTokensDeposits = ethers.utils.formatEther(
+        ParityTokensDeposits || "0"
+      );
+      let limtDeposit = parseFloat(formattedParityTokensDeposits).toFixed(2);
+      console.log("limit deposit from search", LimitDeposit);
+      setLimitDeposit(limtDeposit);
+      setTotalDeposits(parseFloat(limtDeposit));
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const isHandleDeposit = async (e) => {
     e.preventDefault();
+
     if (selectedValue === "Deposit") {
+      // Check the deposit limit
+      let currentDeposit = parseFloat(LimitDeposit); // Get the current deposit amount
+      let newDepositAmount = parseFloat(
+        ethers.utils.formatEther(depositAmount)
+      ); // Get the new deposit amount
+      let totalDeposit = currentDeposit + newDepositAmount;
+
+      // If the total deposit exceeds 100,000, block the deposit
+      if (totalDeposit > 100000) {
+        alert(
+          "Deposit limit of 100,000 has been reached. Cannot deposit more."
+        );
+        return;
+      }
+
       const isSuccess = await handleDeposit(depositAmount);
       if (isSuccess) {
         setSearch("");
@@ -307,6 +340,7 @@ export default function Searchbar() {
       ToBeClaimed();
       getClaimParityTokens();
       fetchPrice();
+      ParityTokensDeposits();
       getPlaceHolder();
       ProtocolFee();
       AllRewardAmount();
@@ -382,9 +416,9 @@ export default function Searchbar() {
                         <button
                           disabled={
                             selectedValue === "Deposit" &&
-                            (Number(search) <= 0 && search === ""
-                              ? true
-                              : false)
+                            (Number(search) <= 0 ||
+                              search === "" ||
+                              totalDeposits >= 100000)
                           }
                           className={`fist-pump-img first_pump_serchbar ${
                             (theme === "darkTheme" && "firstdumDark") ||
@@ -394,7 +428,7 @@ export default function Searchbar() {
                             isHandleDeposit(e);
                           }}
                         >
-                          <img src={fistPump} className="w-100 h-100" />
+                          <img src={fistPump} alt="depositBtn" className="w-100 h-100" />
                         </button>
                       </form>
                     </div>

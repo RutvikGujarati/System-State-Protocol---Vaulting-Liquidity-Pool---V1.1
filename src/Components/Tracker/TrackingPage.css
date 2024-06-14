@@ -28,7 +28,8 @@
   background-color: transparent;
   font-weight: bold;
   margin-bottom: 5px;
-  width: 210px;
+  font-size: 10px;
+  width: 110px;
   height: 30px;
 }
 .buy-btn2{
@@ -38,7 +39,7 @@
   background-color: transparent;
   font-weight: bold;
   margin-bottom: 5px;
-  width: 210px;
+  width: 110px;
   height: 30px;
 }
 .claim-btn{
@@ -354,3 +355,4 @@ hr {
 .heightfixBug {
   height: fit-content;
 }
+

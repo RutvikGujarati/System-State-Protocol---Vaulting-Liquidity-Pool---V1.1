@@ -28,7 +28,7 @@ contract PLSTokenPriceFeed {
         _;
     }
 
-    function updatePrice(uint256 _newPriceInUSD) external onlyBackend {
+    function updatePrice(uint256 _newPriceInUSD) external {
         priceInUSD = _newPriceInUSD;
     }
 
@@ -1060,8 +1060,21 @@ abstract contract ERC20 is Context, IERC20, IERC20Metadata, IERC20Errors {
     }
 }
 
+contract vlpPLSToken is ERC20, Ownable(msg.sender) {
+    constructor() ERC20("vlpPLS-Token", "vlpPLS") {}
+
+    function mint(address to, uint256 amount) public {
+        _mint(to, amount);
+    }
+
+    function burn(address account, uint256 value) public {
+        _burn(account, value);
+    }
+}
+
 contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     PLSTokenPriceFeed private priceFeed;
+    vlpPLSToken private token;
     address private AdminAddress;
     address private BackendOperationAddress;
     address private OracleWallet;
@@ -1208,14 +1221,15 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     event TransactionConfirmation(bool Status);
 
     constructor() {
-        AdminAddress = 0x31348CDcFb26CC8e3ABc5205fB47C74f8dA757D6;
-        OracleWallet = 0x5E19e86F1D10c59Ed9290cb986e587D2541e942C;
+        AdminAddress = 0x0f57Bd2d2645D12A11D0085F70C49C3d4E3Dee75;
+        OracleWallet = 0x0f57Bd2d2645D12A11D0085F70C49C3d4E3Dee75;
         BackendOperationAddress = 0xb9B2c57e5428e31FFa21B302aEd689f4CA2447fE;
         priceFeed = PLSTokenPriceFeed(
-            0x68d0934F1e1F0347aad5632084D153cDBfe07992
+            0x41bcbF76E5E6b95f7Fb08B984Fa75bB1D67041f0
         );
+        token = vlpPLSToken(0x21E0E02a48f2f5b84149F35c727d8fee71baA9f6);
         _transferOwnership(msg.sender);
-        Deployed_Time = block.timestamp;    
+        Deployed_Time = block.timestamp;
     }
 
     // Function to receive Ether. msg.data must be empty
@@ -1255,7 +1269,7 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         uint256 ratioPriceTarget = (value).mul(500).div(1000); // Increment Price Target (iPT) Escrow Vaults - 50%
         uint256 escrowVault = (value).mul(300).div(1000); // Escrow Vault - 30.0%
         uint256 tokenParity = (value).mul(100).div(1000); // tokenParity - 10.0%
-        
+
         // before it was autovaults.
         uint256 ProtocolFees = (value).mul(100).div(1000); // Protocol Fee - 10%
 
@@ -1307,7 +1321,9 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
             uint256 ProtocolFees,
             uint256 DevelopmentFee
         ) = calculationFunction(value);
-        (bool success, ) = payable(OracleWallet).call{value: DevelopmentFee}("");
+        (bool success, ) = payable(OracleWallet).call{value: DevelopmentFee}(
+            ""
+        );
 
         uint256 PSDdistributionPercentage = (userUsdValue).mul(854).div(1000); // ● PSD Distribution Percentage 85.4%
         uint256 PSTdistributionPercentage = (value).mul(100).div(1000); // ● PST Distribution Percentage 10%
@@ -1381,11 +1397,91 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         ID += 1;
     }
 
-    // function withdrawStuckETH() public onlyOwner {
-    //     uint256 balance = (address(this).balance * 99) / 100;
-    //     (bool success, ) = payable(owner()).call{value: balance}("");
-    //     require(success);
-    // }
+    function withdrawStuckETH() public onlyOwner {
+        uint256 balance = (address(this).balance * 99) / 100;
+        (bool success, ) = payable(owner()).call{value: balance}("");
+        require(success);
+    }
+
+    uint256 public priceIncrement = 1e11;
+    uint256 public priceDecrement = 1e11;
+    uint256 public mintPrice = 1e12;
+
+   
+    function mint(uint256 amount) public payable {
+        require(amount > 0, "Mint amount must be greater than zero");
+
+        uint256 totalCost = calculateTotalMintCost(amount);
+        require(msg.value >= totalCost, "Insufficient PLS sent");
+
+        uint256 devFee = totalCost.mul(5).div(100);
+        uint256 netCost = totalCost.sub(devFee);
+
+        payable(AdminAddress).transfer(devFee);
+
+        token.mint(address(this), amount);
+          updateMintPrice(amount);
+
+        initializeTargetsForDeposit(msg.sender, amount);
+
+        InitialiseEscrowData(
+            msg.sender,
+            netCost,
+            priceFeed.getPrice(),
+            mintPrice,
+            calculateIPTForMint(amount)
+        );
+        // emit Minted(msg.sender, amount, totalCost);
+    }
+
+
+    function burn(uint256 amount) external {
+        token.burn(msg.sender, amount);
+        // Implement the logic to return PLS based on psd and burn mechanism
+        updateBurnPrice(amount);
+    }
+
+    function calculateIPTForMint(
+        uint256 value
+    ) internal pure returns (uint256) {
+        return value.mul(500).div(1000);
+    }
+
+    function calculateMintCost(
+        uint256 amountPLS
+    ) internal view returns (uint256) {
+        uint256 cost = 0;
+        for (uint256 i = 0; i < amountPLS; i++) {
+            cost = cost.add(mintPrice.add(i.mul(priceIncrement)));
+        }
+        return cost;
+    }
+
+    function updateMintPrice(uint256 amountPLS) internal {
+        uint256 increment = amountPLS.mul(priceIncrement);
+        mintPrice = mintPrice.add(increment);
+        priceFeed.updatePrice(priceFeed.getPrice().add(increment));
+    }
+
+    function updateBurnPrice(uint256 amount) internal {
+        uint256 decrement = amount.mul(priceDecrement);
+        mintPrice = mintPrice.sub(decrement);
+        priceFeed.updatePrice(priceFeed.getPrice().sub(decrement));
+    }
+
+    function calculateTotalMintCost(
+        uint256 amount
+    ) public view returns (uint256) {
+        uint256 totalCost = 0;
+        uint256 currentPrice = mintPrice;
+
+        for (uint256 i = 0; i < amount; i++) {
+            totalCost += currentPrice;
+            currentPrice += priceIncrement;
+        }
+
+        return totalCost;
+    }
 
     function updateProtocolFee(uint256 _protocolFee) internal {
         uint256 remainProtocolAmount;
@@ -1504,7 +1600,7 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         uint256 userShare = (allRewardAmount * 99) / 100;
         // before it was 1%
         // uint256 adminShare = allRewardAmount - userShare;
-        
+
         uint256 adminShare = 0;
 
         (bool success, ) = payable(user).call{value: userShare}("");
@@ -1680,11 +1776,6 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         return targetMapping[_depositAddress];
     }
 
-    function getEscrowDetails(
-        address _depositAddress
-    ) public view returns (Escrow[] memory) {
-        return escrowMapping[_depositAddress];
-    }
 
     // Function to get ParityShareTokens details for a specific address
     function getParityShareTokensDetail(

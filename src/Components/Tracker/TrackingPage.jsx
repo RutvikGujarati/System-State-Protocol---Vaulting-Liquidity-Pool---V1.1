@@ -48,7 +48,7 @@ export default function TrackingPage({ children }) {
     (theme === "dimTheme" && "dimSh") ||
     (theme === "darkTheme" && "darkSh");
   const location = useLocation();
-  const isHome = location.pathname == "/Create-Vaults";
+  const isHome = location.pathname == "/vlp";
   const isHei = !isHome && "hei";
 
   const {
@@ -91,6 +91,7 @@ export default function TrackingPage({ children }) {
   } = useContext(Web3WalletContext);
   const [toBeClaimed, setToBeClaimed] = useState("0.0000");
   const [parityDollardeposits, setParityDollardeposits] = useState("0");
+  const [depositsInround, setParityDollardepositing] = useState("0");
   const [parityTokensDeposits, setParityTokensDeposits] = useState("0");
   const [paritydeposit, setParitydeposit] = useState("0");
   const [totalsumofPOints, setsumofPoints] = useState("0");
@@ -101,7 +102,8 @@ export default function TrackingPage({ children }) {
   const [parityTokensClaimed, setParityTokensClaimed] = useState("0");
   const [autoVaultAmount, setAutoVaultAmount] = useState("0");
   const [PercentageSeted, setPercentage] = useState("0");
-
+  const [Roundtotal, setRoundTotal] = useState("0");
+  const [LimitDeposit, setLimitDeposit] = useState("0");
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
   const [HoldAMount, setHoldTokens] = useState("0");
   const [totalMinted, setTotalMinted] = useState("0");
@@ -210,6 +212,8 @@ export default function TrackingPage({ children }) {
         ParityDollardeposits || "0"
       );
       let fixed = Number(formattedParityDollardeposits).toFixed(2);
+      console.log("dollar deposits from parity",fixed)
+      setParityDollardepositing(fixed);
 
       // setDepositAmount(inputValue);
       if (/^[0-9,.]*$/.test(fixed)) {
@@ -270,6 +274,8 @@ export default function TrackingPage({ children }) {
       let formattedParityTokensDeposits = ethers.utils.formatEther(
         ParityTokensDeposits || "0"
       );
+      let limtDeposit = parseFloat(formattedParityTokensDeposits).toFixed(2);
+      setLimitDeposit(limtDeposit);
       let fixed =
         parseFloat(formattedParityTokensDeposits)
           .toFixed(2)
@@ -841,10 +847,12 @@ export default function TrackingPage({ children }) {
 
     fetchTotalMintedTokens();
   }, []);
+
   const TotalVaultValueLocked = () => {
     const totalvalue = totalSUm * price + TotalSum * price;
     const roundedTotal = Number(totalvalue.toFixed(3));
-
+    console.log("roundeeeeed total", roundedTotal);
+    setRoundTotal(roundedTotal)
     // Convert the rounded total to string
     const stringValue = roundedTotal.toString();
 
@@ -863,10 +871,9 @@ export default function TrackingPage({ children }) {
     }
   };
 
-  let p = 0;
-  const percentage = async () => {
-    const deposits = Number(parityDollardeposits);
-    const vaultValue = Number(totalVaultValue);
+  const percentage =  () => {
+    const deposits = Number(depositsInround);
+    const vaultValue = Number(Roundtotal);
 
     if (!isNaN(deposits) && !isNaN(vaultValue) && vaultValue !== 0) {
       let division = deposits / vaultValue;
@@ -990,7 +997,7 @@ export default function TrackingPage({ children }) {
                                                 <div className={`varSize ${spanDarkDim}`}><span className={`spanText ${spanDarkDim}`}>$ {totalValueLocked}</span></div>
                                             </div>
                                         </div> */}
-                  <div className="hrp" >
+                  <div className="hrp">
                     <hr className="my-3" />
                   </div>
                   <div className="d-flex h-50">
@@ -1122,53 +1129,54 @@ export default function TrackingPage({ children }) {
                     >
                       <div>
                         <div className={`${textTitle}`}>
-                          <div className={` `}> BUY DAV TOKENS </div>
+                          <div className={` `}> MINT 2 DAV TOKENS </div>
                         </div>
-                        <div className="d-flex flex-column mb-0.1 button-group">
+                        <div className="d-flex flex-column mb-0.1 button-group ">
                           <button
-                            // style={{
-                            //   whiteSpace: "nowrap",
-                            //   marginLeft: "10px",
-                            //   marginTop: "10px",
-                            //   left: "-8px",
-                            //   backgroundColor: "transparent",
-                            //   fontWeight: "bold",
-                            //   marginBottom: "5px",
-                            //   width: "210px",
-                            //   height: "30px", // Set a fixed width for all buttons
-                            // }}
-                            className={`box-3 fontSize  mx-2 glowing-button buy-btn ${
+                            style={{
+                              whiteSpace: "nowrap",
+                              marginLeft: "10px",
+                              marginTop: "10px",
+                              left: "-8px",
+                              backgroundColor: "transparent",
+                              fontWeight: "bold",
+                              fontSize: "10px",
+                              marginBottom: "5px",
+                              width: "110px",
+                              height: "30px", // Set a fixed width for all buttons
+                            }}
+                            className={`box-3   mx-2 glowing-button  ${
                               (theme === "darkTheme" && "Theme-btn-block") ||
                               (theme === "dimTheme" && "dimThemeBtnBg")
                             } `}
                             onClick={() => BuyTokens(2, 100)}
                           >
-                            BUy 2 DAV tokens for 100 pls
+                            100 PLS
                           </button>
                         </div>
                         <div className="d-flex flex-column mb-0.1 button-group">
                           <button
-                            // style={{
-                            //   whiteSpace: "nowrap",
-                            //   marginLeft: "10px",
-                            //   left: "-8px",
-                            //   marginTop: "10px",
-                            //   backgroundColor: "transparent",
-                            //   fontWeight: "bold",
-                            //   marginBottom: "5px",
-                            //   width: "110px",
-                            //   height: "30px", // Set a fixed width for all buttons
-                            // }}
-                            className={`box-3 fontSize  mx-2 glowing-button claim-btn ${
+                            style={{
+                              whiteSpace: "nowrap",
+                              marginLeft: "10px",
+                              left: "-8px",
+                              marginTop: "10px",
+                              backgroundColor: "transparent",
+                              fontWeight: "bold",
+                              marginBottom: "5px",
+                              fontSize: "10px",
+                              width: "110px",
+                              height: "30px", // Set a fixed width for all buttons
+                            }}
+                            className={`box-3   mx-2 glowing-button  ${
                               (theme === "darkTheme" && "Theme-btn-block") ||
                               (theme === "dimTheme" && "dimThemeBtnBg")
                             } `}
                             // onClick={() => BuyTokens(2, 100)}
                           >
-                            claim refund
+                            CLAIM REFUND
                           </button>
                         </div>
-                      
                       </div>
                       {/* <InfoBox data='Parity Shares in Tokens. Indicating the total number of tokens
                                                     deposited'/> */}
@@ -1262,53 +1270,54 @@ export default function TrackingPage({ children }) {
                     >
                       <div>
                         <div className={`${textTitle}`}>
-                          <div className={` `}> BUY DAV TOKENS </div>
+                          <div className={` `}> MINT 5 DAV TOKENS </div>
                         </div>
                         <div className="d-flex flex-column mb-0.1 button-group">
                           <button
-                            // style={{
-                            //   whiteSpace: "nowrap",
-                            //   marginLeft: "10px",
-                            //   marginTop: "10px",
-                            //   left: "-8px",
-                            //   backgroundColor: "transparent",
-                            //   fontWeight: "bold",
-                            //   marginBottom: "5px",
-                            //   width: "210px",
-                            //   height: "30px", // Set a fixed width for all buttons
-                            // }}
-                            className={`box-3 fontSize  mx-2 glowing-button buy-btn ${
+                            style={{
+                              whiteSpace: "nowrap",
+                              marginLeft: "10px",
+                              marginTop: "10px",
+                              left: "-8px",
+                              backgroundColor: "transparent",
+                              fontWeight: "bold",
+                              marginBottom: "5px",
+                              fontSize: "10px",
+                              width: "110px",
+                              height: "30px", // Set a fixed width for all buttons
+                            }}
+                            className={`box-3   mx-2 glowing-button  ${
                               (theme === "darkTheme" && "Theme-btn-block") ||
                               (theme === "dimTheme" && "dimThemeBtnBg")
                             } `}
                             onClick={() => BuyTokens(5, 250)}
                           >
-                            BUy 5 DAV tokens for 250 pls
+                            250 PLS
                           </button>
                         </div>
                         <div className="d-flex flex-column mb-0.1 button-group">
                           <button
-                            // style={{
-                            //   whiteSpace: "nowrap",
-                            //   marginLeft: "10px",
-                            //   left: "-8px",
-                            //   marginTop: "10px",
-                            //   backgroundColor: "transparent",
-                            //   fontWeight: "bold",
-                            //   marginBottom: "5px",
-                            //   width: "110px",
-                            //   height: "30px", // Set a fixed width for all buttons
-                            // }}
-                            className={`box-3 fontSize  mx-2 glowing-button claim-btn ${
+                            style={{
+                              whiteSpace: "nowrap",
+                              marginLeft: "10px",
+                              left: "-8px",
+                              marginTop: "10px",
+                              backgroundColor: "transparent",
+                              fontWeight: "bold",
+                              fontSize: "10px",
+                              marginBottom: "5px",
+                              width: "110px",
+                              height: "30px", // Set a fixed width for all buttons
+                            }}
+                            className={`box-3   mx-2 glowing-button  ${
                               (theme === "darkTheme" && "Theme-btn-block") ||
                               (theme === "dimTheme" && "dimThemeBtnBg")
                             } `}
                             // onClick={() => BuyTokens(2, 100)}
                           >
-                            claim refund
+                            CLAIM REFUND
                           </button>
                         </div>
-                       
                       </div>
                       {/* <InfoBox data='Indicating the total number of tokens claimed' /> */}
                     </div>
@@ -1377,51 +1386,53 @@ export default function TrackingPage({ children }) {
                     >
                       <div>
                         <div className={`${textTitle}`}>
-                          <p className={` `}> BUY DAV TOKENS </p>
+                          <p className={` `}> MINT 12 DAV TOKENS </p>
                         </div>
                         <div className="d-flex flex-column mb-0.1 button-group">
                           <button
-                            // style={{
-                            //   whiteSpace: "nowrap",
-                            //   marginLeft: "10px",
-                            //   // marginTop: "1px",
-                            //   left: "-8px",
-                            //   // top:"-20px",
-                            //   backgroundColor: "transparent",
-                            //   fontWeight: "bold",
-                            //   marginBottom: "5px",
-                            //   width: "210px",
-                            //   height: "30px", // Set a fixed width for all buttons
-                            // }}
-                            className={`box-3 fontSize  mx-2 glowing-button buy-btn2 ${
+                            style={{
+                              whiteSpace: "nowrap",
+                              marginLeft: "10px",
+                              // marginTop: "1px",
+                              left: "-8px",
+                              // top:"-20px",
+                              backgroundColor: "transparent",
+                              fontWeight: "bold",
+                              fontSize: "10px",
+                              marginBottom: "5px",
+                              width: "110px",
+                              height: "30px", // Set a fixed width for all buttons
+                            }}
+                            className={`box-3   mx-2 glowing-button  ${
                               (theme === "darkTheme" && "Theme-btn-block") ||
                               (theme === "dimTheme" && "dimThemeBtnBg")
                             } `}
                             onClick={() => BuyTokens(12, 500)}
                           >
-                            BUy 12 DAV tokens for 500 pls
+                            500 PLS
                           </button>
                         </div>
                         <div className="d-flex flex-column mb-0.1 button-group">
                           <button
-                            // style={{
-                            //   whiteSpace: "nowrap",
-                            //   marginLeft: "10px",
-                            //   left: "-8px",
-                            //   marginTop: "10px",
-                            //   backgroundColor: "transparent",
-                            //   fontWeight: "bold",
-                            //   marginBottom: "15px",
-                            //   width: "110px",
-                            //   height: "30px", // Set a fixed width for all buttons
-                            // }}
-                            className={`box-3 fontSize  mx-2 glowing-button claim-btn2 ${
+                            style={{
+                              whiteSpace: "nowrap",
+                              marginLeft: "10px",
+                              left: "-8px",
+                              marginTop: "10px",
+                              backgroundColor: "transparent",
+                              fontWeight: "bold",
+                              fontSize: "10px",
+                              marginBottom: "15px",
+                              width: "110px",
+                              height: "30px", // Set a fixed width for all buttons
+                            }}
+                            className={`box-3   mx-2 glowing-button  ${
                               (theme === "darkTheme" && "Theme-btn-block") ||
                               (theme === "dimTheme" && "dimThemeBtnBg")
                             } `}
                             // onClick={() => BuyTokens(12, 500)}
                           >
-                            claim refund
+                            CLAIM REFUND
                           </button>
                         </div>
                       </div>

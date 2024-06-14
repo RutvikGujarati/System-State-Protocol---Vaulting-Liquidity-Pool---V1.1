@@ -1,4 +1,101 @@
-.small-metamask-logo{
-    width: 20px; /* Adjust the width as needed */
-  height: 20px; /* Adjust the height as needed */
-}
+.information-container {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: -10px;
+  }
+  
+  .pad{
+    margin-top: 20px;
+  }
+  .info-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .info-title {
+    margin-left: 10px;
+  }
+  
+  .info-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0px; /* Adjust gap between groups */
+  }
+  
+  .info-column {
+    flex: 1;
+  }
+  
+  .info-item {
+    background-color: transparent;
+    padding: 10px;
+    font-size: 10px;
+    font-weight: bold;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    white-space: nowrap; /* Ensure text is in a single line */
+    overflow: hidden; /* Hide overflow text */
+    text-overflow: ellipsis; /* Add ellipsis for overflow text */
+    min-height: 10px; /* Adjust the height as needed */
+    max-height: 50px; /* Ensure consistent height */
+    min-width: 300px; /* Adjust the width as needed */
+    max-width: 300px; /* Ensure consistent width */
+    margin-bottom: 10px; /* Add space between items */
+  }
+  
+  .info-item p {
+    margin: 0;
+  }
+  
+  .info-link {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  .info-data {
+    margin-left: 5px;
+  }
+  
+  .metamask-logo {
+    cursor: pointer;
+    margin-left: 10px;
+    width: 20px; /* Adjust size as needed */
+    height: 20px; /* Adjust size as needed */
+  }
+  
+  .column-left {
+    align-self: flex-start;
+  }
+  
+  .column-center {
+    align-self: center;
+  }
+  
+  .column-right {
+    align-items: flex-start;
+  }
+  
+  /* Add media query for mobile responsiveness */
+  @media (max-width: 768px) {
+    .information-container {
+      margin-left: 0;
+      margin-top: 0;
+    }
+  
+    .info-content {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .info-column {
+      width: 100%;
+    }
+  }
+  
