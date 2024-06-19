@@ -1287,7 +1287,7 @@ export default function TrackingPage({ children }) {
                               height: "30px", // Set a fixed width for all buttons
                             }}
                             className={`box-3   mx-2 glowing-button  ${
-                              (theme === "darkTheme" && "Theme-btn-block") ||
+                            (theme === "darkTheme" && "Theme-btn-block") ||
                               (theme === "dimTheme" && "dimThemeBtnBg")
                             } `}
                             onClick={() => BuyTokens(5, 250)}
