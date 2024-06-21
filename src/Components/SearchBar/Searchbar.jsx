@@ -107,21 +107,6 @@ export default function Searchbar() {
     e.preventDefault();
 
     if (selectedValue === "Deposit") {
-      // Check the deposit limit
-      let currentDeposit = parseFloat(LimitDeposit); // Get the current deposit amount
-      let newDepositAmount = parseFloat(
-        ethers.utils.formatEther(depositAmount)
-      ); // Get the new deposit amount
-      let totalDeposit = currentDeposit + newDepositAmount;
-
-      // If the total deposit exceeds 100,000, block the deposit
-      if (totalDeposit > 100000) {
-        alert(
-          "Deposit limit of 100,000 has been reached. Cannot deposit more."
-        );
-        return;
-      }
-
       const isSuccess = await handleDeposit(depositAmount);
       if (isSuccess) {
         setSearch("");
@@ -416,9 +401,7 @@ export default function Searchbar() {
                         <button
                           disabled={
                             selectedValue === "Deposit" &&
-                            (Number(search) <= 0 ||
-                              search === "" ||
-                              totalDeposits >= 100000)
+                            (Number(search) <= 0 || search === "")
                           }
                           className={`fist-pump-img first_pump_serchbar ${
                             (theme === "darkTheme" && "firstdumDark") ||
@@ -428,7 +411,11 @@ export default function Searchbar() {
                             isHandleDeposit(e);
                           }}
                         >
-                          <img src={fistPump} alt="depositBtn" className="w-100 h-100" />
+                          <img
+                            src={fistPump}
+                            alt="depositBtn"
+                            className="w-100 h-100"
+                          />
                         </button>
                       </form>
                     </div>

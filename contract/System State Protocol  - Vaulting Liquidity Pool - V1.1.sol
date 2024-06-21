@@ -405,22 +405,22 @@ abstract contract Ownable is Context {
     }
 }
 
-contract DAVPLS is ERC20, Ownable {
+contract DAVTOKEN is ERC20, Ownable {
     uint256 public constant MAX_SUPPLY = 100000 * 10 ** 18;
 
     mapping(address => bool) public isHolder;
     address[] public holders;
 
     // Token prices in wei
-    uint256 public constant PRICE_TWO_TOKEN = 100 ether;
-    uint256 public constant PRICE_FIVE_TOKENS = 300 ether;
-    uint256 public constant PRICE_TWELVE_TOKENS = 500 ether;
+    uint256 public PRICE_TWO_TOKEN = 100 ether;
+    uint256 public PRICE_FIVE_TOKENS = 300 ether;
+    uint256 public PRICE_THERTEEN_TOKENS = 500 ether;
 
     // Address to receive Ether payments
     address payable public constant paymentAddress =
         payable(0x5E19e86F1D10c59Ed9290cb986e587D2541e942C);
 
-    constructor() ERC20("StateToken", "DAVPLS") Ownable(msg.sender) {}
+    constructor() ERC20("DAVTOKEN", "DAVPLS") Ownable(msg.sender) {}
 
     function mint(address to, uint256 amount) public onlyOwner {
         require(
@@ -437,8 +437,8 @@ contract DAVPLS is ERC20, Ownable {
             cost = PRICE_TWO_TOKEN;
         } else if (quantity == 5) {
             cost = PRICE_FIVE_TOKENS;
-        } else if (quantity == 12) {
-            cost = PRICE_TWELVE_TOKENS;
+        } else if (quantity == 13) {
+            cost = PRICE_THERTEEN_TOKENS;
         } else {
             revert("Invalid token quantity");
         }
@@ -472,6 +472,15 @@ contract DAVPLS is ERC20, Ownable {
         return holders.length;
     }
 
+    function _transfer(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) internal override {
+        super._transfer(sender, recipient, amount);
+        _addHolder(recipient);
+    }
+
     function holderAt(uint256 index) external view returns (address) {
         require(index < holders.length, "Index out of bounds");
         return holders[index];
@@ -480,13 +489,23 @@ contract DAVPLS is ERC20, Ownable {
     function balanceOfUser(address user) external view returns (uint256) {
         return balanceOf(user);
     }
+
+    function setPriceOfTokens(
+        uint256 twoT,
+        uint256 fiveT,
+        uint256 thirteenT
+    ) public onlyOwner {
+        PRICE_TWO_TOKEN = twoT;
+        PRICE_FIVE_TOKENS = fiveT;
+        PRICE_THERTEEN_TOKENS = thirteenT;
+    }
 }
 
 contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     PLSTokenPriceFeed private priceFeed;
     address private AdminAddress;
-    address public statetokenAddress;
-    DAVPLS public stateToken;
+    address public DAVPLSAddress;
+    DAVTOKEN public DAVPLS;
     address private BackendOperationAddress;
     using SafeMath for uint256;
     uint256 public ID = 1;
@@ -632,7 +651,7 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     constructor() {
         AdminAddress = 0x31348CDcFb26CC8e3ABc5205fB47C74f8dA757D6;
         BackendOperationAddress = 0xb9B2c57e5428e31FFa21B302aEd689f4CA2447fE;
-        stateToken = DAVPLS(0xfE1BBD793C5C055b116C43D23FC0727AAFA89Ec9);
+        DAVPLS = DAVTOKEN(0xfE1BBD793C5C055b116C43D23FC0727AAFA89Ec9);
         priceFeed = PLSTokenPriceFeed(
             0x75a7eBe3C4469a5e35c91bA7D4956C46e3a6ACB6
         );
@@ -692,19 +711,18 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         return (ratioPriceTarget, escrowVault, tokenParity, 0, AutoVaultFee);
     }
 
-    function distributeAutoVaultFee(
-        uint256 AutoVaultFee
-    ) private {
-      
-    for (uint256 i = 0; i < stateToken.holdersLength(); i++) {
-        address user = stateToken.holders(i);
-        uint256 userBalance = stateToken.balanceOf(user);
-        
-        if (userBalance > 0 && stateToken.totalSupply() > 0) {
-            uint256 userShare = AutoVaultFee.mul(userBalance).div(stateToken.totalSupply());
-            userAutoVault[user] = userAutoVault[user].add(userShare);
+    function distributeAutoVaultFee(uint256 AutoVaultFee) private {
+        for (uint256 i = 0; i < DAVPLS.holdersLength(); i++) {
+            address user = DAVPLS.holders(i);
+            uint256 userBalance = DAVPLS.balanceOf(user);
+
+            if (userBalance > 0 && DAVPLS.totalSupply() > 0) {
+                uint256 userShare = AutoVaultFee.mul(userBalance).div(
+                    DAVPLS.totalSupply()
+                );
+                userAutoVault[user] = userAutoVault[user].add(userShare);
+            }
         }
-    }
     }
 
     function depositAndAutoVaults() public {
@@ -1087,14 +1105,14 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         return distributionAmount;
     }
 
-    function buyStateTokens(uint256 quantity) public payable {
+    function buyDAVPLS(uint256 quantity) public payable {
         require(
             userAutoVault[msg.sender] > 0,
             "You must have an Auto-Vault to buy State Tokens"
         );
 
-        // Call the buyTokens function of the StateToken contract
-        stateToken.buyTokens{value: msg.value}(quantity);
+        // Call the buyTokens function of the DAVPLS contract
+        DAVPLS.buyTokens{value: msg.value}(quantity);
     }
 
     function calculateIPT(uint8 fibonacciIndex) private view returns (uint256) {

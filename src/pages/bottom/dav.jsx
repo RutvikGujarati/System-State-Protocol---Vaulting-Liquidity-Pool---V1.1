@@ -150,7 +150,7 @@ export default function DAV() {
           params: {
             type: "ERC20", // Indicates that this is an ERC20 token
             options: {
-              address: "0x0B415D5482918A11B4Dc8bF68169E89293Cd3a02", // The address of the token contract
+              address: "0xF99FB2111697f55f859b83B8B8BE1EA5B897623e", // The address of the token contract
               symbol: "DAVPLS", // A ticker symbol or shorthand, up to 5 characters
               decimals: "18", // The number of decimals in the token
               image: { firstPump }, // A string url of the token logo
@@ -272,8 +272,10 @@ export default function DAV() {
         className={`flex-grow-1 fontSize text-start ${textTitle} mb-0 ms-3 ${
           theme === "dimTheme" && "text-white"
         }`}
-      
       >
+        <div style={{ marginLeft: "550px", marginTop: "-20px" }}>
+          <p>DAV token must remain in the wallet that minted them.</p>
+        </div>
         <div style={{ marginLeft: "170px", marginTop: "-10px" }}>
           <div
             className="d-flex align-items-center "
@@ -288,131 +290,129 @@ export default function DAV() {
             </p>
           </div>
           <div className="pad">
-          <div className={`info-content `}>
-            <div className="info-column column-left">
-              <div
-                className={`info-item  ${
-                  (theme === "darkTheme" && "Theme-btn-block") ||
-                  (theme === "dimTheme" && "dimThemeBtnBg")
-                } `}
-              >
-                <p>DAY {DayStamp}</p>
+            <div className={`info-content `}>
+              <div className="info-column column-left">
+                <div
+                  className={`info-item  ${
+                    (theme === "darkTheme" && "Theme-btn-block") ||
+                    (theme === "dimTheme" && "dimThemeBtnBg")
+                  } `}
+                >
+                  <p>DAY {DayStamp}</p>
+                </div>
+                <div
+                  className={`info-item  ${
+                    (theme === "darkTheme" && "Theme-btn-block") ||
+                    (theme === "dimTheme" && "dimThemeBtnBg")
+                  } `}
+                >
+                  <p>
+                    VLP Contract Address -{" "}
+                    <Link
+                      to={navigateToExplorer}
+                      target="_blank"
+                      className={`info-link ${textTitle} ${spanDarkDim}`}
+                    >
+                      {conciseAddress(PSD_ADDRESS)}
+                    </Link>
+                  </p>
+                </div>
+                <div
+                  className={`info-item  ${
+                    (theme === "darkTheme" && "Theme-btn-block") ||
+                    (theme === "dimTheme" && "dimThemeBtnBg")
+                  } `}
+                >
+                  <p>
+                    DAV Contract Address -{" "}
+                    <Link
+                      to={statetokenNavigate}
+                      target="_blank"
+                      className={`info-link ${textTitle} ${spanDarkDim}`}
+                    >
+                      {conciseAddress(state_token)}
+                    </Link>
+                  </p>
+                </div>
               </div>
-              <div
-                className={`info-item  ${
-                  (theme === "darkTheme" && "Theme-btn-block") ||
-                  (theme === "dimTheme" && "dimThemeBtnBg")
-                } `}
-              >
-                
-                <p>
-                  VLP Contract Address -{" "}
-                  <Link
-                    to={navigateToExplorer}
-                    target="_blank"
-                    className={`info-link ${textTitle} ${spanDarkDim}`}
-                  >
-                    {conciseAddress(PSD_ADDRESS)}
-                  </Link>
-                </p>
+              <div className="info-column column-center">
+                <div
+                  className={`info-item  ${
+                    (theme === "darkTheme" && "Theme-btn-block") ||
+                    (theme === "dimTheme" && "dimThemeBtnBg")
+                  } `}
+                >
+                  <p>
+                    DAV Holding - {HoldAMount} DAV token{" "}
+                    <img
+                      src={metamask}
+                      alt="MetaMask Logo"
+                      onClick={addTokenToWallet}
+                      className="metamask-logo"
+                    />
+                  </p>
+                </div>
+                <div
+                  className={`info-item  ${
+                    (theme === "darkTheme" && "Theme-btn-block") ||
+                    (theme === "dimTheme" && "dimThemeBtnBg")
+                  } `}
+                >
+                  <p>
+                    DAV Token Mints -{" "}
+                    <span className={`info-data ${textTitle} ${spanDarkDim}`}>
+                      {totalMinted}
+                    </span>
+                  </p>
+                </div>
+                <div
+                  className={`info-item  ${
+                    (theme === "darkTheme" && "Theme-btn-block") ||
+                    (theme === "dimTheme" && "dimThemeBtnBg")
+                  } `}
+                >
+                  <p>
+                    DAV Token Supply -{" "}
+                    <span className={`info-data ${textTitle} ${spanDarkDim}`}>
+                      100000
+                    </span>
+                  </p>
+                </div>
               </div>
-              <div
-                className={`info-item  ${
-                  (theme === "darkTheme" && "Theme-btn-block") ||
-                  (theme === "dimTheme" && "dimThemeBtnBg")
-                } `}
-              >
-                <p>
-                  DAV Contract Address -{" "}
-                  <Link
-                    to={statetokenNavigate}
-                    target="_blank"
-                    className={`info-link ${textTitle} ${spanDarkDim}`}
-                  >
-                    {conciseAddress(state_token)}
-                  </Link>
-                </p>
+              <div className="info-column column-right">
+                <div
+                  className={`info-item  ${
+                    (theme === "darkTheme" && "Theme-btn-block") ||
+                    (theme === "dimTheme" && "dimThemeBtnBg")
+                  } `}
+                >
+                  <p>
+                    Future Airdrop Points -{" "}
+                    <span className={`info-data ${textTitle} ${spanDarkDim}`}>
+                      {totalsumofPOints} points
+                    </span>
+                  </p>
+                </div>
+                <div
+                  className={`info-item  ${
+                    (theme === "darkTheme" && "Theme-btn-block") ||
+                    (theme === "dimTheme" && "dimThemeBtnBg")
+                  } `}
+                >
+                  <p>
+                    Documentation{" "}
+                    <a
+                      href="https://system-state-documentation.gitbook.io/"
+                      className="link"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <i className="fas fa-external-link-alt"></i>
+                    </a>
+                  </p>
+                </div>
               </div>
             </div>
-            <div className="info-column column-center">
-            <div
-                className={`info-item  ${
-                  (theme === "darkTheme" && "Theme-btn-block") ||
-                  (theme === "dimTheme" && "dimThemeBtnBg")
-                } `}
-              >
-                <p>
-                  DAV Holding - {HoldAMount} DAV token{" "}
-                  <img
-                    src={metamask}
-                    alt="MetaMask Logo"
-                    onClick={addTokenToWallet}
-                    className="metamask-logo"
-                  />
-                </p>
-              </div>
-              <div
-                className={`info-item  ${
-                  (theme === "darkTheme" && "Theme-btn-block") ||
-                  (theme === "dimTheme" && "dimThemeBtnBg")
-                } `}
-              >
-               
-                <p>
-                  DAV Token Mints -{" "}
-                  <span className={`info-data ${textTitle} ${spanDarkDim}`}>
-                    {totalMinted}
-                  </span>
-                </p>
-              </div>
-              <div
-                className={`info-item  ${
-                  (theme === "darkTheme" && "Theme-btn-block") ||
-                  (theme === "dimTheme" && "dimThemeBtnBg")
-                } `}
-              >
-                <p>
-                  DAV Token Supply -{" "}
-                  <span className={`info-data ${textTitle} ${spanDarkDim}`}>
-                    100000
-                  </span>
-                </p>
-              </div>
-            </div>
-            <div className="info-column column-right">
-            <div
-                className={`info-item  ${
-                  (theme === "darkTheme" && "Theme-btn-block") ||
-                  (theme === "dimTheme" && "dimThemeBtnBg")
-                } `}
-              >
-                <p>
-                  Future Airdrop Points -{" "}
-                  <span className={`info-data ${textTitle} ${spanDarkDim}`}>
-                    {totalsumofPOints} points
-                  </span>
-                </p> 
-              </div>
-              <div
-                className={`info-item  ${
-                  (theme === "darkTheme" && "Theme-btn-block") ||
-                  (theme === "dimTheme" && "dimThemeBtnBg")
-                } `}
-              >
-                <p>
-                  Documentation{" "}
-                  <a
-                    href="https://system-state-documentation.gitbook.io/"
-                    className="link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <i className="fas fa-external-link-alt"></i>
-                  </a>
-                </p>
-              </div>
-            </div>
-          </div>
           </div>
         </div>
       </div>

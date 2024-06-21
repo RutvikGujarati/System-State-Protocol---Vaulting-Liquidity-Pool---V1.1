@@ -1386,7 +1386,7 @@ export default function TrackingPage({ children }) {
                     >
                       <div>
                         <div className={`${textTitle}`}>
-                          <p className={` `}> MINT 12 DAV TOKENS </p>
+                          <p className={` `}> MINT 13 DAV TOKENS </p>
                         </div>
                         <div className="d-flex flex-column mb-0.1 button-group">
                           <button
@@ -1407,7 +1407,7 @@ export default function TrackingPage({ children }) {
                               (theme === "darkTheme" && "Theme-btn-block") ||
                               (theme === "dimTheme" && "dimThemeBtnBg")
                             } `}
-                            onClick={() => BuyTokens(12, 500)}
+                            onClick={() => BuyTokens(13, 500)}
                           >
                             500 PLS
                           </button>
