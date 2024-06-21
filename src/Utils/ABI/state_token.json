@@ -183,12 +183,77 @@
 	},
 	{
 		"inputs": [],
+		"name": "MAX_PDXN_SUPPLY",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "MAX_SUPPLY",
 		"outputs": [
 			{
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "PDXN_PRICE_FIVE_TOKENS",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "PDXN_PRICE_THIRTEEN_TOKENS",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "PDXN_PRICE_TWO_TOKEN",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "PDXN_TOKEN_ADDRESS",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
 			}
 		],
 		"stateMutability": "view",
@@ -209,7 +274,7 @@
 	},
 	{
 		"inputs": [],
-		"name": "PRICE_THERTEEN_TOKENS",
+		"name": "PRICE_THIRTEEN_TOKENS",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -434,6 +499,19 @@
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "quantity",
+				"type": "uint256"
+			}
+		],
+		"name": "mintWithPDXN",
+		"outputs": [],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "name",
 		"outputs": [
@@ -474,7 +552,43 @@
 	},
 	{
 		"inputs": [],
+		"name": "pdxnMinted",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "renounceOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "twoT",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "fiveT",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "thirteenT",
+				"type": "uint256"
+			}
+		],
+		"name": "setPDXNPriceOfTokens",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"

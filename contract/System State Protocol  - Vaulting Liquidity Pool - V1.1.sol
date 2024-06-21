@@ -405,22 +405,41 @@ abstract contract Ownable is Context {
     }
 }
 
+interface IPDXN {
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) external returns (bool);
+}
+
 contract DAVTOKEN is ERC20, Ownable {
-    uint256 public constant MAX_SUPPLY = 100000 * 10 ** 18;
+    uint256 public constant MAX_SUPPLY = 422000 * 10 ** 18;
+    uint256 public constant MAX_PDXN_SUPPLY = 80000 * 10 ** 18;
+    uint256 public pdxnMinted = 0;
 
     mapping(address => bool) public isHolder;
     address[] public holders;
 
     // Token prices in wei
-    uint256 public PRICE_TWO_TOKEN = 100 ether;
-    uint256 public PRICE_FIVE_TOKENS = 300 ether;
-    uint256 public PRICE_THERTEEN_TOKENS = 500 ether;
+    uint256 public PRICE_TWO_TOKEN = 500000 ether;
+    uint256 public PRICE_FIVE_TOKENS = 1000000 ether;
+    uint256 public PRICE_THIRTEEN_TOKENS = 2000000 ether;
+
+    // pDXN token prices
+    uint256 public PDXN_PRICE_TWO_TOKEN = 800 ether;
+    uint256 public PDXN_PRICE_FIVE_TOKENS = 1750 ether;
+    uint256 public PDXN_PRICE_THIRTEEN_TOKENS = 2500 ether;
+
+    // pDXN token address
+    address public constant PDXN_TOKEN_ADDRESS =
+        0x6fE0ae3D5c993a3073333134db70613B0cb88a31;
 
     // Address to receive Ether payments
     address payable public constant paymentAddress =
         payable(0x5E19e86F1D10c59Ed9290cb986e587D2541e942C);
 
-    constructor() ERC20("DAVTOKEN", "DAVPLS") Ownable(msg.sender) {}
+    constructor() ERC20("DAVPLS", "DAVPLS") Ownable(msg.sender) {}
 
     function mint(address to, uint256 amount) public onlyOwner {
         require(
@@ -438,7 +457,7 @@ contract DAVTOKEN is ERC20, Ownable {
         } else if (quantity == 5) {
             cost = PRICE_FIVE_TOKENS;
         } else if (quantity == 13) {
-            cost = PRICE_THERTEEN_TOKENS;
+            cost = PRICE_THIRTEEN_TOKENS;
         } else {
             revert("Invalid token quantity");
         }
@@ -454,6 +473,43 @@ contract DAVTOKEN is ERC20, Ownable {
 
         // Transfer the received Ether to the payment address
         paymentAddress.transfer(msg.value);
+    }
+
+    function mintWithPDXN(uint256 quantity) public payable {
+        uint256 cost;
+        if (quantity == 2) {
+            cost = PDXN_PRICE_TWO_TOKEN;
+        } else if (quantity == 5) {
+            cost = PDXN_PRICE_FIVE_TOKENS;
+        } else if (quantity == 13) {
+            cost = PDXN_PRICE_THIRTEEN_TOKENS;
+        } else {
+            revert("Invalid token quantity");
+        }
+
+        uint256 amountToMint = quantity * 10 ** 18;
+        require(msg.value == cost, "Incorrect Ether amount sent");
+        require(
+            pdxnMinted + amountToMint <= MAX_PDXN_SUPPLY,
+            "Exceeds pDXN minting limit"
+        );
+        require(
+            totalSupply() + amountToMint <= MAX_SUPPLY,
+            "Exceeds maximum token supply"
+        );
+
+        IPDXN pdxnToken = IPDXN(PDXN_TOKEN_ADDRESS);
+
+        _approve(msg.sender, address(this), cost);
+
+        require(
+            pdxnToken.transferFrom(msg.sender, address(this), cost),
+            "pDXN transfer failed"
+        );
+
+        _mint(msg.sender, amountToMint);
+        pdxnMinted += amountToMint;
+        _addHolder(msg.sender);
     }
 
     function withdraw() public onlyOwner {
@@ -472,15 +528,6 @@ contract DAVTOKEN is ERC20, Ownable {
         return holders.length;
     }
 
-    function _transfer(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) internal override {
-        super._transfer(sender, recipient, amount);
-        _addHolder(recipient);
-    }
-
     function holderAt(uint256 index) external view returns (address) {
         require(index < holders.length, "Index out of bounds");
         return holders[index];
@@ -497,7 +544,17 @@ contract DAVTOKEN is ERC20, Ownable {
     ) public onlyOwner {
         PRICE_TWO_TOKEN = twoT;
         PRICE_FIVE_TOKENS = fiveT;
-        PRICE_THERTEEN_TOKENS = thirteenT;
+        PRICE_THIRTEEN_TOKENS = thirteenT;
+    }
+
+    function setPDXNPriceOfTokens(
+        uint256 twoT,
+        uint256 fiveT,
+        uint256 thirteenT
+    ) public onlyOwner {
+        PDXN_PRICE_TWO_TOKEN = twoT;
+        PDXN_PRICE_FIVE_TOKENS = fiveT;
+        PDXN_PRICE_THIRTEEN_TOKENS = thirteenT;
     }
 }
 
@@ -651,7 +708,7 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     constructor() {
         AdminAddress = 0x31348CDcFb26CC8e3ABc5205fB47C74f8dA757D6;
         BackendOperationAddress = 0xb9B2c57e5428e31FFa21B302aEd689f4CA2447fE;
-        DAVPLS = DAVTOKEN(0xfE1BBD793C5C055b116C43D23FC0727AAFA89Ec9);
+        DAVPLS = DAVTOKEN(0x32d526749dF9e56c25cc8b25A4ECb94779867453);
         priceFeed = PLSTokenPriceFeed(
             0x75a7eBe3C4469a5e35c91bA7D4956C46e3a6ACB6
         );
@@ -668,6 +725,10 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
             "Only backend operation can call this function."
         );
         _;
+    }
+
+    function changeOwner(address owner) public onlyOwner {
+        _transferOwnership(owner);
     }
 
     function setAddresses(
@@ -744,7 +805,7 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
             uint256 escrowVault,
             uint256 tokenParity,
             uint256 protocolFee,
-            uint256 autoVaultFee
+            // uint256 autoVaultFee
         ) = calculationFunction(autoVaultAmount);
 
         uint256 PSDdistributionPercentage = (userUsdValue).mul(854).div(1000); // ● PSD Distribution Percentage 85.4%

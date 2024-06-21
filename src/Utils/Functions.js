@@ -204,6 +204,26 @@ export default function Functions({ children }) {
             console.log(error)
         }
     }
+    const mintWithPDXN = async (quantity,price) => {
+        try {
+            allInOnePopup(null, 'Minting DAV Tokens', null, `OK`, null)
+
+            const contract = await getStatetokenContract();
+            const value = ethers.utils.parseEther(price.toString());
+
+            let BuyTx = await contract.mintWithPDXN(
+                 quantity,{value}
+            )
+            await BuyTx.wait();
+            allInOnePopup(null, 'Successfully Minted', null, `OK`, null)
+            setSocket(prevBool => !prevBool);
+            return true
+        } catch (error) {
+            allInOnePopup(null, 'Transaction Rejected', null, `OK`, null)
+
+            console.log(error)
+        }
+    }
     const holdTokens = async (accountAddress) => {
         try {
             const contract = await getStatetokenContract();
@@ -817,6 +837,7 @@ export default function Functions({ children }) {
                 reward,
                 getAndMarkReachedTarget,
                 isClaimed,
+                mintWithPDXN,
                 getUserDistributedTokens,
                 getTimeStampForCreateValut,
                 getClaimAllReward,

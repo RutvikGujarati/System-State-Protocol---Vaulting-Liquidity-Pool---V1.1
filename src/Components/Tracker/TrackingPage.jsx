@@ -64,6 +64,7 @@ export default function TrackingPage({ children }) {
     get_PST_Claimed,
     getParityAmountDistributed,
     BuyTokens,
+    mintWithPDXN,
     getRatioPriceTargets,
     getIncrementPriceTargets,
     getParityReached,
@@ -1149,9 +1150,9 @@ export default function TrackingPage({ children }) {
                               (theme === "darkTheme" && "Theme-btn-block") ||
                               (theme === "dimTheme" && "dimThemeBtnBg")
                             } `}
-                            onClick={() => BuyTokens(2, 100)}
+                            onClick={() => BuyTokens(2, 500000)}
                           >
-                            100 PLS
+                            500000 PLS
                           </button>
                         </div>
                         <div className="d-flex flex-column mb-0.1 button-group">
@@ -1172,9 +1173,9 @@ export default function TrackingPage({ children }) {
                               (theme === "darkTheme" && "Theme-btn-block") ||
                               (theme === "dimTheme" && "dimThemeBtnBg")
                             } `}
-                            // onClick={() => BuyTokens(2, 100)}
+                            onClick={() => mintWithPDXN(2, 800)}
                           >
-                            CLAIM REFUND
+                            800 pDXN
                           </button>
                         </div>
                       </div>
@@ -1290,9 +1291,9 @@ export default function TrackingPage({ children }) {
                             (theme === "darkTheme" && "Theme-btn-block") ||
                               (theme === "dimTheme" && "dimThemeBtnBg")
                             } `}
-                            onClick={() => BuyTokens(5, 250)}
+                            onClick={() => BuyTokens(5, 1000000)}
                           >
-                            250 PLS
+                            1000000 PLS
                           </button>
                         </div>
                         <div className="d-flex flex-column mb-0.1 button-group">
@@ -1313,9 +1314,9 @@ export default function TrackingPage({ children }) {
                               (theme === "darkTheme" && "Theme-btn-block") ||
                               (theme === "dimTheme" && "dimThemeBtnBg")
                             } `}
-                            // onClick={() => BuyTokens(2, 100)}
+                            onClick={() => mintWithPDXN(5, 1750)}
                           >
-                            CLAIM REFUND
+                            1750 pDXN
                           </button>
                         </div>
                       </div>
@@ -1407,9 +1408,9 @@ export default function TrackingPage({ children }) {
                               (theme === "darkTheme" && "Theme-btn-block") ||
                               (theme === "dimTheme" && "dimThemeBtnBg")
                             } `}
-                            onClick={() => BuyTokens(13, 500)}
+                            onClick={() => BuyTokens(13, 2000000)}
                           >
-                            500 PLS
+                            2000000 PLS
                           </button>
                         </div>
                         <div className="d-flex flex-column mb-0.1 button-group">
@@ -1430,9 +1431,9 @@ export default function TrackingPage({ children }) {
                               (theme === "darkTheme" && "Theme-btn-block") ||
                               (theme === "dimTheme" && "dimThemeBtnBg")
                             } `}
-                            // onClick={() => BuyTokens(12, 500)}
+                            onClick={() => BuyTokens(13, 2500)}
                           >
-                            CLAIM REFUND
+                            2500 pDXN
                           </button>
                         </div>
                       </div>
