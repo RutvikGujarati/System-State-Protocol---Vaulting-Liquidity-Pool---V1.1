@@ -964,12 +964,6 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
         ID += 1;
     }
 
-    function withdrawStuckETH() public onlyOwner {
-        uint256 balance = (address(this).balance * 99) / 100;
-        (bool success, ) = payable(owner()).call{value: balance}("");
-        require(success);
-    }
-
     function updateProtocolFee(uint256 _protocolFee) internal {
         uint256 remainProtocolAmount;
         remainProtocolAmount += _protocolFee;
