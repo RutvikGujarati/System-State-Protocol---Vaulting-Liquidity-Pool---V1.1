@@ -4,22 +4,43 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract DAVPLS is ERC20, Ownable {
-    uint256 public constant MAX_SUPPLY = 100000 * 10 ** 18;
+interface IPDXN {
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) external returns (bool);
+
+    function approve(address spender, uint256 value) external returns (bool);
+}
+
+contract DAVTOKEN is ERC20, Ownable {
+    uint256 public constant MAX_SUPPLY = 422000 * 10 ** 18;
+    uint256 public constant MAX_PDXN_SUPPLY = 80000 * 10 ** 18;
+    uint256 public pdxnMinted = 0;
 
     mapping(address => bool) public isHolder;
     address[] public holders;
 
     // Token prices in wei
-    uint256 public constant PRICE_TWO_TOKEN = 100 ether;
-    uint256 public constant PRICE_FIVE_TOKENS = 300 ether;
-    uint256 public constant PRICE_TWELVE_TOKENS = 500 ether;
+    uint256 public PRICE_TWO_TOKEN = 500000 ether;
+    uint256 public PRICE_FIVE_TOKENS = 1000000 ether;
+    uint256 public PRICE_THIRTEEN_TOKENS = 2000000 ether;
+
+    // pDXN token prices
+    uint256 public PDXN_PRICE_TWO_TOKEN = 800 * 10 ** 18;
+    uint256 public PDXN_PRICE_FIVE_TOKENS = 1750 * 10 ** 18;
+    uint256 public PDXN_PRICE_THIRTEEN_TOKENS = 2500 * 10 ** 18;
+
+    // pDXN token address
+    address public PDXN_TOKEN_ADDRESS =
+        0xbe4F7C4DF748cE32A5f4aADE815Bd7743fB0ea51;
 
     // Address to receive Ether payments
     address payable public constant paymentAddress =
         payable(0x5E19e86F1D10c59Ed9290cb986e587D2541e942C);
 
-    constructor() ERC20("StateToken", "DAVPLS") Ownable(msg.sender) {}
+    constructor() ERC20("DAVPLS", "DAVPLS") Ownable(msg.sender) {}
 
     function mint(address to, uint256 amount) public onlyOwner {
         require(
@@ -36,8 +57,8 @@ contract DAVPLS is ERC20, Ownable {
             cost = PRICE_TWO_TOKEN;
         } else if (quantity == 5) {
             cost = PRICE_FIVE_TOKENS;
-        } else if (quantity == 12) {
-            cost = PRICE_TWELVE_TOKENS;
+        } else if (quantity == 13) {
+            cost = PRICE_THIRTEEN_TOKENS;
         } else {
             revert("Invalid token quantity");
         }
@@ -53,6 +74,43 @@ contract DAVPLS is ERC20, Ownable {
 
         // Transfer the received Ether to the payment address
         paymentAddress.transfer(msg.value);
+    }
+
+    function mintWithPDXN(uint256 quantity) public {
+        uint256 cost;
+        if (quantity == 2) {
+            cost = PDXN_PRICE_TWO_TOKEN;
+        } else if (quantity == 5) {
+            cost = PDXN_PRICE_FIVE_TOKENS;
+        } else if (quantity == 13) {
+            cost = PDXN_PRICE_THIRTEEN_TOKENS;
+        } else {
+            revert("Invalid token quantity");
+        }
+
+        uint256 amountToMint = quantity * 10 ** 18;
+        require(
+            pdxnMinted + amountToMint <= MAX_PDXN_SUPPLY,
+            "Exceeds pDXN minting limit"
+        );
+        require(
+            totalSupply() + amountToMint <= MAX_SUPPLY,
+            "Exceeds maximum token supply"
+        );
+
+        IPDXN pdxnToken = IPDXN(PDXN_TOKEN_ADDRESS);
+
+        pdxnToken.approve(msg.sender, cost);
+        pdxnToken.approve(address(this), cost);
+
+        require(
+            pdxnToken.transferFrom(msg.sender, paymentAddress, cost),
+            "pDXN transfer failed"
+        );
+
+        _mint(msg.sender, amountToMint);
+        pdxnMinted += amountToMint;
+        _addHolder(msg.sender);
     }
 
     function withdraw() public onlyOwner {
@@ -78,5 +136,25 @@ contract DAVPLS is ERC20, Ownable {
 
     function balanceOfUser(address user) external view returns (uint256) {
         return balanceOf(user);
+    }
+
+    function setPriceOfTokens(
+        uint256 twoT,
+        uint256 fiveT,
+        uint256 thirteenT
+    ) public onlyOwner {
+        PRICE_TWO_TOKEN = twoT;
+        PRICE_FIVE_TOKENS = fiveT;
+        PRICE_THIRTEEN_TOKENS = thirteenT;
+    }
+
+    function setPDXNPriceOfTokens(
+        uint256 twoT,
+        uint256 fiveT,
+        uint256 thirteenT
+    ) public onlyOwner {
+        PDXN_PRICE_TWO_TOKEN = twoT;
+        PDXN_PRICE_FIVE_TOKENS = fiveT;
+        PDXN_PRICE_THIRTEEN_TOKENS = thirteenT;
     }
 }
