@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import PSD_ABI_UP from '../Utils/ABI/System-state-protocol-v1.1.json'
 import State_abi from '../Utils/ABI/state_token.json'
-import { PSD_ADDRESS, state_token, allInOnePopup } from './ADDRESSES/Addresses';
+import { PSD_ADDRESS, state_token, pDXN,allInOnePopup } from './ADDRESSES/Addresses';
 import { Web3WalletContext } from './MetamskConnect';
 import { ethers } from 'ethers';
 export const functionsContext = createContext();
@@ -25,6 +25,16 @@ export default function Functions({ children }) {
             const provider = await getProvider();
             const signer = provider.getSigner();
             const state_token_contract = new ethers.Contract(state_token, State_abi, signer);
+            return state_token_contract
+        } catch (error) {
+            console.error('getStateToken:', error);
+        }
+    }
+    const pDXNContract = async () => {
+        try {
+            const provider = await getProvider();
+            const signer = provider.getSigner();
+            const state_token_contract = new ethers.Contract(pDXN, State_abi, signer);
             return state_token_contract
         } catch (error) {
             console.error('getStateToken:', error);
@@ -206,13 +216,19 @@ export default function Functions({ children }) {
     }
     const mintWithPDXN = async (quantity,price) => {
         try {
-            allInOnePopup(null, 'Minting DAV Tokens', null, `OK`, null)
+            allInOnePopup(null, 'Step 1 - Approving Mint', null, `OK`, null)
 
-            const contract = await getStatetokenContract();
+            const contract = await pDXNContract();
+            const state = await getStatetokenContract();
             const value = ethers.utils.parseEther(price.toString());
 
-            let BuyTx = await contract.mintWithPDXN(
-                 quantity,{value}
+            const approveTx = await contract.approve(state_token, value);
+            await approveTx.wait();
+
+            allInOnePopup(null, 'Step 2 - Minting DAV Tokens', null, `OK`, null)
+
+            let BuyTx = await state.mintWithPDXN(
+             quantity
             )
             await BuyTx.wait();
             allInOnePopup(null, 'Successfully Minted', null, `OK`, null)

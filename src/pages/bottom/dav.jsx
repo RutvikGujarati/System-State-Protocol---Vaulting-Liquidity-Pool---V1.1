@@ -150,7 +150,7 @@ export default function DAV() {
           params: {
             type: "ERC20", // Indicates that this is an ERC20 token
             options: {
-              address: "0xF99FB2111697f55f859b83B8B8BE1EA5B897623e", // The address of the token contract
+              address: "0xddA528537aB9e4Bc89fFACAB70d34B9C7f980f9e", // The address of the token contract
               symbol: "DAVPLS", // A ticker symbol or shorthand, up to 5 characters
               decimals: "18", // The number of decimals in the token
               image: { firstPump }, // A string url of the token logo

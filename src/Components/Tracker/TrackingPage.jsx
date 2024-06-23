@@ -213,7 +213,7 @@ export default function TrackingPage({ children }) {
         ParityDollardeposits || "0"
       );
       let fixed = Number(formattedParityDollardeposits).toFixed(2);
-      console.log("dollar deposits from parity",fixed)
+      console.log("dollar deposits from parity", fixed);
       setParityDollardepositing(fixed);
 
       // setDepositAmount(inputValue);
@@ -853,7 +853,7 @@ export default function TrackingPage({ children }) {
     const totalvalue = totalSUm * price + TotalSum * price;
     const roundedTotal = Number(totalvalue.toFixed(3));
     console.log("roundeeeeed total", roundedTotal);
-    setRoundTotal(roundedTotal)
+    setRoundTotal(roundedTotal);
     // Convert the rounded total to string
     const stringValue = roundedTotal.toString();
 
@@ -872,7 +872,7 @@ export default function TrackingPage({ children }) {
     }
   };
 
-  const percentage =  () => {
+  const percentage = () => {
     const deposits = Number(depositsInround);
     const vaultValue = Number(Roundtotal);
 
@@ -1152,7 +1152,7 @@ export default function TrackingPage({ children }) {
                             } `}
                             onClick={() => BuyTokens(2, 500000)}
                           >
-                            500000 PLS
+                            500,000 PLS
                           </button>
                         </div>
                         <div className="d-flex flex-column mb-0.1 button-group">
@@ -1288,12 +1288,12 @@ export default function TrackingPage({ children }) {
                               height: "30px", // Set a fixed width for all buttons
                             }}
                             className={`box-3   mx-2 glowing-button  ${
-                            (theme === "darkTheme" && "Theme-btn-block") ||
+                              (theme === "darkTheme" && "Theme-btn-block") ||
                               (theme === "dimTheme" && "dimThemeBtnBg")
                             } `}
                             onClick={() => BuyTokens(5, 1000000)}
                           >
-                            1000000 PLS
+                            1,000,000 PLS
                           </button>
                         </div>
                         <div className="d-flex flex-column mb-0.1 button-group">
@@ -1316,7 +1316,7 @@ export default function TrackingPage({ children }) {
                             } `}
                             onClick={() => mintWithPDXN(5, 1750)}
                           >
-                            1750 pDXN
+                            1,750 pDXN
                           </button>
                         </div>
                       </div>
@@ -1410,7 +1410,7 @@ export default function TrackingPage({ children }) {
                             } `}
                             onClick={() => BuyTokens(13, 2000000)}
                           >
-                            2000000 PLS
+                            2,000,000 PLS
                           </button>
                         </div>
                         <div className="d-flex flex-column mb-0.1 button-group">
@@ -1431,9 +1431,9 @@ export default function TrackingPage({ children }) {
                               (theme === "darkTheme" && "Theme-btn-block") ||
                               (theme === "dimTheme" && "dimThemeBtnBg")
                             } `}
-                            onClick={() => BuyTokens(13, 2500)}
+                            onClick={() => mintWithPDXN(13, 2500)}
                           >
-                            2500 pDXN
+                            2,500 pDXN
                           </button>
                         </div>
                       </div>

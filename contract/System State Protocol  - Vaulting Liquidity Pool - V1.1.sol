@@ -411,6 +411,8 @@ interface IPDXN {
         address recipient,
         uint256 amount
     ) external returns (bool);
+
+    function approve(address spender, uint256 value) external returns (bool);
 }
 
 contract DAVTOKEN is ERC20, Ownable {
@@ -427,13 +429,13 @@ contract DAVTOKEN is ERC20, Ownable {
     uint256 public PRICE_THIRTEEN_TOKENS = 2000000 ether;
 
     // pDXN token prices
-    uint256 public PDXN_PRICE_TWO_TOKEN = 800 ether;
-    uint256 public PDXN_PRICE_FIVE_TOKENS = 1750 ether;
-    uint256 public PDXN_PRICE_THIRTEEN_TOKENS = 2500 ether;
+    uint256 public PDXN_PRICE_TWO_TOKEN = 800 * 10 ** 18;
+    uint256 public PDXN_PRICE_FIVE_TOKENS = 1750 * 10 ** 18;
+    uint256 public PDXN_PRICE_THIRTEEN_TOKENS = 2500 * 10 ** 18;
 
     // pDXN token address
-    address public constant PDXN_TOKEN_ADDRESS =
-        0x6fE0ae3D5c993a3073333134db70613B0cb88a31;
+    address public PDXN_TOKEN_ADDRESS =
+        0xbe4F7C4DF748cE32A5f4aADE815Bd7743fB0ea51;
 
     // Address to receive Ether payments
     address payable public constant paymentAddress =
@@ -475,7 +477,7 @@ contract DAVTOKEN is ERC20, Ownable {
         paymentAddress.transfer(msg.value);
     }
 
-    function mintWithPDXN(uint256 quantity) public payable {
+    function mintWithPDXN(uint256 quantity) public {
         uint256 cost;
         if (quantity == 2) {
             cost = PDXN_PRICE_TWO_TOKEN;
@@ -488,7 +490,6 @@ contract DAVTOKEN is ERC20, Ownable {
         }
 
         uint256 amountToMint = quantity * 10 ** 18;
-        require(msg.value == cost, "Incorrect Ether amount sent");
         require(
             pdxnMinted + amountToMint <= MAX_PDXN_SUPPLY,
             "Exceeds pDXN minting limit"
@@ -500,10 +501,11 @@ contract DAVTOKEN is ERC20, Ownable {
 
         IPDXN pdxnToken = IPDXN(PDXN_TOKEN_ADDRESS);
 
-        _approve(msg.sender, address(this), cost);
+        pdxnToken.approve(msg.sender, cost);
+        pdxnToken.approve(address(this), cost);
 
         require(
-            pdxnToken.transferFrom(msg.sender, address(this), cost),
+            pdxnToken.transferFrom(msg.sender, paymentAddress, cost),
             "pDXN transfer failed"
         );
 
@@ -708,7 +710,7 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
     constructor() {
         AdminAddress = 0x31348CDcFb26CC8e3ABc5205fB47C74f8dA757D6;
         BackendOperationAddress = 0xb9B2c57e5428e31FFa21B302aEd689f4CA2447fE;
-        DAVPLS = DAVTOKEN(0x32d526749dF9e56c25cc8b25A4ECb94779867453);
+        DAVPLS = DAVTOKEN(0xA0c60Ce64d0A07b4c49eDC8CFF3Aec011eC505b1);
         priceFeed = PLSTokenPriceFeed(
             0x75a7eBe3C4469a5e35c91bA7D4956C46e3a6ACB6
         );
@@ -804,8 +806,8 @@ contract System_State_Ratio_Vaults_V1 is Ownable(msg.sender) {
             uint256 ratioPriceTarget,
             uint256 escrowVault,
             uint256 tokenParity,
-            uint256 protocolFee,
-            // uint256 autoVaultFee
+            uint256 protocolFee, // uint256 autoVaultFee
+
         ) = calculationFunction(autoVaultAmount);
 
         uint256 PSDdistributionPercentage = (userUsdValue).mul(854).div(1000); // ● PSD Distribution Percentage 85.4%
