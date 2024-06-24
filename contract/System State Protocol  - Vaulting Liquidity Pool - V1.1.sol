@@ -411,8 +411,6 @@ interface IPDXN {
         address recipient,
         uint256 amount
     ) external returns (bool);
-
-    function approve(address spender, uint256 value) external returns (bool);
 }
 
 contract DAVTOKEN is ERC20, Ownable {
@@ -423,25 +421,42 @@ contract DAVTOKEN is ERC20, Ownable {
     mapping(address => bool) public isHolder;
     address[] public holders;
 
-    // Token prices in wei
     uint256 public PRICE_TWO_TOKEN = 500000 ether;
     uint256 public PRICE_FIVE_TOKENS = 1000000 ether;
     uint256 public PRICE_THIRTEEN_TOKENS = 2000000 ether;
 
-    // pDXN token prices
     uint256 public PDXN_PRICE_TWO_TOKEN = 800 * 10 ** 18;
     uint256 public PDXN_PRICE_FIVE_TOKENS = 1750 * 10 ** 18;
     uint256 public PDXN_PRICE_THIRTEEN_TOKENS = 2500 * 10 ** 18;
 
-    // pDXN token address
-    address public PDXN_TOKEN_ADDRESS =
-        0xbe4F7C4DF748cE32A5f4aADE815Bd7743fB0ea51;
+    address public PDXN_TOKEN_ADDRESS;
+    address payable public paymentAddress;
 
-    // Address to receive Ether payments
-    address payable public constant paymentAddress =
-        payable(0x5E19e86F1D10c59Ed9290cb986e587D2541e942C);
+    event TokensBought(address indexed buyer, uint256 quantity, uint256 cost);
+    event TokensMintedWithPDXN(
+        address indexed minter,
+        uint256 quantity,
+        uint256 cost
+    );
+    event HolderAdded(address indexed holder);
+    event PricesSet(
+        uint256 priceTwoTokens,
+        uint256 priceFiveTokens,
+        uint256 priceThirteenTokens
+    );
+    event PDXNPricesSet(
+        uint256 priceTwoTokens,
+        uint256 priceFiveTokens,
+        uint256 priceThirteenTokens
+    );
 
-    constructor() ERC20("DAVPLS", "DAVPLS") Ownable(msg.sender) {}
+    constructor(
+        address _PDXN_TOKEN_ADDRESS,
+        address payable _paymentAddress
+    ) ERC20("DAVPLS", "DAVPLS") Ownable(msg.sender) {
+        PDXN_TOKEN_ADDRESS = _PDXN_TOKEN_ADDRESS;
+        paymentAddress = _paymentAddress;
+    }
 
     function mint(address to, uint256 amount) public onlyOwner {
         require(
@@ -474,7 +489,10 @@ contract DAVTOKEN is ERC20, Ownable {
         _addHolder(msg.sender);
 
         // Transfer the received Ether to the payment address
-        paymentAddress.transfer(msg.value);
+        (bool success, ) = paymentAddress.call{value: msg.value}("");
+        require(success, "Ether transfer failed");
+
+        emit TokensBought(msg.sender, quantity, cost);
     }
 
     function mintWithPDXN(uint256 quantity) public {
@@ -500,10 +518,6 @@ contract DAVTOKEN is ERC20, Ownable {
         );
 
         IPDXN pdxnToken = IPDXN(PDXN_TOKEN_ADDRESS);
-
-        pdxnToken.approve(msg.sender, cost);
-        pdxnToken.approve(address(this), cost);
-
         require(
             pdxnToken.transferFrom(msg.sender, paymentAddress, cost),
             "pDXN transfer failed"
@@ -512,6 +526,8 @@ contract DAVTOKEN is ERC20, Ownable {
         _mint(msg.sender, amountToMint);
         pdxnMinted += amountToMint;
         _addHolder(msg.sender);
+
+        emit TokensMintedWithPDXN(msg.sender, quantity, cost);
     }
 
     function withdraw() public onlyOwner {
@@ -523,6 +539,7 @@ contract DAVTOKEN is ERC20, Ownable {
         if (!isHolder[holder]) {
             isHolder[holder] = true;
             holders.push(holder);
+            emit HolderAdded(holder);
         }
     }
 
@@ -535,10 +552,6 @@ contract DAVTOKEN is ERC20, Ownable {
         return holders[index];
     }
 
-    function balanceOfUser(address user) external view returns (uint256) {
-        return balanceOf(user);
-    }
-
     function setPriceOfTokens(
         uint256 twoT,
         uint256 fiveT,
@@ -547,6 +560,7 @@ contract DAVTOKEN is ERC20, Ownable {
         PRICE_TWO_TOKEN = twoT;
         PRICE_FIVE_TOKENS = fiveT;
         PRICE_THIRTEEN_TOKENS = thirteenT;
+        emit PricesSet(twoT, fiveT, thirteenT);
     }
 
     function setPDXNPriceOfTokens(
@@ -557,6 +571,7 @@ contract DAVTOKEN is ERC20, Ownable {
         PDXN_PRICE_TWO_TOKEN = twoT;
         PDXN_PRICE_FIVE_TOKENS = fiveT;
         PDXN_PRICE_THIRTEEN_TOKENS = thirteenT;
+        emit PDXNPricesSet(twoT, fiveT, thirteenT);
     }
 }
 

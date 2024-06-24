@@ -246,8 +246,8 @@ export default function Functions({ children }) {
             if (!contract) {
                 throw new Error("Contract is not initialized");
             }
-            const holdTokens = await contract.balanceOfUser(accountAddress); // Use balanceOf instead of balanceOfUser
-            console.log(holdTokens)
+            const holdTokens = await contract.balanceOf(accountAddress); // Use balanceOf instead of balanceOfUser
+            console.log("holdsssss tokens",holdTokens)
             return holdTokens;
         } catch (error) {
             console.log(error);

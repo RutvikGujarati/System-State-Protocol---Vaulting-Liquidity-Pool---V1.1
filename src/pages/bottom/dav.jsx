@@ -150,7 +150,7 @@ export default function DAV() {
           params: {
             type: "ERC20", // Indicates that this is an ERC20 token
             options: {
-              address: "0xddA528537aB9e4Bc89fFACAB70d34B9C7f980f9e", // The address of the token contract
+              address: "0xB0C278AD98c0a43608889cF317Bd337921cabC51", // The address of the token contract
               symbol: "DAVPLS", // A ticker symbol or shorthand, up to 5 characters
               decimals: "18", // The number of decimals in the token
               image: { firstPump }, // A string url of the token logo
@@ -177,7 +177,7 @@ export default function DAV() {
       }
       const holdToken = await holdTokens(accountAddress);
       const formattedPrice = ethers.utils.formatEther(holdToken || "0");
-      console.log("hold tokens", formattedPrice);
+      console.log("hold tokensssssss", formattedPrice);
       setHoldTokens(formattedPrice);
     } catch (error) {
       console.log(error);
@@ -374,7 +374,7 @@ export default function DAV() {
                   <p>
                     DAV Token Supply -{" "}
                     <span className={`info-data ${textTitle} ${spanDarkDim}`}>
-                      100000
+                    422000
                     </span>
                   </p>
                 </div>

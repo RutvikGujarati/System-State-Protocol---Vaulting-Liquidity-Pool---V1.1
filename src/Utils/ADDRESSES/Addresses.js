@@ -105,13 +105,13 @@ const PRICE_FEED_ADDRESS = '0x68d0934F1e1F0347aad5632084D153cDBfe07992'
 // const PSD_ADDRESS = "0x20e53e5d0221daEF793bcb7BdB6Ee08C3314CE88"// all things working (autovaults also) - for live testnet - full working ....
 // const PSD_ADDRESS = "0x681474aA48a3587ff154F0e80CaE5efa1B861dce"// all things working (autovaults also) - for final live testnet - full working ....
 // const PSD_ADDRESS = "0x08f77EFb7B30eF768232f0306B5884F751B4C937"// all things working (autovaults also) - for final live testnet - full working ....
-const PSD_ADDRESS = "0xC0863E5b897DDa84cD0bfF7bc28C4289EB771ddA"// test for pDXN
+const PSD_ADDRESS = "0x1a0515aA54e013F37Eb6A2565Ebf037bA2A9666E"// test for pDXN
 
 
 // const state_token = "0x14a568BA33AeF6f8Cc484E918e1638E597AC9fC1"  // for me
 // const state_token = "0x0348b818712D5248d7E5013F29378EDB5Ee0b842"  // for me.
 // const state_token = "0x32d526749dF9e56c25cc8b25A4ECb94779867453"  // for final live testnet.
-const state_token = "0xddA528537aB9e4Bc89fFACAB70d34B9C7f980f9e"  // for pDXN.
+const state_token = "0xB0C278AD98c0a43608889cF317Bd337921cabC51"  // for pDXN.
 
 const pDXN = "0xbe4F7C4DF748cE32A5f4aADE815Bd7743fB0ea51"  // for pDXN.
 
