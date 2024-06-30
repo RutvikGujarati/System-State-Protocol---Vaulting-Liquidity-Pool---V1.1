@@ -1,250 +1,33 @@
 import React, { useContext, useState, useEffect } from "react";
 import "./RatioPriceTargets.css";
 import "../../Utils/Theme.css";
-import { Link } from "react-router-dom";
 import { themeContext } from "../../App";
 // import { TotalSumProvider  } from "../../Components/Tracker/TrackingPage";
 import { Web3WalletContext } from "../../Utils/MetamskConnect";
 import { functionsContext } from "../../Utils/Functions";
 import { ethers } from "ethers";
-import iconLink from "./download.svg";
-import metamask from "../../Assets/metamask.png";
-import firstPump from "../../Assets/fistPumpBox.svg";
-
-import {
-  PSD_ADDRESS,
-  conciseAddress,
-  state_token,
-} from "../../Utils/ADDRESSES/Addresses";
 
 export default function RatioPriceTargets() {
   // const {setsumofPoints} = useContext(airdrop)
   const { theme } = useContext(themeContext);
-  let block =
-    (theme === "lightTheme" && theme + " translite") ||
-    (theme === "darkTheme" && theme + " transdark") ||
-    (theme === "dimTheme" && theme + " transdim");
-  let dark = theme === "lightTheme" && "text-dark";
 
   const shadow =
     (theme === "lightTheme" && "lightSh") ||
     (theme === "dimTheme" && "dimSh") ||
     (theme === "darkTheme" && "darkSh");
-  const textTheme =
-    (theme === "darkTheme" && "darkColor") ||
-    (theme === "dimTheme" && "text-white");
-  const spanDarkDim =
-    (theme === "darkTheme" && "TrackSpanText") ||
-    (theme === "dimTheme" && "TrackSpanText");
-  const { accountAddress, currencyName, userConnected, networkName } =
+
+  const { accountAddress, currencyName, userConnected } =
     useContext(Web3WalletContext);
-  const {
-    socket,
-    getRatioPriceTargets,
-    getPrice,
-    getDepositors,
-    getTimeStampForCreateValut,
-    getParityTokensDeposits,
-    getParityDollardeposits,
-    holdTokens,
-    fetchAutoVaultAmount,
-    getTotalMintedTokens,
-  } = useContext(functionsContext);
+  const { getRatioPriceTargets, getDepositors } = useContext(functionsContext);
   const [ratioPriceTargets, setRatioPriceTargets] = useState([]);
-  const [price, setPrice] = useState("0");
-  const [seeFullPage, setseeFullPage] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredArray, setFilteredArray] = useState([]);
-  const [navigateToExplorer, setNavigateToExplorer] = useState("");
-  const [statetokenNavigate, setStateTokenNavigate] = useState("");
-  const [DayStamp, setDayStamp] = useState("0");
-  const [paritydeposit, setParitydeposit] = useState("0");
-  const [HoldAMount, setHoldTokens] = useState("0");
-  const [totalMinted, setTotalMinted] = useState("0");
-  const [autoVaultAmount, setAutoVaultAmount] = useState("0");
-  const [parityDollardeposits, setParityDollardeposits] = useState("0");
-  const [parityTokensDeposits, setParityTokensDeposits] = useState("0");
-  const [totalsumofPOints, setsumofPoints] = useState("0");
 
-  const textTitle =
-    (theme === "darkTheme" && "darkColorTheme") ||
-    (theme === "dimTheme" && "darkColorTheme");
-  const ParityDollardeposits = async () => {
-    try {
-      let ParityDollardeposits = await getParityDollardeposits(accountAddress);
-      let formattedParityDollardeposits = ethers.utils.formatEther(
-        ParityDollardeposits || "0"
-      );
-      let fixed = Number(formattedParityDollardeposits).toFixed(2);
-
-      // setDepositAmount(inputValue);
-      if (/^[0-9,.]*$/.test(fixed)) {
-        const numericValue = fixed.replace(/,/g, "");
-        const formattedValue = numericValue.replace(
-          /\B(?=(\d{3})+(?!\d))/g,
-          ","
-        );
-        const formattedWithDecimals = `${formattedValue} .00`;
-        setParityDollardeposits(formattedValue);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const ParityTokensDeposits = async () => {
-    try {
-      let ParityTokensDeposits = await getParityTokensDeposits(accountAddress);
-      let formattedParityTokensDeposits = ethers.utils.formatEther(
-        ParityTokensDeposits || "0"
-      );
-      let fixed =
-        parseFloat(formattedParityTokensDeposits)
-          .toFixed(2)
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
-        " " +
-        currencyName;
-      setParityTokensDeposits(fixed);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const explorer_URL = async () => {
-    if ((await networkName) === "Polygon Mumbai") {
-      return `https://mumbai.polygonscan.com/address`;
-    } else if ((await networkName) === "Pulsechain Testnet") {
-      return `https://scan.v4.testnet.pulsechain.com/#/address`;
-    } else {
-      return `https://mumbai.polygonscan.com/address`;
-    }
-  };
-  const navToExplorer = async () => {
-    const baseUrl = await explorer_URL();
-
-    return `${baseUrl}/${PSD_ADDRESS}/`;
-  };
-  const stateExplorer = async () => {
-    const baseUrl = await explorer_URL();
-
-    return `${baseUrl}/${state_token}/`;
-  };
-
-  const exploere = async () => {
-    try {
-      navToExplorer()
-        .then((res) => {
-          setNavigateToExplorer(res);
-        })
-        .catch((error) => {});
-      stateExplorer().then((res) => {
-        setStateTokenNavigate(res);
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const addTokenToWallet = async () => {
-    if (window.ethereum) {
-      try {
-        await window.ethereum.request({
-          method: "wallet_watchAsset",
-          params: {
-            type: "ERC20", // Indicates that this is an ERC20 token
-            options: {
-              address: "0xfE1BBD793C5C055b116C43D23FC0727AAFA89Ec9", // The address of the token contract
-              symbol: "DAVPLS", // A ticker symbol or shorthand, up to 5 characters
-              decimals: "18", // The number of decimals in the token
-              image: { firstPump }, // A string url of the token logo
-            },
-          },
-        });
-      } catch (error) {
-        console.error("Failed to add token to wallet", error);
-      }
-    } else {
-      console.error("MetaMask is not installed");
-    }
-  };
-
-  useEffect(() => {
-    exploere();
-    // totalReachedPriceTarget();
-  }, [accountAddress, networkName]);
-
-  const HoldTokensOfUser = async (accountAddress) => {
-    try {
-      if (!accountAddress) {
-        throw new Error("Account address is undefined");
-      }
-      const holdToken = await holdTokens(accountAddress);
-      const formattedPrice = ethers.utils.formatEther(holdToken || "0");
-      console.log("hold tokens", formattedPrice);
-      setHoldTokens(formattedPrice);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    if (accountAddress) {
-      HoldTokensOfUser(accountAddress);
-    }
-  }, [accountAddress]);
-
-  const fetchAutoVaultAmounts = async (address) => {
-    try {
-      let autoVaultAmount = await fetchAutoVaultAmount(accountAddress);
-      const fixedAuto = Number(autoVaultAmount).toFixed(2);
-
-      console.log("AutoVaultss from ratio:", autoVaultAmount);
-      // Convert the AutoVault amount to a number for comparison
-      // const autoVaultAmountNumber = parseFloat(autoVaultAmount);
-
-      setAutoVaultAmount(fixedAuto);
-    } catch (error) {
-      console.error("fetchAutoVaultAmounts error:", error);
-      setAutoVaultAmount("0");
-    }
-  };
-  const ParityTokensDepositforPoint = async () => {
-    try {
-      let ParityTokensDeposits = await getParityTokensDeposits(accountAddress);
-      let formattedParityTokensDeposits = ethers.utils.formatEther(
-        ParityTokensDeposits || "0"
-      );
-      let fixed =
-        parseFloat(formattedParityTokensDeposits)
-          .toFixed(2)
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " ";
-      setParitydeposit(fixed);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const totalsumofPoints = () => {
-    try {
-      let sum =
-        parseFloat(paritydeposit.replace(/,/g, "")) +
-        parseFloat(parityDollardeposits.replace(/,/g, ""));
-      let fixed =
-        parseFloat(sum)
-          .toFixed(2)
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " ";
-
-      setsumofPoints(fixed);
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const itemsPerPage = 25;
 
   const RatioPriceTargets = async () => {
     if (accountAddress) {
       try {
-        let price = await getPrice();
-        let formattedPrice = await ethers.utils.formatEther(price || "0");
-        setPrice(formattedPrice);
-
         let All_USERS_TARGETS = [];
         let allDepositorsAddress = await getDepositors();
 
@@ -282,10 +65,7 @@ export default function RatioPriceTargets() {
       }
     }
   };
-  const getDay = async () => {
-    const Day = await getTimeStampForCreateValut();
-    setDayStamp(Day);
-  };
+
   const updateCurrentPageItems = async (array, page) => {
     const startIndex = (page - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -391,36 +171,18 @@ export default function RatioPriceTargets() {
       return `${seconds} second${seconds !== 1 ? "s" : ""}`;
     }
   };
-  useEffect(() => {
-    const fetchTotalMintedTokens = async () => {
-      try {
-        const total = await getTotalMintedTokens();
-        setTotalMinted(total);
-      } catch (error) {
-        console.error("Error fetching total minted tokens:", error);
-      }
-    };
-
-    fetchTotalMintedTokens();
-  }, []);
 
   useEffect(() => {
     if (userConnected) {
       RatioPriceTargets();
-      fetchAutoVaultAmounts();
-      ParityDollardeposits();
-      ParityTokensDeposits();
-      ParityTokensDepositforPoint();
-      totalsumofPoints();
-      getDay();
     }
-  }, [accountAddress, currencyName, theme, socket]);
+  });
 
   useEffect(() => {
     if (filteredArray.length > 0) {
       updateCurrentPageItems(filteredArray, currentPage);
     }
-  }, [currentPage, filteredArray]);
+  });
 
   return (
     <>
@@ -445,13 +207,7 @@ export default function RatioPriceTargets() {
               Ratio Price Targets (rPT)
             </h1>
           </div>
-          <div
-            className={`${
-              seeFullPage ? "seenFullContent" : ""
-            } reponsive-box1 `}
-          >
-            {ratioPriceTargets}
-          </div>
+          <div className={` reponsive-box1 `}>{ratioPriceTargets}</div>
           <div className="view-main">
             <div
               className={`view-pagerpt  ${

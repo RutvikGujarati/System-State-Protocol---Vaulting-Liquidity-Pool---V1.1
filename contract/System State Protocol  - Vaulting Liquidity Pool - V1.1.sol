@@ -289,8 +289,6 @@ library SafeMath {
 
 // OpenZeppelin Contracts (last updated v5.0.1) (utils/Context.sol)
 
-pragma solidity ^0.8.20;
-
 /**
  * @dev Provides information about the current execution context, including the
  * sender of the transaction and its data. While these are generally available
@@ -305,8 +303,6 @@ pragma solidity ^0.8.20;
 // File: @openzeppelin/contracts/access/Ownable.sol
 
 // OpenZeppelin Contracts (last updated v5.0.0) (access/Ownable.sol)
-
-pragma solidity ^0.8.20;
 
 /**
  * @dev Contract module which provides a basic access control mechanism, where

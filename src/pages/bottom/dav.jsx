@@ -19,50 +19,30 @@ import {
 export default function DAV() {
   // const {setsumofPoints} = useContext(airdrop)
   const { theme } = useContext(themeContext);
-  let block =
-    (theme === "lightTheme" && theme + " translite") ||
-    (theme === "darkTheme" && theme + " transdark") ||
-    (theme === "dimTheme" && theme + " transdim");
-  let dark = theme === "lightTheme" && "text-dark";
 
-  const shadow =
-    (theme === "lightTheme" && "lightSh") ||
-    (theme === "dimTheme" && "dimSh") ||
-    (theme === "darkTheme" && "darkSh");
-  const textTheme =
-    (theme === "darkTheme" && "darkColor") ||
-    (theme === "dimTheme" && "text-white");
   const spanDarkDim =
     (theme === "darkTheme" && "TrackSpanText") ||
     (theme === "dimTheme" && "TrackSpanText");
-  const { accountAddress, currencyName, userConnected, networkName } =
+  const { accountAddress, userConnected, networkName } =
     useContext(Web3WalletContext);
   const {
-    socket,
-    getRatioPriceTargets,
-    getPrice,
-    getDepositors,
+    // socket,
+    // getRatioPriceTargets,
+    // getPrice,
+    // getDepositors,
     getTimeStampForCreateValut,
     getParityTokensDeposits,
     getParityDollardeposits,
     holdTokens,
-    fetchAutoVaultAmount,
     getTotalMintedTokens,
   } = useContext(functionsContext);
-  const [ratioPriceTargets, setRatioPriceTargets] = useState([]);
-  const [price, setPrice] = useState("0");
-  const [seeFullPage, setseeFullPage] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [filteredArray, setFilteredArray] = useState([]);
   const [navigateToExplorer, setNavigateToExplorer] = useState("");
   const [statetokenNavigate, setStateTokenNavigate] = useState("");
   const [DayStamp, setDayStamp] = useState("0");
   const [paritydeposit, setParitydeposit] = useState("0");
   const [HoldAMount, setHoldTokens] = useState("0");
   const [totalMinted, setTotalMinted] = useState("0");
-  const [autoVaultAmount, setAutoVaultAmount] = useState("0");
   const [parityDollardeposits, setParityDollardeposits] = useState("0");
-  const [parityTokensDeposits, setParityTokensDeposits] = useState("0");
   const [totalsumofPOints, setsumofPoints] = useState("0");
 
   const textTitle =
@@ -83,30 +63,14 @@ export default function DAV() {
           /\B(?=(\d{3})+(?!\d))/g,
           ","
         );
-        const formattedWithDecimals = `${formattedValue} .00`;
+        // const formattedWithDecimals = `${formattedValue} .00`;
         setParityDollardeposits(formattedValue);
       }
     } catch (error) {
       console.error(error);
     }
   };
-  const ParityTokensDeposits = async () => {
-    try {
-      let ParityTokensDeposits = await getParityTokensDeposits(accountAddress);
-      let formattedParityTokensDeposits = ethers.utils.formatEther(
-        ParityTokensDeposits || "0"
-      );
-      let fixed =
-        parseFloat(formattedParityTokensDeposits)
-          .toFixed(2)
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
-        " " +
-        currencyName;
-      setParityTokensDeposits(fixed);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+
   const explorer_URL = async () => {
     if ((await networkName) === "Polygon Mumbai") {
       return `https://mumbai.polygonscan.com/address`;
@@ -148,12 +112,12 @@ export default function DAV() {
         await window.ethereum.request({
           method: "wallet_watchAsset",
           params: {
-            type: "ERC20", // Indicates that this is an ERC20 token
+            type: "ERC20",
             options: {
-              address: "0xB0C278AD98c0a43608889cF317Bd337921cabC51", // The address of the token contract
-              symbol: "DAVPLS", // A ticker symbol or shorthand, up to 5 characters
-              decimals: "18", // The number of decimals in the token
-              image: { firstPump }, // A string url of the token logo
+              address: "0xB0C278AD98c0a43608889cF317Bd337921cabC51",
+              symbol: "DAVPLS",
+              decimals: "18",
+              image: { firstPump },
             },
           },
         });
@@ -168,7 +132,7 @@ export default function DAV() {
   useEffect(() => {
     exploere();
     // totalReachedPriceTarget();
-  }, [accountAddress, networkName]);
+  });
 
   const HoldTokensOfUser = async (accountAddress) => {
     try {
@@ -187,23 +151,8 @@ export default function DAV() {
     if (accountAddress) {
       HoldTokensOfUser(accountAddress);
     }
-  }, [accountAddress]);
+  });
 
-  const fetchAutoVaultAmounts = async (address) => {
-    try {
-      let autoVaultAmount = await fetchAutoVaultAmount(accountAddress);
-      const fixedAuto = Number(autoVaultAmount).toFixed(2);
-
-      console.log("AutoVaultss from ratio:", autoVaultAmount);
-      // Convert the AutoVault amount to a number for comparison
-      // const autoVaultAmountNumber = parseFloat(autoVaultAmount);
-
-      setAutoVaultAmount(fixedAuto);
-    } catch (error) {
-      console.error("fetchAutoVaultAmounts error:", error);
-      setAutoVaultAmount("0");
-    }
-  };
   const ParityTokensDepositforPoint = async () => {
     try {
       let ParityTokensDeposits = await getParityTokensDeposits(accountAddress);
@@ -235,7 +184,6 @@ export default function DAV() {
       console.log(error);
     }
   };
-  const itemsPerPage = 25;
 
   const getDay = async () => {
     const Day = await getTimeStampForCreateValut();
@@ -253,18 +201,16 @@ export default function DAV() {
     };
 
     fetchTotalMintedTokens();
-  }, []);
+  });
 
   useEffect(() => {
     if (userConnected) {
-      fetchAutoVaultAmounts();
       ParityDollardeposits();
-      ParityTokensDeposits();
       ParityTokensDepositforPoint();
       totalsumofPoints();
       getDay();
     }
-  }, [accountAddress, currencyName, theme, socket]);
+  });
 
   return (
     <>
@@ -374,7 +320,7 @@ export default function DAV() {
                   <p>
                     DAV Token Supply -{" "}
                     <span className={`info-data ${textTitle} ${spanDarkDim}`}>
-                    422000
+                      422000
                     </span>
                   </p>
                 </div>

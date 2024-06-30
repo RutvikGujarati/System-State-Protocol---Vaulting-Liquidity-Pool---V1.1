@@ -1,7 +1,7 @@
 import React, { createContext, useEffect, useState } from "react";
-import Layout from "./Protected Route/Layout";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Index from "./pages/Landing Page/Index";
+import Alpha from "./pages/Landing Page/alpha";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCloudMoon, faGasPump, faMoon, faSun, fas } from '@fortawesome/free-solid-svg-icons';
 import MetamskConnect from "./Utils/MetamskConnect";
@@ -39,6 +39,7 @@ function App() {
               <Route index element={<Website />} />
 
               <Route path="/vlp" element={<Index />} />
+              <Route path="/alpharoom" element={<Alpha />} />
 
             </Routes>
           </Functions>

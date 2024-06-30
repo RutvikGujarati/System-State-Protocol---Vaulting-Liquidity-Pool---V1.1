@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import PSD_ABI_UP from '../Utils/ABI/System-state-protocol-v1.1.json'
 import State_abi from '../Utils/ABI/state_token.json'
-import { PSD_ADDRESS, state_token, pDXN,allInOnePopup } from './ADDRESSES/Addresses';
+import { PSD_ADDRESS, state_token, pDXN, allInOnePopup } from './ADDRESSES/Addresses';
 import { Web3WalletContext } from './MetamskConnect';
 import { ethers } from 'ethers';
 export const functionsContext = createContext();
 
 export default function Functions({ children }) {
-    const { ProvidermetamaskLogin, userConnected, accountAddress, WalletBalance, networkName, currencyName } = useContext(Web3WalletContext)
+    const { userConnected, accountAddress } = useContext(Web3WalletContext)
     const [socket, setSocket] = useState(false);
     const [reward, setReward] = useState('0')
     const [depositedAmount, setDepositedAmount] = useState('0')
@@ -194,7 +194,7 @@ export default function Functions({ children }) {
             console.error('handleDeposit error:', error);
         }
     }
-    const BuyTokens = async (quantity,price) => {
+    const BuyTokens = async (quantity, price) => {
         try {
             allInOnePopup(null, 'Minting DAV Tokens', null, `OK`, null)
 
@@ -202,7 +202,7 @@ export default function Functions({ children }) {
             const value = ethers.utils.parseEther(price.toString());
 
             let BuyTx = await contract.buyTokens(
-                 quantity,{value}
+                quantity, { value }
             )
             await BuyTx.wait();
             allInOnePopup(null, 'Successfully Minted', null, `OK`, null)
@@ -214,7 +214,7 @@ export default function Functions({ children }) {
             console.log(error)
         }
     }
-    const mintWithPDXN = async (quantity,price) => {
+    const mintWithPDXN = async (quantity, price) => {
         try {
             allInOnePopup(null, 'Step 1 - Approving Mint', null, `OK`, null)
 
@@ -228,7 +228,7 @@ export default function Functions({ children }) {
             allInOnePopup(null, 'Step 2 - Minting DAV Tokens', null, `OK`, null)
 
             let BuyTx = await state.mintWithPDXN(
-             quantity
+                quantity
             )
             await BuyTx.wait();
             allInOnePopup(null, 'Successfully Minted', null, `OK`, null)
@@ -247,7 +247,7 @@ export default function Functions({ children }) {
                 throw new Error("Contract is not initialized");
             }
             const holdTokens = await contract.balanceOf(accountAddress); // Use balanceOf instead of balanceOfUser
-            console.log("holdsssss tokens",holdTokens)
+            console.log("holdsssss tokens", holdTokens)
             return holdTokens;
         } catch (error) {
             console.log(error);
@@ -321,31 +321,6 @@ export default function Functions({ children }) {
         }
     };
 
-    const handle_Claim_IPT_and_RPT = async (address) => {
-        if (address) {
-            let bucketBalance = await getToBeClaimed(address)
-            let formattedValue = await getFormatEther(bucketBalance)
-            if (0 >= Number(formattedValue)) {
-                // allInOnePopup(`info`, `Insufficient Balance`, `You don't have balance in "IPT and RPT".`, `OK`, true)
-                allInOnePopup(null, 'Insufficient Balance', null, `OK`, null)
-                return
-            }
-            allInOnePopup(null, 'Processing Claim', null, `OK`, null)
-            try {
-                let contract = await getPsdContract()
-                let withdrawBucketTx = await contract?.WithdrawBucket();
-                await withdrawBucketTx.wait()
-                // allInOnePopup(`success`, `Successful Claimed`, null, `OK`, true)
-                allInOnePopup(null, 'Successful Claimed', null, `OK`, null)
-                console.log('withdrawBucketTx:', withdrawBucketTx);
-                setSocket(prevBool => !prevBool);
-            } catch (error) {
-                // allInOnePopup(`error`, `Error`, `An error occurred. Please try again.`, `OK`, true);
-                allInOnePopup(null, 'An error occurred. Please try again.', null, `OK`, null)
-                console.error('handle_Claim_IPT_and_RPT error:', error);
-            }
-        }
-    }
 
 
     const getProtocolFee = async (address) => {
@@ -549,8 +524,6 @@ export default function Functions({ children }) {
             let distributedTokens = await contract.getUserReceivedTokens(address);
             let formattedDistributedTokens = await getFormatEther(distributedTokens);
 
-
-
             console.log("distributed amount,,...... ", formattedDistributedTokens)
 
             return formattedDistributedTokens;
@@ -585,8 +558,8 @@ export default function Functions({ children }) {
         try {
             let contract = await getPsdContract();
             let getClaimableAmount = await contract.getClaimableAmount(accountAddress);
-            let fromateClaimAmount = await getFormatEther(getClaimableAmount);
-            return fromateClaimAmount;
+            let formattedClaimAmount = await getFormatEther(getClaimableAmount);
+            return formattedClaimAmount;
         } catch (error) {
             console.log(error);
         }
@@ -777,7 +750,7 @@ export default function Functions({ children }) {
     const getDepositeValues = async () => {
         const contract = await getPsdContract();
         try {
-            const _id = await contract?.ID();
+            // const _id = await contract?.ID();
             const depostedValues = await contract?.getDeposited(1);
             setDepositedAmount(depostedValues[0].depositAmount)
             return depostedValues;
@@ -805,7 +778,7 @@ export default function Functions({ children }) {
         }, 5000);
 
         return () => clearInterval(intervalId);
-    }, [accountAddress, setReward]);
+    },);
 
 
     return (
@@ -817,7 +790,6 @@ export default function Functions({ children }) {
                 getParityReached,
                 handleDeposit,
                 fetchAutoVaultAmount,
-                handle_Claim_IPT_and_RPT,
                 handle_Claim_Protocol_Fee,
                 handle_Claim_Parity_Tokens,
                 handle_Claim_All_Reward_Amount,

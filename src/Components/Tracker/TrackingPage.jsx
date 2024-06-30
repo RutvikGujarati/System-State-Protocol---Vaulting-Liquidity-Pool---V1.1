@@ -1,29 +1,21 @@
 import React, {
   createContext,
-  useCallback,
+  // useCallback,
   useContext,
-  useRef,
+  // useRef,
   useEffect,
   useState,
 } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../Tracker/TrackingPage.css";
-import Swal from "sweetalert2";
 import "../../Utils/Theme.css";
 import { themeContext } from "../../App";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { functionsContext } from "../../Utils/Functions";
 import { Web3WalletContext } from "../../Utils/MetamskConnect";
-import { BigNumber, errors, ethers } from "ethers";
-import InfoBox from "../InfoIconBox/InfoBox";
-import firstPump from "../../Assets/fistPumpBox.svg";
+import { ethers } from "ethers";
 import fisrtPumpBrt from "../../Assets/High-Resolutions-Svg/Updated/fist pump small.svg";
-import tb from "./tb.svg";
-import {
-  PSD_ADDRESS,
-  allInOnePopup,
-  conciseAddress,
-} from "../../Utils/ADDRESSES/Addresses";
+import { allInOnePopup } from "../../Utils/ADDRESSES/Addresses";
 // import {STATE_TOKEN_ADDRES}from "../../Utils/ADDRESSES/Addresses"
 const TotalSumContext = createContext();
 
@@ -48,21 +40,19 @@ export default function TrackingPage({ children }) {
     (theme === "dimTheme" && "dimSh") ||
     (theme === "darkTheme" && "darkSh");
   const location = useLocation();
-  const isHome = location.pathname == "/vlp";
+  const isHome = location.pathname === "/vlp";
+  const isAlpha = location.pathname === "/alpharoom";
   const isHei = !isHome && "hei";
 
   const {
     socket,
     getToBeClaimed,
     getPrice,
-    getFormatEther,
-    getPsdContract,
     getDepositors,
     getParityDollarClaimed,
     getParityDollardeposits,
     getParityTokensDeposits,
     get_PST_Claimed,
-    getParityAmountDistributed,
     BuyTokens,
     mintWithPDXN,
     getRatioPriceTargets,
@@ -73,83 +63,28 @@ export default function TrackingPage({ children }) {
     fetchAutoVaultAmount,
     NumberOfUser,
     getUserDistributedTokens,
-    getTimeStampForCreateValut,
-    getCeateVaultTime,
     getClaimAllReward,
-    holdTokens,
-    getTotalMintedTokens,
-    onlyPSDclaimed,
-    getTotalTokenValueInVaults,
-    getNumberOfStateProtocolUsers,
-    getTotalProtocolFeesTransferred,
   } = useContext(functionsContext);
   const {
     accountAddress,
-    networkName,
+    // networkName,
     userConnected,
-    WalletBalance,
+    // WalletBalance,
     currencyName,
   } = useContext(Web3WalletContext);
   const [toBeClaimed, setToBeClaimed] = useState("0.0000");
   const [parityDollardeposits, setParityDollardeposits] = useState("0");
   const [depositsInround, setParityDollardepositing] = useState("0");
   const [parityTokensDeposits, setParityTokensDeposits] = useState("0");
-  const [paritydeposit, setParitydeposit] = useState("0");
-  const [totalsumofPOints, setsumofPoints] = useState("0");
-  const [autovault, setAutovault] = useState("0");
-  const [search, setSearch] = useState("0");
-  const [parityTokensDeposit, setParityTokensDeposit] = useState("0");
   const [parityDollarClaimed, setParityDollarClaimed] = useState("0");
   const [parityTokensClaimed, setParityTokensClaimed] = useState("0");
   const [autoVaultAmount, setAutoVaultAmount] = useState("0");
   const [PercentageSeted, setPercentage] = useState("0");
   const [Roundtotal, setRoundTotal] = useState("0");
-  const [LimitDeposit, setLimitDeposit] = useState("0");
   const [isButtonEnabled, setIsButtonEnabled] = useState(false);
-  const [HoldAMount, setHoldTokens] = useState("0");
-  const [totalMinted, setTotalMinted] = useState("0");
-  const [value, setValue] = useState("0");
   const [IsParityReached, setIsParityReached] = useState(false);
-  const [perpeptualYieldLocked, setPerpetualYieldLocked] = useState("0");
-  const [getReachedTarget, setReachedPriceTargets] = useState("0");
-  const [protocolFee, setProtocolFee] = useState("0");
-  const [getTotalTokenValueVaults, setTotalTokenValueInVaults] = useState("0");
-  const [ProtocolFeeInDollar, setProtocolFeeInDollar] = useState("0");
-  const [parityAmountDistributed, setParityAmountDistributed] = useState("0");
-  const [DayStamp, setDayStamp] = useState("0");
-  const [createVaultDays, setCreateVaultDays] = useState("0");
-  const [toBeClaimedReward, setToBeClaimedReward] = useState("");
-  const [navigateToExplorer, setNavigateToExplorer] = useState("");
-  const [balance, setBalance] = useState("Enter Amount");
-  const [NumberOfStateProtocolUsers, setNumberOfStateProtocolUsers] =
-    useState(0);
   const [totalVaultValue, setTotalVaultSum] = useState("0");
 
-  // Done
-  const containerStyle = {
-    backgroundColor:
-      theme === "darkTheme"
-        ? "#1c1c1c"
-        : theme === "dimTheme"
-        ? "#2f2f2f"
-        : "#f8f9fa",
-    color:
-      theme === "darkTheme" ? "#fff" : theme === "dimTheme" ? "#ccc" : "#000",
-    borderRadius: "15px",
-    border: "1px solid #ccc",
-    padding: "20px",
-    textAlign: "center",
-    width: "100%",
-    maxWidth: "500px",
-    margin: "0 auto",
-  };
-
-  const buttonStyle = {
-    fontSize: "10px",
-    backgroundColor: "transparent",
-    whiteSpace: "nowrap",
-    width: "100px", // Adjust width as needed
-  };
   const ToBeClaimed = async () => {
     try {
       // Get the IPT and RPT rewards
@@ -223,7 +158,7 @@ export default function TrackingPage({ children }) {
           /\B(?=(\d{3})+(?!\d))/g,
           ","
         );
-        const formattedWithDecimals = `${formattedValue} .00`;
+        // const formattedWithDecimals = `${formattedValue} .00`;
         setParityDollardeposits(formattedValue);
       }
     } catch (error) {
@@ -275,8 +210,6 @@ export default function TrackingPage({ children }) {
       let formattedParityTokensDeposits = ethers.utils.formatEther(
         ParityTokensDeposits || "0"
       );
-      let limtDeposit = parseFloat(formattedParityTokensDeposits).toFixed(2);
-      setLimitDeposit(limtDeposit);
       let fixed =
         parseFloat(formattedParityTokensDeposits)
           .toFixed(2)
@@ -286,49 +219,6 @@ export default function TrackingPage({ children }) {
       setParityTokensDeposits(fixed);
     } catch (error) {
       console.error(error);
-    }
-  };
-
-  const ParityTokensDepositforPoint = async () => {
-    try {
-      let ParityTokensDeposits = await getParityTokensDeposits(accountAddress);
-      let formattedParityTokensDeposits = ethers.utils.formatEther(
-        ParityTokensDeposits || "0"
-      );
-      let fixed =
-        parseFloat(formattedParityTokensDeposits)
-          .toFixed(2)
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " ";
-      setParitydeposit(fixed);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const totalsumofPoints = () => {
-    try {
-      let sum =
-        parseFloat(paritydeposit.replace(/,/g, "")) +
-        parseFloat(parityDollardeposits.replace(/,/g, ""));
-      setsumofPoints(sum.toFixed(2));
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const PSDClaimed = async () => {
-    try {
-      let PSDClaimed = await onlyPSDclaimed(accountAddress);
-
-      let formatted_PSD_Claimed = ethers.utils.formatEther(PSDClaimed || "0");
-
-      let fixed = Number(formatted_PSD_Claimed).toFixed(2);
-      // let PSTClaimed = await get_PST_Claimed(accountAddress)
-      // let formatted_PST_Claimed = ethers.utils.formatEther(PSTClaimed || '0')
-      // let PST_Claimed_InDollar = await getUserUsdValue(formatted_PST_Claimed || '0')
-      // let fixed = Number(PST_Claimed_InDollar).toFixed(2)
-      // setParityDollarClaimed(fixed);
-    } catch (error) {
-      console.error("error:", error);
     }
   };
 
@@ -370,23 +260,6 @@ export default function TrackingPage({ children }) {
       console.error("error:", error);
     }
   };
-  const ParityAmountDistributed = async () => {
-    try {
-      let ParityAmountDistributed = await getParityAmountDistributed(
-        accountAddress
-      );
-      let formatted_ParityAmountDistributed = await getFormatEther(
-        ParityAmountDistributed || "0"
-      );
-      let fixed =
-        Number(formatted_ParityAmountDistributed).toFixed(4) +
-        " " +
-        currencyName;
-      setParityAmountDistributed(fixed);
-    } catch (error) {
-      console.log("ParityAmountDistributed error: ", error);
-    }
-  };
 
   const isParityReached = async () => {
     try {
@@ -397,139 +270,10 @@ export default function TrackingPage({ children }) {
     }
   };
 
-  const PERPETUAL_YIELD_LOCKED = async () => {
-    // if (accountAddress && currencyName) {
-    let perpetual_yield_locked = 0;
-    let price = await getPrice();
-    let formattedPrice = Number(ethers.utils.formatEther(price || "0"));
-    try {
-      // let incrementPriceTarget = await getIncrementPriceTargets(accountAddress)
-      let allDepositorsAddress = await getDepositors();
-      let incrementPriceTarget = [];
-      for (let index = 0; index < allDepositorsAddress?.length; index++) {
-        const address = allDepositorsAddress[index];
-        let PriceTargets = await getIncrementPriceTargets(address);
-        incrementPriceTarget.push(...(PriceTargets || []));
-      }
-
-      if (incrementPriceTarget) {
-        for (let index = 0; index < incrementPriceTarget?.length; index++) {
-          const element = incrementPriceTarget[index];
-          const escrowAmountInTokens = element?.totalFunds.toString();
-          perpetual_yield_locked += Number(
-            ethers.utils.formatEther(escrowAmountInTokens || "0")
-          );
-        }
-      }
-    } catch (error) {
-      console.error("error:", error);
-    }
-    let perpetual_yield_locked_In_Dollar =
-      perpetual_yield_locked * formattedPrice;
-    let fixedFloat = perpetual_yield_locked_In_Dollar.toFixed(2);
-    setPerpetualYieldLocked(fixedFloat);
-    // }
-  };
-
-  const ProtocolFee = async () => {
-    try {
-      let protocolFee = await getTotalProtocolFeesTransferred();
-
-      let price = await getPrice();
-      let formattedPrice = Number(ethers.utils.formatEther(price || "0"));
-
-      let feeDollar = protocolFee * formattedPrice;
-      let fixed = Number(feeDollar).toFixed(2);
-      const inputValue = fixed;
-      // setDepositAmount(inputValue);
-      if (/^[0-9,.]*$/.test(fixed)) {
-        const numericValue = fixed.replace(/,/g, "");
-        const formattedValue = numericValue.replace(
-          /\B(?=(\d{3})+(?!\d))/g,
-          ","
-        );
-        const formattedWithDecimals = `${formattedValue} .00`;
-        setProtocolFee(formattedValue);
-      }
-    } catch (error) {
-      console.error("error:", error);
-    }
-  };
-  function addCommasForProtocolFee(e) {
-    try {
-      const inputValue = protocolFee;
-      // setDepositAmount(inputValue);
-      if (/^[0-9,.]*$/.test(inputValue)) {
-        const numericValue = inputValue.replace(/,/g, "");
-        const formattedValue = numericValue.replace(
-          /\B(?=(\d{3})+(?!\d))/g,
-          ","
-        );
-        const formattedWithDecimals = `${formattedValue} .00`;
-        setProtocolFee(formattedValue);
-      }
-    } catch (error) {
-      console.error("error:", error);
-    }
-  }
-
-  const TotalTokenValueInVaults = async () => {
-    try {
-      let TotalTokenValue = await getTotalTokenValueInVaults();
-      let TotalTokenValueFloat = parseFloat(TotalTokenValue);
-
-      if (!isNaN(TotalTokenValueFloat)) {
-        setTotalTokenValueInVaults(TotalTokenValueFloat.toFixed(6));
-      } else {
-        setTotalTokenValueInVaults(0);
-      }
-    } catch (error) {
-      console.log("Error in getting total token value in vaults", error);
-    }
-  };
-  const HoldTokensOfUser = async (accountAddress) => {
-    try {
-      if (!accountAddress) {
-        throw new Error("Account address is undefined");
-      }
-      const holdToken = await holdTokens(accountAddress);
-      const formattedPrice = ethers.utils.formatEther(holdToken || "0");
-      console.log("hold tokens", formattedPrice);
-      setHoldTokens(formattedPrice);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const protocolFeeInDollar = async () => {
-    try {
-      let protocolFee = await getProtocolFee(accountAddress);
-      let protocolAmount = await protocolFee?.protocolAmount;
-      let price = await getPrice();
-      let feeDollar = protocolAmount.mul(price);
-      let fixed = Number(feeDollar).toFixed(4) + " " + currencyName;
-      setProtocolFeeInDollar(fixed);
-    } catch (error) {
-      console.error("error:", error);
-    }
-  };
-  const getDay = async () => {
-    const Day = await getTimeStampForCreateValut();
-    setDayStamp(Day);
-  };
-
-  const getVaultDays = async () => {
-    try {
-      const days = await getCeateVaultTime();
-      console.log("days:", days);
-      setCreateVaultDays(days);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
+  // eslint-disable-next-line no-extend-native
   Number.prototype.noExponents = function () {
     let data = String(this).split(/[eE]/);
-    if (data.length == 1) return data[0];
+    if (data.length === 1) return data[0];
 
     let z = "",
       sign = this < 0 ? "-" : "",
@@ -539,13 +283,12 @@ export default function TrackingPage({ children }) {
     if (mag < 0) {
       z = sign + "0.";
       while (mag++) z += "0";
-      return z + str.replace(/^\-/, "");
+      return z + str.replace(/^-/, "");
     }
     mag -= str.length;
     while (mag--) z += "0";
     return str + z;
   };
-  let n = 2e-7;
 
   const claimAllReward = async () => {
     console.log("Number(toBeClaimed):", Number(toBeClaimed));
@@ -560,7 +303,7 @@ export default function TrackingPage({ children }) {
       // allInOnePopup(null, 'Processing...', 'Please wait while we claim your rewards', `OK`, null);
       const allReward = await getClaimAllReward(accountAddress);
       await allReward.wait(); // Wait for the transaction to be confirmed
-      setToBeClaimedReward(allReward);
+      // setToBeClaimedReward(allReward);
       allInOnePopup(null, "Successfully Claimed", null, `OK`, null);
       console.log("allReward:", allReward);
     } catch (error) {
@@ -575,43 +318,6 @@ export default function TrackingPage({ children }) {
           error?.data?.message || error.message
         );
       }
-    }
-  };
-
-  const FetchBalance = async () => {
-    try {
-      if (userConnected) {
-        let fixedBalance = Number(WalletBalance || "0").toFixed(4);
-
-        let Price = await getPrice();
-        let formattedPrice = Number(ethers.utils.formatEther(Price || "0"));
-
-        let total_amount = formattedPrice * fixedBalance;
-        let fixed2 = Number(total_amount).toFixed(4);
-
-        setBalance(fixed2);
-      }
-    } catch (error) {}
-  };
-  useEffect(() => {
-    if (accountAddress) {
-      HoldTokensOfUser(accountAddress);
-    }
-  }, [accountAddress]);
-
-  useEffect(() => {
-    FetchBalance();
-
-    // totalReachedPriceTarget();
-  }, [accountAddress, networkName]);
-
-  const getStateTokenUserInNumber = async () => {
-    try {
-      let users = await getNumberOfStateProtocolUsers();
-      let usersInStr = await users?.toString();
-      setNumberOfStateProtocolUsers(usersInStr);
-    } catch (error) {
-      console.error("getStateTokenUserInNumber: ", error);
     }
   };
 
@@ -733,7 +439,7 @@ export default function TrackingPage({ children }) {
       IncrementPriceTarget();
       IPTmultiplySumWithPrice();
     }
-  }, [accountAddress, currencyName, theme, socket, currentPage]);
+  });
 
   const [ratioPriceTargets, setRatioPriceTargets] = useState([]);
   const [noOfPage, setNoOfPage] = useState(0);
@@ -828,26 +534,12 @@ export default function TrackingPage({ children }) {
   };
 
   const RTPpmultiplySumWithPrice = async () => {
-    // Convert the price to a floating-point number
-    // Multiply the total sum with the current price
     const totalRTPPrice = TotalSum * price;
 
     console.log("price RTP", totalRTPPrice);
 
     return totalRTPPrice;
   };
-  useEffect(() => {
-    const fetchTotalMintedTokens = async () => {
-      try {
-        const total = await getTotalMintedTokens();
-        setTotalMinted(total);
-      } catch (error) {
-        console.error("Error fetching total minted tokens:", error);
-      }
-    };
-
-    fetchTotalMintedTokens();
-  }, []);
 
   const TotalVaultValueLocked = () => {
     const totalvalue = totalSUm * price + TotalSum * price;
@@ -890,30 +582,19 @@ export default function TrackingPage({ children }) {
       percentage();
       TotalVaultValueLocked();
     }
-  }, [accountAddress, currencyName, theme, socket]);
+  });
 
   useEffect(() => {
     if (userConnected) {
       ToBeClaimed();
       ParityDollardeposits();
       ParityTokensDeposits();
-      ParityTokensDepositforPoint();
-      totalsumofPoints();
-      PSDClaimed();
       fetchAutoVaultAmounts();
       mathPSD();
       PSTClaimed();
-      ParityAmountDistributed();
-      PERPETUAL_YIELD_LOCKED();
       isParityReached();
-      ProtocolFee();
-      getDay();
-
-      getVaultDays();
-      getStateTokenUserInNumber();
-      // getRemainingTimeForStateTokenPriceUpdate()
     }
-  }, [accountAddress, currencyName, socket, NumberOfUser]);
+  });
 
   const tooltip =
     (theme === "dimTheme" && "dim-tooltip") ||
@@ -923,9 +604,6 @@ export default function TrackingPage({ children }) {
 
   return (
     <>
-      <TotalSumContext.Provider value={{ totalsumofPoints }}>
-        {children}
-      </TotalSumContext.Provider>{" "}
       <div
         className={`top-container ${
           (theme === "darkTheme" && "darkThemeTrackingBg") ||
@@ -947,9 +625,9 @@ export default function TrackingPage({ children }) {
             {isHome ? (
               <div className="row g-lg-10">
                 <div
-                  className={`col-md-4 border-right ${borderDarkDim} col-lg-3 d-flex flex-column justify-content-between`}
+                  className={`col-md-4 border-right ${borderDarkDim} col-lg-3  flex-column justify-content-between`}
                 >
-                  <div>
+                  {/* <div>
                     <div className={`d-flex uniqHeightxyz`}>
                       <div className=" margin-right">
                         <i
@@ -986,21 +664,11 @@ export default function TrackingPage({ children }) {
                         />
                       </button>
                     </div>
-                  </div>
-                  {/* for showing total locked value. */}
-                  {/* <hr className="my-2" />
-                                        <div classN ame="d-flex">
-                                            <div className='margin-right'>
-                                                <i className={`iconSize fa-solid fa-comments-dollar ${theme}`}></i>
-                                            </div>
-                                            <div className={`flex-grow-1 fontSize text-start ${textTheme}`}>
-                                                <div className={`${textTitle}`}>TOTAL VALUE LOCKED</div>
-                                                <div className={`varSize ${spanDarkDim}`}><span className={`spanText ${spanDarkDim}`}>$ {totalValueLocked}</span></div>
-                                            </div>
-                                        </div> */}
-                  <div className="hrp">
+                  </div> */}
+
+                  {/* <div className="hrp">
                     <hr className="my-3" />
-                  </div>
+                  </div> */}
                   <div className="d-flex h-50">
                     <div className="margin-right">
                       <i
@@ -1015,40 +683,26 @@ export default function TrackingPage({ children }) {
                           className={`${textTitle} `}
                           style={{ fontSize: "11px" }}
                         >
-                          Decentralized Autonomous Vaults
+                          MINT DAV TOKENS FOR PULSECHAIN{" "}
                         </div>
                         <div className={`varSize ${spanDarkDim}`}>
                           <span className={`spanText ${spanDarkDim} `}>
                             {" "}
-                            {autoVaultAmount} PLS
+                            DAVPLS
                           </span>
                         </div>
                       </div>
                       <div
-                        className="d-flex align-items-center pumpBoxImg deposit-bt"
-                        // style={{ marginLeft: "-40px", marginTop: "10px" }}
+                        className="d-flex  pumpBoxImg deposit-bt"
+                        style={{
+                          marginTop: "50px",
+                          display: "flex",
+                          marginLeft: "0px",
+                        }}
                       >
-                        <button
-                          onClick={() => {
-                            if (isButtonEnabled) {
-                              handleDeposit(); // Ensure handleDeposit doesn't require an argument if not needed
-                            }
-                          }}
-                          className={`first_pump_boxIcon ${
-                            (theme === "darkTheme" && "firstdumDark") ||
-                            (theme === "dimTheme" && "dimThemeBg")
-                          } ${!isButtonEnabled ? "disabled-button" : ""}`}
-                          disabled={!isButtonEnabled}
-                          style={{
-                            cursor: isButtonEnabled ? "pointer" : "not-allowed",
-                          }}
-                        >
-                          <img
-                            src={fisrtPumpBrt}
-                            alt="firstpump"
-                            className="w-100 h-100"
-                          />
-                        </button>
+                        0xB0C278AD98c0a43608889cF317
+                        <br />
+                        Bd337921cabC51{" "}
                       </div>
                     </div>
                     <div className="d-flex align-items-end pb-3">
@@ -1069,43 +723,41 @@ export default function TrackingPage({ children }) {
                 <div
                   className={`col-md-4 border-right col-lg-3 d-flex flex-column justify-content-center ${borderDarkDim}`}
                 >
-                  <hr className="d-block d-lg-none d-md-none " />
-                  <div className="d-flex h-50">
-                    <div className="margin-right">
+                  {/* <hr className="d-block d-lg-none d-md-none " /> */}
+                  {/* <div className="d-flex h-50"> */}
+                  {/* <div className="margin-right">
                       <i
                         className={`iconSize fa-regular fa-money-bill-1 ${theme}`}
                       ></i>
-                    </div>
-                    <div
+                    </div> */}
+                  {/* <div
                       className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
-                    >
-                      <div className={`${textTitle}`}>
-                        <div className={` ${textTitle} `}> PSD</div>
+                    > */}
+                  {/* <div className={`${textTitle}`}> */}
+                  {/* <div className={` ${textTitle} `}> PSD</div>
                         <div className={`varSize `}>
                           <span className={`spanText ${spanDarkDim}`}>
                             {" "}
                             $ {parityDollardeposits} ({PercentageSeted} %)
                           </span>
-                        </div>
+                        </div> */}
 
-                        <div>
-                          <div
-                            className={`${textTitle}`}
-                            style={{ marginTop: "10px" }}
-                          >
-                            {/* <div className={`varSize`}> PSD Rewards </div> */}
-                          </div>
-                          <div className={`varSize ${spanDarkDim}`}>
-                            <span className={`spanText ${spanDarkDim} fs-5`}>
-                              $ {parityDollarClaimed}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      {/* <InfoBox data='Parity Shares in Dollars. Indicating the total $ value deposited' /> */}
-                      <div className="d-flex align-items-end pb-3">
+                  {/* <div>
+                            <div
+                              className={`${textTitle}`}
+                              style={{ marginTop: "10px" }}
+                            >
+                            </div>
+                            <div className={`varSize ${spanDarkDim}`}>
+                              <span className={`spanText ${spanDarkDim} fs-5`}>
+                                $ {parityDollarClaimed}
+                              </span>
+                            </div>
+                          </div> */}
+                  {/* </div> */}
+
+                  {/* <div className="d-flex align-items-end pb-3">
                         <span
-                          // style={{ marginTop: "110px" }}
                           className={`${tooltip} heightfixBug hoverText tooltipAlign`}
                           data-tooltip="Parity Shares in Dollars. Indicating the total $ value deposited  AND CLAIMED"
                           data-flow="bottom"
@@ -1115,11 +767,11 @@ export default function TrackingPage({ children }) {
                             className={`fas mx-2 fa-exclamation-circle ${theme}`}
                           ></i>
                         </span>
-                      </div>
-                    </div>
-                  </div>
-                  <hr className="my-3" />
-                  <div className="d-flex h-50">
+                      </div> */}
+                  {/* </div> */}
+                  {/* </div> */}
+                  {/* <hr className="my-3" /> */}
+                  <div className="d-flex " style={{ marginTop: "-130px" }}>
                     <div className="margin-right">
                       <i
                         className={`iconSize fa-solid fa-coins fa-money-bill-transfer ${theme} `}
@@ -1164,7 +816,7 @@ export default function TrackingPage({ children }) {
                               marginTop: "10px",
                               backgroundColor: "transparent",
                               fontWeight: "bold",
-                              marginBottom: "5px",
+                              // marginBottom: "5px",
                               fontSize: "10px",
                               width: "110px",
                               height: "30px", // Set a fixed width for all buttons
@@ -1179,8 +831,6 @@ export default function TrackingPage({ children }) {
                           </button>
                         </div>
                       </div>
-                      {/* <InfoBox data='Parity Shares in Tokens. Indicating the total number of tokens
-                                                    deposited'/> */}
                     </div>
                     <div className="d-flex align-items-end pb-3">
                       <span
@@ -1202,7 +852,7 @@ export default function TrackingPage({ children }) {
                 >
                   <hr className="d-block d-lg-none d-md-none " />
 
-                  <div className="d-flex h-50">
+                  {/* <div className="d-flex h-50">
                     <div className="margin-right">
                       <i
                         className={`iconSize fa-solid fa-arrow-up-right-dots ${theme}`}
@@ -1244,7 +894,7 @@ export default function TrackingPage({ children }) {
                           </div>
                         </div>
                       </div>
-                      {/* <InfoBox data='Indicating the total $ value claimed' /> */}
+                
                       <div className="d-flex align-items-end pb-3">
                         <span
                           className={`${tooltip} hoverText tooltipAlign`}
@@ -1258,9 +908,12 @@ export default function TrackingPage({ children }) {
                         </span>
                       </div>
                     </div>
-                  </div>
-                  <hr className="my-3" />
-                  <div className="d-flex h-70" style={{ height: "-100px" }}>
+                  </div> */}
+                  {/* <hr className="my-3" /> */}
+                  <div
+                    className="d-flex "
+                    style={{ height: "-100px", marginBottom: "130px" }}
+                  >
                     <div className="margin-right">
                       <i
                         className={`iconSize fa-solid fa-coins fa-money-bill-transfer ${theme}`}
@@ -1340,7 +993,7 @@ export default function TrackingPage({ children }) {
                 <div className=" col-lg-3 extraFlex">
                   <hr className="d-lg-none d-block my-3" />
 
-                  <div className="d-flex pt-1">
+                  {/* <div className="d-flex pt-1">
                     <div className="margin-right">
                       <i
                         className={`iconSize fa-solid fa-comments-dollar ${theme}`}
@@ -1372,10 +1025,10 @@ export default function TrackingPage({ children }) {
                         ></i>
                       </span>
                     </div>
-                  </div>
-                  <div style={{ marginTop: "-1px" }}>
+                  </div> */}
+                  {/* <div style={{ marginTop: "-1px" }}>
                     <hr className="my-3" />
-                  </div>
+                  </div> */}
                   <div className="d-flex  h-50">
                     <div className="margin-right">
                       <i
@@ -1394,15 +1047,14 @@ export default function TrackingPage({ children }) {
                             style={{
                               whiteSpace: "nowrap",
                               marginLeft: "10px",
-                              // marginTop: "1px",
                               left: "-8px",
-                              // top:"-20px",
                               backgroundColor: "transparent",
                               fontWeight: "bold",
                               fontSize: "10px",
-                              marginBottom: "5px",
+                              // marginBottom: "10px",
+                              marginTop:"-5px",
                               width: "110px",
-                              height: "30px", // Set a fixed width for all buttons
+                              height: "30px", 
                             }}
                             className={`box-3   mx-2 glowing-button  ${
                               (theme === "darkTheme" && "Theme-btn-block") ||
@@ -1419,13 +1071,12 @@ export default function TrackingPage({ children }) {
                               whiteSpace: "nowrap",
                               marginLeft: "10px",
                               left: "-8px",
-                              marginTop: "10px",
+                              marginTop: "15px",
                               backgroundColor: "transparent",
                               fontWeight: "bold",
                               fontSize: "10px",
-                              marginBottom: "15px",
                               width: "110px",
-                              height: "30px", // Set a fixed width for all buttons
+                              height: "30px", 
                             }}
                             className={`box-3   mx-2 glowing-button  ${
                               (theme === "darkTheme" && "Theme-btn-block") ||
@@ -1441,7 +1092,6 @@ export default function TrackingPage({ children }) {
                     <div className="d-flex align-items-end pb-3">
                       <span
                         className={`${tooltip} hoverText tooltipAlign`}
-                        // style={{ marginTop: "60px" }}
                         data-tooltip="SEE WHITEPAPER FOR MORE INFO"
                         data-flow="bottom"
                       >
@@ -1454,6 +1104,167 @@ export default function TrackingPage({ children }) {
                   </div>
                 </div>
               </div>
+            ) : isAlpha ? (
+              <>
+                <div className="row g-lg-10">
+                  <div
+                    className={`col-md-4 border-right ${borderDarkDim} col-lg-3 d-flex flex-column justify-content-between`}
+                  >
+                    <div>
+                      <div
+                        className={`d-flex uniqHeightxyz`}
+                        style={{ marginTop: "10px" }}
+                      >
+                        <div className=" margin-right">
+                          {/* <i
+                            className={`iconSize fa-solid fa-money-bill-transfer ${theme}`}
+                          ></i> */}
+                        </div>
+                        <div
+                          className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
+                        >
+                          <div>
+                            <div
+                              className={`  ${
+                                theme === "darkTheme" || theme === "dimTheme"
+                              }varSize ${spanDarkDim} ${textTitle} `}
+                              style={{
+                                marginLeft: "100px",
+                                display: "flex",
+                                alignItems: "center",
+                                marginTop: "10px",
+                              }}
+                            >
+                              DATE
+                            </div>
+                            <div className="varSize"></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className={`col-md-4 border-right col-lg-3 d-flex flex-column justify-content-center ${borderDarkDim}`}
+                  >
+                    <hr className="d-block d-lg-none d-md-none " />
+                    <div className="d-flex ">
+                      <div className="margin-right">
+                        {/* <i
+                          className={`iconSize fa-regular fa-money-bill-1 ${theme}`}
+                        ></i> */}
+                      </div>
+                      <div
+                        className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
+                      >
+                        <div className={`${textTitle}`}>
+                          <div
+                            className={` ${textTitle}  ${spanDarkDim}`}
+                            style={{
+                              marginLeft: "100px",
+                              alignItems: "center",
+                              marginTop: "5px",
+                            }}
+                          >
+                            {" "}
+                            EVENT
+                          </div>
+                          <div className={`varSize `}></div>
+
+                          <div>
+                            <div className={`${textTitle}`}>
+                              {/* <div className={`varSize`}> PSD Rewards </div> */}
+                            </div>
+                            <div className={`varSize ${spanDarkDim}`}>
+                              {/* <span className={`spanText ${spanDarkDim} fs-5`}>
+                                $ {parityDollarClaimed}
+                              </span> */}
+                            </div>
+                          </div>
+                        </div>
+                        {/* <InfoBox data='Parity Shares in Dollars. Indicating the total $ value deposited' /> */}
+                        <div className="d-flex align-items-end pb-3"></div>
+                      </div>
+                    </div>
+                    {/* <hr className="my-3" /> */}
+                  </div>
+                  <div
+                    className={`col-md-4 border-right col-lg-3 d-flex flex-column justify-content-center ${borderDarkDim}`}
+                  >
+                    <hr className="d-block d-lg-none d-md-none " />
+
+                    <div className="d-flex">
+                      <div className="margin-right">
+                        {/* <i
+                          className={`iconSize fa-solid fa-arrow-up-right-dots ${theme}`}
+                        ></i> */}
+                      </div>
+                      <div
+                        className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
+                      >
+                        <div>
+                          <div
+                            className={`${textTitle} ${spanDarkDim}`}
+                            style={{
+                              marginLeft: "100px",
+                              alignItems: "center",
+                              marginTop: "5px",
+                            }}
+                          >
+                            <div className={``}> NOTES </div>
+                          </div>
+                          <div className={`varSize ${spanDarkDim}`}></div>
+                        </div>
+                        {/* <InfoBox data='Indicating the total $ value claimed' /> */}
+                        <div className="d-flex align-items-end pb-3"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className=" col-lg-3 extraFlex">
+                    <hr className="d-lg-none d-block my-3" />
+
+                    <div className="d-flex pt-1" style={{ marginTop: "10px" }}>
+                      <div className="margin-right">
+                        {/* <i
+                          className={`iconSize fa-solid fa-comments-dollar ${theme}`}
+                        ></i> */}
+                      </div>
+                      <div
+                        className={`flex-grow-1 fontSize text-start justify-content-between ${textTheme}`}
+                      >
+                        <div
+                          className={`${textTitle} ${spanDarkDim} `}
+                          style={{
+                            marginLeft: "100px",
+                            alignItems: "center",
+                            marginTop: "10px",
+                          }}
+                        >
+                          LINKS
+                        </div>
+                        {/* <div className={`varSize ${spanDarkDim}`}>
+                          <span className={`spanText ${spanDarkDim} fs-5`}>
+                            {" "}
+                            $ {totalVaultValue}
+                          </span>
+                        </div> */}
+                      </div>
+                      {/* <div className="d-flex align-items-end pb-3">
+                        <span
+                          className={`${tooltip} hoverText tooltipAlign`}
+                          style={{ marginTop: "45px" }}
+                          data-tooltip="The number of tokens in vaults * current price."
+                          data-flow="bottom"
+                        >
+                          {" "}
+                          <i
+                            className={`fas mx-2 fa-exclamation-circle ${theme}`}
+                          ></i>
+                        </span>
+                      </div> */}
+                    </div>
+                  </div>
+                </div>
+              </>
             ) : (
               <div></div>
             )}

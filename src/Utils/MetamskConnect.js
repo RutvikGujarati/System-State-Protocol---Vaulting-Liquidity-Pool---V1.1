@@ -60,7 +60,7 @@ export default function MetamskConnect({ children }) {
       console.error(error, "hi")
       // eslint-disable-next-line
       if (error.code == -32002) {
-        window.alert('Please Manually connect to metamask')
+        // window.alert('Please Manually connect to metamask')
       }
     }
 

@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./IncrementPriceTarget.css";
-import { Link } from "react-router-dom";
 import { themeContext } from "../../App";
 import "../../Utils/Theme.css";
 import { Web3WalletContext } from "../../Utils/MetamskConnect";
@@ -9,23 +8,16 @@ import { ethers } from "ethers";
 
 export default function IncrementPriceTarget() {
   const { theme } = useContext(themeContext);
-  const textTitle =
-    (theme === "darkTheme" && "darkColorTheme") ||
-    (theme === "dimTheme" && "darkColorTheme");
-  const spanDarkDim =
-    (theme === "darkTheme" && "TrackSpanText") ||
-    (theme === "dimTheme" && "TrackSpanText");
+
   const shadow =
     (theme === "lightTheme" && "lightSh") ||
     (theme === "dimTheme" && "dimSh") ||
     (theme === "darkTheme" && "darkSh");
   const { accountAddress, currencyName, userConnected } =
     useContext(Web3WalletContext);
-  const { socket, getPrice, getIncrementPriceTargets, getDepositors } =
+  const { getIncrementPriceTargets, getDepositors } =
     useContext(functionsContext);
-  const [price, setPrice] = useState("0");
   const [incrementPriceTargets, setIncrementPriceTargets] = useState([]);
-  const [seeFullPage, setSeeFullPage] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredArray, setFilteredArray] = useState([]);
   const itemsPerPage = 25;
@@ -48,10 +40,6 @@ export default function IncrementPriceTarget() {
   const IncrementPriceTarget = async () => {
     if (accountAddress && currencyName) {
       try {
-        let price = await getPrice();
-        let formattedPrice = await ethers.utils.formatEther(price || "0");
-        setPrice(formattedPrice);
-
         let All_USERS_TARGETS = [];
         let allDepositorsAddress = await getDepositors();
 
@@ -184,13 +172,13 @@ export default function IncrementPriceTarget() {
     if (userConnected) {
       IncrementPriceTarget();
     }
-  }, [accountAddress, currencyName, theme, socket]);
+  });
 
   useEffect(() => {
     if (filteredArray.length > 0) {
       updateCurrentPageItems(filteredArray, currentPage);
     }
-  }, [currentPage, filteredArray]);
+  });
 
   return (
     <>
@@ -215,13 +203,7 @@ export default function IncrementPriceTarget() {
               Increment Price Target (iPT) Escrow Vaults
             </h1>
           </div>
-          <div
-            className={`${
-              seeFullPage ? "seenFullContent" : ""
-            } reponsive-box1 `}
-          >
-            {incrementPriceTargets}
-          </div>
+          <div className={`reponsive-box1 `}>{incrementPriceTargets}</div>
           <div className="view-main">
             <div
               className={`view-pageIncre  ${
@@ -270,18 +252,6 @@ export default function IncrementPriceTarget() {
           </div>
         </div>
       </div>
-
-      {/* <div style={{ marginLeft: "600px", marginTop: "-10px" }}>
-        <div className="d-flex align-items-center ">
-          <i className={`iconSize fa-solid fa-solid fa-link ${theme}`}></i>
-
-          <p
-            className={`flex-grow-1 fontSize text-start ${textTitle} ${spanDarkDim} mb-0 ms-2`}
-          >
-            INFORMATION
-          </p>
-        </div>
-      </div> */}
     </>
   );
 }

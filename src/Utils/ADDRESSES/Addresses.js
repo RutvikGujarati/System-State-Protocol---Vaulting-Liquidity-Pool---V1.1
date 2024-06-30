@@ -39,83 +39,22 @@ const PSD_ADDRESS = '0xACA67fB2e3f3B14ee50F90dDEA85A3AdCb777ef1'
 // const PSD_ADDRESS = '0xd571422642ba35482eae9f714128387c7C761efe'
 
 const PRICE_FEED_ADDRESS = '0x68d0934F1e1F0347aad5632084D153cDBfe07992'
-// const STATE_TOKEN_ADDRES = '0xa0b4748de0464bb98c37Fbaf1eD47fC54B19d092'
-// const PSD_ADDRESS = '0x5cEd17c5170b2ceBf8871A95Acb4410D155082c5'
 
-// const PRICE_FEED_ADDRESS = '0xEC61c5c0777DEdF795D36FEa31927B4ce56f87e4'
-// const STATE_TOKEN_ADDRES = '0x53E351Ff87f7FDa5F8bA63Ea995C65cf571B6525'
-// const PSD_ADDRESS = '0xc59dCaa7cCd4be959999792CE49b78c5E3623bc2'
 
-// const PRICE_FEED_ADDRESS = '0x28187Fb765Be0B90c8c490d88B66781f86734a4B'
-// const STATE_TOKEN_ADDRES = '0x26E8c67D084D873059C8853d83f28c593CA06a83'
-// const PSD_ADDRESS = '0x81f3809f0672F3c659e1DdD5E09d82B6FF07E1e7'  
+//==>> const PSD_ADDRESS = "0x285A2c31ecfA3FCB0545705d310d244581049FAc"//  for MATIC live testnet
 
-// const PSD_ADDRESS = '0x7D58E2775b4dbdd84BCbec15A36A146a1BaDfB5f' 
-// const PSD_ADDRESS = '0x1297Df5e72151e9f638d67Cd4b7B9bda3632e3DD' 
-
-// const PSD_ADDRESS = '0xA9c459c2fe67a135Dd1D3cddaA859f4178c527f3'    // working with claim-  updated 
-// const PSD_ADDRESS = '0x86e19B5Dac6181d31F5B881588A987B241034172'   // second updated 
-// const PSD_ADDRESS = '0xe7E5320728bA8d5d8Af99982CB2EF948a4dEc7Fe'   // third updated 
-// const PSD_ADDRESS = '0x391eAa603e920925AECed61336917096fb592818'   // forth for rpt vault updated 
-// const PSD_ADDRESS = '0x58f46c00949a2b23a83DC616b0c3641Dc5Fd20Fa'   // fifth old for rpt vault updated
-
-// const PSD_ADDRESS = '0xf8C22Ac62414D1Fa557d5856192c91b6Ee7dF2E9'   // new updated contract
-
-// const PSD_ADDRESS = "0xf63F270370EA95C21A322f6d00A51Bc1D0a12068"
-// const PSD_ADDRESS = "0xDf245B8AC521FB58C9b40aeDADFfF2184f5B2dBf"//full working contract
-// const PSD_ADDRESS = "0x3DA046BD8815BD1a4A9985b2C21Efc3f2C10D6A2"//full working contract
-// const PSD_ADDRESS = "0xA0A2DbAfd494971890BaE47deAD6C03650F66d55"//full working with TVL and autovaults contract
-
-// const PSD_ADDRESS = "0x49A1d17823D60A995F28a137d9E0997f63c88d4C"//protocolFee transferred
-// const PSD_ADDRESS = "0x310bae63184a4D860d83E3B8061FC29EceA33A62"//final deploy
-
-// const PSD_ADDRESS = "0x071c78DE3d658f11Ac147cAbDBf93Aa2B9aFF904"//final 2 deploy
-
-// const PSD_ADDRESS = "0x82de120bE40a2597029B08eba57Af62f47a00BdE"//final 3  deploy- with solved claim reward
-
-// const PSD_ADDRESS = "0x09F05F69e35D7312cb61b368d9C2cC967E4BA3FB"//final 3  deploy- with solved claim reward
-// const PSD_ADDRESS = "0xDfe1ad60F29C5B29bE8d8298deb6f234DA124788"//solved with no sent amount to admin 
-// const PSD_ADDRESS = "0x5A97849426FBdD94Da1c17f6c0afE9fbA6483BE9"//solved with no sent amount to admin 
-// const PSD_ADDRESS = "0x59b3dF79E1A88f3e2C1Ec8611aA537322D68F5F1"//solved with no sent amount to admin 
-// const PSD_ADDRESS = "0x4aE77Ee65d616Db24CDcCfeBe7716a6538080bdb"//half working with value is sending to the user but not showing.
-// const PSD_ADDRESS = "0xcc1238fE34817C4147661fE5a115678BE1df8726"//half-full working with value is sending to the user and also showing.
-// const PSD_ADDRESS = "0xDc31aB82AAE0f6DFAe2e3593b581f16D7455d844"//half-full working with value is sending to the user and also showing.
-// const PSD_ADDRESS = "0x03eAEc8b24211d772bdACfc30d133b418a732f67"//half-full working with value is sending to the user and also showing.
-// const PSD_ADDRESS = "0xaB90c15B9130D2a6821C86dfDF0dc1D279Ac11b7"//half-full working with value is sending to the user and also showing.
-// const PSD_ADDRESS = "0x5E721E04c3245281e284C7868aec1cFA3f18f12F"//full working with value is sending to the user and also showing.
-// const PSD_ADDRESS = "0x63C840b53186Cae178cD975419b3ee8e494B4e06"//full working with new reached function.
-// const PSD_ADDRESS = "0x69DdC8C57CE6807047AE08EB525F6c36e7d362Cf"//full with claimed functions working with value is sending to the user and also showing.
-// const PSD_ADDRESS = "0x8aaA08C5cD19bCF6766a258EcCe1008AD6Ea186C"// deployed testing address (working with all things except claim value is not going 0)
-
-// => below is the full working contracts
-// const PSD_ADDRESS = "0xBB322b8FbB3A5030E3ECa2C23bCD6F15dB745d6C"// full working address (working with all things )
-// const PSD_ADDRESS = "0x3c0e9B6193F15cD969253A6a45fC8D6934025529"// testing address (working with all things )
-// const PSD_ADDRESS = "0xE39e80cce2080E1A4f9FfA0F58b88FBCc0a2CD59"// next deploy full working testing address (working with all things )
-// const PSD_ADDRESS = "0xccB242AF03073E5b58502bF750142fe47a1e107A"// next deploy full working testing address (working with all things )
-// const PSD_ADDRESS = "0xD99C12036ad5D5b851525b6642A656d1AD3853Ab"// my new for close vaults share deploy full working testing address (working with all things )
-// const PSD_ADDRESS = "0xf62E9D78A2C5176A5D199Fc98383246452e64e4D"// deployed for close vaults share deploy full working testing address (working with all things )
-// const PSD_ADDRESS = "0x1F075939fccBFdF91912ECC477bdE154e215967c"// deployed for close vaults share deploy full working testing address (working with all things )
-// const PSD_ADDRESS = "0x7410F4b9612B36b268adEc1224EcD93547392841"// deployed for close vaults share deploy full working testing address (working with all things with text Updation.)
-// const PSD_ADDRESS = "0x9f90c9f98333e2bB0061f63Ff9Fb5Fc0219d3C64"// deployed for close vaults share deploy full working testing address (working with all things with text Updation.)
-// const PSD_ADDRESS = "0xc9ddB5f78C18FF192BF81DbDd847fAf64a85c6Db"// final for live testnet
-// const PSD_ADDRESS = "0x285A2c31ecfA3FCB0545705d310d244581049FAc"//  for matic live testnet
-// const PSD_ADDRESS = "0x7b88336DEDa87bA7A455E1C6C3a04b5d158A2a88"//  for [arity solved  live testnet
-// const PSD_ADDRESS = "0xA51bEa69c54702bd69A287CeF7c7aAb68d53187F"// all things working (autovaults also) - for me
-// const PSD_ADDRESS = "0x3d04815036093fbCB02b59e2C165A5725aE5A6e5"// all things working (autovaults also) - for me - full working ....
 // const PSD_ADDRESS = "0x20e53e5d0221daEF793bcb7BdB6Ee08C3314CE88"// all things working (autovaults also) - for live testnet - full working ....
 // const PSD_ADDRESS = "0x681474aA48a3587ff154F0e80CaE5efa1B861dce"// all things working (autovaults also) - for final live testnet - full working ....
 // const PSD_ADDRESS = "0x08f77EFb7B30eF768232f0306B5884F751B4C937"// all things working (autovaults also) - for final live testnet - full working ....
-const PSD_ADDRESS = "0x1a0515aA54e013F37Eb6A2565Ebf037bA2A9666E"// test for pDXN
+const PSD_ADDRESS = "0x1a0515aA54e013F37Eb6A2565Ebf037bA2A9666E"// live testnet with pDXN
 
 
 // const state_token = "0x14a568BA33AeF6f8Cc484E918e1638E597AC9fC1"  // for me
 // const state_token = "0x0348b818712D5248d7E5013F29378EDB5Ee0b842"  // for me.
 // const state_token = "0x32d526749dF9e56c25cc8b25A4ECb94779867453"  // for final live testnet.
-const state_token = "0xB0C278AD98c0a43608889cF317Bd337921cabC51"  // for pDXN.
+const state_token = "0xB0C278AD98c0a43608889cF317Bd337921cabC51"  //live Dav token with pDXN.
 
-const pDXN = "0xbe4F7C4DF748cE32A5f4aADE815Bd7743fB0ea51"  // for pDXN.
-
-// const System_State_Ratio_Vaults_V1 = "0x7D58E2775b4dbdd84BCbec15A36A146a1BaDfB5f";
+const pDXN = "0xbe4F7C4DF748cE32A5f4aADE815Bd7743fB0ea51"  //  pDXN token contract address (LOAN testnet address.).
 
 const allInOnePopup = (icon, title, text, button, confirmBtn, callback) => {
     return (

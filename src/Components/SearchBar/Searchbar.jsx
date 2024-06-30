@@ -51,12 +51,12 @@ export default function Searchbar() {
     }
   };
   const location = useLocation();
-  const isHome = location.pathname == "/vlp";
+  const isHome = location.pathname === "/vlp";
+  const isAlpha = location.pathname === "/alpharoom";
   const isVisible = !isHome && "isVisible";
   const [totalDeposits, setTotalDeposits] = useState(0);
   const [selectedValue, setSelectedValue] = useState("Deposit");
   const [buyTokenSelector, setBuyTokenSelector] = useState("Inscribe");
-  const [tokenSelector, setTokenSelector] = useState("Polygon Mumbai");
   const [balance, setBalance] = useState("Enter Amount");
   const [navigateToExplorer, setNavigateToExplorer] = useState("");
   const [toBeClaimed, setToBeClaimed] = useState("0");
@@ -350,7 +350,7 @@ export default function Searchbar() {
                     color: "#ffffff",
                     marginBottom: "15px",
                     marginLeft: "10px",
-                    marginTop: "-30px",
+                    marginTop: "-10px",
                   }}
                 >
                   Vaulting Liquidity Pools (VLP) is the process through which a
@@ -434,10 +434,156 @@ export default function Searchbar() {
                           data-bs-placement="top"
                         ></span>
                       </span>
+
                       <span
                         data-bs-toggle="tooltip"
                         data-bs-placement="top"
                       ></span>
+                    </div>
+                    <div
+                      className={`info-item  ${
+                        (theme === "darkTheme" && "Theme-btn-block") ||
+                        (theme === "dimTheme" && "dimThemeBtnBg")
+                      } `}
+                      style={{ marginTop: "10px" }}
+                    >
+                      <p style={{marginLeft:"80px"}}>MINT DAV TOKENS</p>
+                    </div>
+                    <div
+                      className={`info-item info-column column-center ${
+                        (theme === "darkTheme" && "Theme-btn-block") ||
+                        (theme === "dimTheme" && "dimThemeBtnBg")
+                      } `}
+                      style={{ marginLeft: "500px", marginTop: "-45px" }}
+                    >
+                      <p style={{marginLeft:"80px"}}> INFLATION BANK</p>
+                    </div>
+                    <div
+                      className={`info-item  info-column column-right ${
+                        (theme === "darkTheme" && "Theme-btn-block") ||
+                        (theme === "dimTheme" && "dimThemeBtnBg")
+                      } `}
+                      style={{ marginLeft: "900px", marginTop: "-45px" }}
+                    >
+                      <Link to="/alpharoom">
+                        <p style={{marginLeft:"85px"}}>ALPHA ROOM</p>
+                      </Link>
+                    </div>
+                  </>
+                ) : isAlpha ? (
+                  <>
+                    <div
+                      className={`search ${theme} ${
+                        theme === "lightTheme" && "text-dark"
+                      } ${
+                        (theme === "darkTheme" && "Theme-block-container") ||
+                        (theme === "dimTheme" && "dimThemeBg")
+                      }`}
+                    >
+                      <p
+                        className={`m-0 ms-3 tokenSize d-none d-md-block ${
+                          block + dark
+                        } ${
+                          (theme === "lightTheme" && "depositInputLight") ||
+                          (theme === "dimTheme" && "depositInputGrey darkColor")
+                        } ${
+                          theme === "darkTheme" && "depositInputDark darkColor"
+                        }`}
+                      >
+                        {currencyName}&nbsp;<span>(Pulsechain)</span>
+                      </p>
+                      <form className="w-100 search-form">
+                        <input
+                          className={`w-75 ms-3 me-4 form-control inputactive ${block} ${
+                            (theme === "lightTheme" && "depositInputLight") ||
+                            (theme === "dimTheme" &&
+                              "depositInputGrey darkColor")
+                          } ${
+                            theme === "darkTheme" &&
+                            "depositInputDark darkColor"
+                          }`}
+                          pattern={`[0-9,.]*`} // Only allow digits, commas, and dots
+                          type="text"
+                          disabled={isDashboardInputDisabled}
+                          onBlur={handleBlur}
+                          value={search}
+                          placeholder={placeHolder}
+                          onChange={(e) => addCommasAsYouType(e)}
+                        />
+                        <button
+                          disabled={
+                            selectedValue === "Deposit" &&
+                            (Number(search) <= 0 || search === "")
+                          }
+                          className={`fist-pump-img first_pump_serchbar ${
+                            (theme === "darkTheme" && "firstdumDark") ||
+                            (theme === "dimTheme" && "dimThemeBg")
+                          } `}
+                          onClick={(e) => {
+                            isHandleDeposit(e);
+                          }}
+                        >
+                          <img
+                            src={fistPump}
+                            alt="depositBtn"
+                            className="w-100 h-100"
+                          />
+                        </button>
+                      </form>
+                    </div>
+                    <div
+                      className={`box-3 ${
+                        (theme === "darkTheme" && "Theme-btn-block") ||
+                        (theme === "dimTheme" && "dimThemeBtnBg")
+                      }`}
+                      style={{ marginTop: "10px" }}
+                    >
+                      <span>{currencyName} PRICE :</span>
+                      <span className="mx-1">
+                        $ {price} {""}
+                        <span
+                          data-bs-toggle="tooltip"
+                          data-bs-placement="top"
+                        ></span>
+                      </span>
+
+                      <span
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                      ></span>
+                    </div>
+                   
+                      <div
+                        className={`info-item  ${
+                          (theme === "darkTheme" && "Theme-btn-block") ||
+                          (theme === "dimTheme" && "dimThemeBtnBg")
+                        } `}
+                        style={{ marginTop: "10px" }}
+                      >
+                        <Link to="/vlp">
+                        {/* <button> */}
+                          <p style={{marginLeft:"85px"}}>MINT DAV TOKENS</p>
+                          {/* </button> */}
+                        </Link>
+                      </div>
+                  
+                    <div
+                      className={`info-item info-column column-center ${
+                        (theme === "darkTheme" && "Theme-btn-block") ||
+                        (theme === "dimTheme" && "dimThemeBtnBg")
+                      } `}
+                      style={{ marginLeft: "500px", marginTop: "-45px" }}
+                    >
+                      <p style={{marginLeft:"85px"}}> INFLATION BANK</p>
+                    </div>
+                    <div
+                      className={`info-item  info-column column-right ${
+                        (theme === "darkTheme" && "Theme-btn-block") ||
+                        (theme === "dimTheme" && "dimThemeBtnBg")
+                      } `}
+                      style={{ marginLeft: "900px", marginTop: "-45px" }}
+                    >
+                      <p style={{marginLeft:"95px"}}>ALPHA ROOM</p>
                     </div>
                   </>
                 ) : (
