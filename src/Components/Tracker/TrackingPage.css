@@ -13,7 +13,20 @@
   margin-right: 16px;
 }
 .hrp {
-  margin-top: 2px;
+  margin-top: 15px;
+}
+.input-placeholder::placeholder {
+  color: #000; /* Dark color for light theme */
+}
+
+/* Dark theme placeholder */
+.input-placeholder-dark::placeholder {
+  color: #fff; /* White color for dark theme */
+}
+
+/* Dim theme placeholder */
+.input-placeholder-dim::placeholder {
+  color: #fff; /* White color for dim theme */
 }
 .deposit-bt {
   margin-left: -40px;
