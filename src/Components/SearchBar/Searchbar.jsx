@@ -354,41 +354,29 @@ export default function Searchbar() {
                     marginTop: "-10px",
                   }}
                 >
-                  Vaulting Liquidity Pools (VLP) is the process through which a
-                  smart contract employs ratio vaults to mitigate token
-                  inflation-erosion and directly create multiple copies of your
-                  crypto assets over natural market cycles.
+                  <p>
+                    {" "}
+                    System State Protocol is the first crypto INFLATION BANK to
+                    provide market-making services for crypto assets. Mint DAV
+                    tokens to access the ALPHA ROOM, where users gain insights
+                    into projects receiving our market-making services and where
+                    gains are identified.
+                    <br />
+                    {/* <br/> */}
+                    INFLATION BANK - Locks inflation into ratio-based vaults,
+                    releasing assets to users and DAV token holders when price
+                    targets are met.
+                  </p>
                 </div>
                 {isHome ? (
                   <>
-                    <div
-                      className={`box-3 ${
-                        (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBtnBg")
-                      }`}
-                      style={{ marginTop: "10px" }}
-                    >
-                      <span>{currencyName} PRICE :</span>
-                      <span className="mx-1">
-                        $ {price} {""}
-                        <span
-                          data-bs-toggle="tooltip"
-                          data-bs-placement="top"
-                        ></span>
-                      </span>
-
-                      <span
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="top"
-                      ></span>
-                    </div>
                     <div
                       className={`info-item  ${
                         (theme === "darkTheme" && "Theme-btn-block") ||
                         (theme === "dimTheme" && "dimThemeBtnBg") ||
                         (theme === "lightTheme" && theme + " translite")
                       }  `}
-                      style={{ marginTop: "60px" }}
+                      style={{ marginTop: "10px" }}
                     >
                       <p style={{ marginLeft: "80px" }}>MINT DAV TOKENS</p>
                     </div>
@@ -397,10 +385,10 @@ export default function Searchbar() {
                         (theme === "darkTheme" && "Theme-btn-block") ||
                         (theme === "dimTheme" && "dimThemeBtnBg")
                       } `}
-                      style={{ marginLeft: "500px", marginTop: "-45px" }}
+                      style={{ marginLeft: "550px", marginTop: "-45px" }}
                     >
                       <Link to="/inflation">
-                        <p style={{ marginLeft: "80px" }}> INFLATION BANK</p>
+                        <p style={{ marginLeft: "100px" }}> INFLATION</p>
                       </Link>
                     </div>
                     <div
@@ -408,43 +396,21 @@ export default function Searchbar() {
                         (theme === "darkTheme" && "Theme-btn-block") ||
                         (theme === "dimTheme" && "dimThemeBtnBg")
                       } `}
-                      style={{ marginLeft: "900px", marginTop: "-45px" }}
+                      style={{ marginLeft: "995px", marginTop: "-45px" }}
                     >
                       <Link to="/alpharoom">
-                        <p style={{ marginLeft: "85px" }}>ALPHA ROOM</p>
+                        <p style={{ marginLeft: "100px" }}>ALPHA ROOM</p>
                       </Link>
                     </div>
                   </>
                 ) : isAlpha ? (
                   <>
                     <div
-                      className={`box-3 ${
-                        (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBtnBg")
-                      }`}
-                      style={{ marginTop: "10px" }}
-                    >
-                      <span>{currencyName} PRICE :</span>
-                      <span className="mx-1">
-                        $ {price} {""}
-                        <span
-                          data-bs-toggle="tooltip"
-                          data-bs-placement="top"
-                        ></span>
-                      </span>
-
-                      <span
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="top"
-                      ></span>
-                    </div>
-
-                    <div
                       className={`info-item  ${
                         (theme === "darkTheme" && "Theme-btn-block") ||
                         (theme === "dimTheme" && "dimThemeBtnBg")
                       } `}
-                      style={{ marginTop: "60px" }}
+                      style={{ marginTop: "10px" }}
                     >
                       <Link to="/vlp">
                         <p style={{ marginLeft: "85px" }}>MINT DAV TOKENS</p>
@@ -456,10 +422,10 @@ export default function Searchbar() {
                         (theme === "darkTheme" && "Theme-btn-block") ||
                         (theme === "dimTheme" && "dimThemeBtnBg")
                       } `}
-                      style={{ marginLeft: "500px", marginTop: "-45px" }}
+                      style={{ marginLeft: "550px", marginTop: "-45px" }}
                     >
                       <Link to="/inflation">
-                        <p style={{ marginLeft: "85px" }}> INFLATION BANK</p>
+                        <p style={{ marginLeft: "100px" }}> INFLATION</p>
                       </Link>
                     </div>
                     <div
@@ -468,41 +434,19 @@ export default function Searchbar() {
                         (theme === "dimTheme" && "dimThemeBtnBg") ||
                         (theme === "lightTheme" && theme + " translite")
                       } `}
-                      style={{ marginLeft: "900px", marginTop: "-45px" }}
+                      style={{ marginLeft: "995px", marginTop: "-45px" }}
                     >
-                      <p style={{ marginLeft: "95px" }}>ALPHA ROOM</p>
+                      <p style={{ marginLeft: "100px" }}>ALPHA ROOM</p>
                     </div>
                   </>
                 ) : isInflation ? (
                   <>
                     <div
-                      className={`box-3 ${
-                        (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBtnBg")
-                      }`}
-                      style={{ marginTop: "10px" }}
-                    >
-                      <span>{currencyName} PRICE :</span>
-                      <span className="mx-1">
-                        $ {price} {""}
-                        <span
-                          data-bs-toggle="tooltip"
-                          data-bs-placement="top"
-                        ></span>
-                      </span>
-
-                      <span
-                        data-bs-toggle="tooltip"
-                        data-bs-placement="top"
-                      ></span>
-                    </div>
-
-                    <div
                       className={`info-item  ${
                         (theme === "darkTheme" && "Theme-btn-block") ||
                         (theme === "dimTheme" && "dimThemeBtnBg")
                       } `}
-                      style={{ marginTop: "60px" }}
+                      style={{ marginTop: "10px" }}
                     >
                       <Link to="/vlp">
                         <p style={{ marginLeft: "85px" }}>MINT DAV TOKENS</p>
@@ -515,19 +459,19 @@ export default function Searchbar() {
                         (theme === "dimTheme" && "dimThemeBtnBg") ||
                         (theme === "lightTheme" && theme + " translite")
                       } `}
-                      style={{ marginLeft: "500px", marginTop: "-45px" }}
+                      style={{ marginLeft: "550px", marginTop: "-45px" }}
                     >
-                      <p style={{ marginLeft: "85px" }}> INFLATION BANK</p>
+                      <p style={{ marginLeft: "100px" }}> INFLATION</p>
                     </div>
                     <div
                       className={`info-item  info-column column-right ${
                         (theme === "darkTheme" && "Theme-btn-block") ||
                         (theme === "dimTheme" && "dimThemeBtnBg")
                       } `}
-                      style={{ marginLeft: "900px", marginTop: "-45px" }}
+                      style={{ marginLeft: "995px", marginTop: "-45px" }}
                     >
                       <Link to="/alpharoom">
-                        <p style={{ marginLeft: "95px" }}>ALPHA ROOM</p>
+                        <p style={{ marginLeft: "100px" }}>ALPHA ROOM</p>
                       </Link>
                     </div>
                   </>
@@ -535,21 +479,24 @@ export default function Searchbar() {
                   <div></div>
                 )}
               </div>
-              <a
-                href="/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="serachIconLink State searchBar2_small d-flex flex-wrap justify-content-lg-center justify-content-md-start justify-content-sm-start"
-              >
-                <div className="under-state">
-                  <img
-                    src={SystemStateLogo}
-                    alt="SystemStateLogo"
-                    className="SystemStateLogo"
-                  />
-                </div>
-                <p className="state-dex-txt">System State</p>
-              </a>
+              <div style={{marginBottom:"50px"}}>
+                {" "}
+                <a
+                  href="/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="serachIconLink State searchBar2_small d-flex flex-wrap justify-content-lg-center justify-content-md-start justify-content-sm-start"
+                >
+                  <div className="under-state">
+                    <img
+                      src={SystemStateLogo}
+                      alt="SystemStateLogo"
+                      className="SystemStateLogo"
+                    />
+                  </div>
+                  <p className="state-dex-txt">System State</p>
+                </a>
+              </div>
             </div>
           </div>
         </div>

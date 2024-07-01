@@ -15,13 +15,138 @@
 .hrp {
   margin-top: 15px;
 }
+
+.info-item1 {
+  background-color: transparent;
+  font-size: 10px;
+  font-weight: bold;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.info-item2 {
+  background-color: transparent;
+  font-size: 10px;
+  font-weight: bold;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.info-item1 p {
+  margin: 0;
+  padding: 10px;
+}
+
+.info-item2 p {
+  margin: 0;
+  padding: 10px;
+}
 .input-placeholder::placeholder {
   color: #000; /* Dark color for light theme */
 }
 
+.input-padding {
+  margin-top: 1px;
+  box-sizing: content-box;
+  box-sizing: initial;
+  display: flex;
+  margin-right: 10px;
+}
+
+.bt-padding {
+  margin-top: 3px;
+}
+
+.col-size {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tvl-padding {
+  margin-top: 10px;
+}
 /* Dark theme placeholder */
 .input-placeholder-dark::placeholder {
   color: #fff; /* White color for dark theme */
+}
+
+.glowing-button {
+  background-color: transparent;
+  font-weight: bold;
+  font-size: 10px;
+  width: 110px;
+  height: 30px;
+}
+
+.button-group {
+  margin-bottom: 5px;
+}
+
+.whiteThemeBtn {
+  background-color: #fff; /* White background */
+}
+
+.translite {
+  background-color: #fff; /* Transparent background */
+}
+
+.whiteThemeBtn:hover {
+  background-color: #f0f0f0;
+}
+
+@media (max-width: 992px) {
+  .border-right {
+    border-right: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .extraFlex {
+    margin-top: 10px;
+  }
+
+  .margin-right,
+  .margin-left {
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  .text-start {
+    text-align: center;
+  }
+
+  .fontSize {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 576px) {
+  .extraFlex {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .tooltip-container {
+    margin-left: 0;
+  }
+
+  .heightfixBug {
+    margin-top: 0;
+  }
+
+  .fontSize {
+    font-size: 10px;
+  }
+
+  .iconSize {
+    font-size: 20px;
+  }
+
+  .tooltipAlign[data-tooltip]:before {
+    font-size: 10px;
+  }
 }
 
 /* Dim theme placeholder */
@@ -33,7 +158,7 @@
   margin-top: 10px;
 }
 
-.buy-btn{
+.buy-btn {
   white-space: nowrap;
   margin-left: 10px;
   margin-top: 10px;
@@ -45,7 +170,7 @@
   width: 110px;
   height: 30px;
 }
-.buy-btn2{
+.buy-btn2 {
   white-space: nowrap;
   margin-left: 10px;
   left: -8px;
@@ -55,7 +180,7 @@
   width: 110px;
   height: 30px;
 }
-.claim-btn{
+.claim-btn {
   white-space: nowrap;
   margin-left: 10px;
   margin-top: 10px;
@@ -66,7 +191,7 @@
   width: 110px;
   height: 30px;
 }
-.claim-btn2{
+.claim-btn2 {
   white-space: nowrap;
   margin-left: 10px;
   left: -8px;
@@ -368,4 +493,3 @@ hr {
 .heightfixBug {
   height: fit-content;
 }
-

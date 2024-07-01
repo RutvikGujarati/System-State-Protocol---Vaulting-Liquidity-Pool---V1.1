@@ -24,12 +24,12 @@ export default function Index() {
         <div className="container-xxl position-relative d-flex flex-row justify-content-around flex-wrap posRel">
           <div className="col-md-12 col-12 col-lg-6 col-sm-12 mb-sm-4 sec-1" >
             <div className="container-fluid p-0">
-              <RatioPriceTargets />
+              {/* <RatioPriceTargets /> */}
             </div>
           </div>
           <div className="col-md-12 col-12 col-lg-6 col-sm-12 mb-sm-4 sec-2">
             <div className="container-fluid p-0">
-              <IncrementPriceTarget />
+              {/* <IncrementPriceTarget /> */}
             </div>
           </div>
         </div>

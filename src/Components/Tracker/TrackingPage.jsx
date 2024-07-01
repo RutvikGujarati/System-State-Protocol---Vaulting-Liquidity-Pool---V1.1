@@ -10,6 +10,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../Tracker/TrackingPage.css";
 import "../../Utils/Theme.css";
 import { Link } from "react-router-dom";
+import metamask from "../../Assets/metamask.png";
 import { themeContext } from "../../App";
 import { useLocation } from "react-router-dom";
 import { functionsContext } from "../../Utils/Functions";
@@ -72,10 +73,12 @@ export default function TrackingPage({ children }) {
     getIncrementPriceTargets,
     getParityReached,
     handleDepositAutovaults,
+    handleDeposit,
     getProtocolFee,
     fetchAutoVaultAmount,
     getUserDistributedTokens,
     getClaimAllReward,
+    holdTokens,
   } = useContext(functionsContext);
   const {
     accountAddress,
@@ -89,10 +92,11 @@ export default function TrackingPage({ children }) {
   const [depositsInround, setParityDollardepositing] = useState("0");
   const [parityTokensDeposits, setParityTokensDeposits] = useState("0");
   const [parityDollarClaimed, setParityDollarClaimed] = useState("0");
+  const [HoldAMount, setHoldTokens] = useState("0");
+  const [statetokenNavigate, setStateTokenNavigate] = useState("");
   const [parityTokensClaimed, setParityTokensClaimed] = useState("0");
   const [depositAmount, setDepositAmount] = useState("");
   const [navigateToExplorer, setNavigateToExplorer] = useState("");
-  const [stateTokenNevegation, setStateTokenNavigate] = useState("");
   const [autoVaultAmount, setAutoVaultAmount] = useState("0");
   const [selectedValue, setSelectedValue] = useState("Deposit");
   const [balance, setBalance] = useState("Enter Amount");
@@ -133,19 +137,67 @@ export default function TrackingPage({ children }) {
           setNavigateToExplorer(res);
         })
         .catch((error) => {});
-      stateExplorer().then((res) => {
-        setStateTokenNavigate(res);
-      });
     } catch (error) {
       console.error(error);
     }
   };
-
+  const explore = async () => {
+    try {
+      stateExplorer()
+        .then((res) => {
+          setStateTokenNavigate(res);
+        })
+        .catch((error) => {});
+    } catch (error) {
+      console.error(error);
+    }
+  };
   useEffect(() => {
     exploere();
+    explore();
     // totalReachedPriceTarget();
   });
+  const HoldTokensOfUser = async (accountAddress) => {
+    try {
+      if (!accountAddress) {
+        throw new Error("Account address is undefined");
+      }
+      const holdToken = await holdTokens(accountAddress);
+      const formattedPrice = ethers.utils.formatEther(holdToken || "0");
+      console.log("hold tokensssssss", formattedPrice);
+      setHoldTokens(formattedPrice);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    if (accountAddress) {
+      HoldTokensOfUser(accountAddress);
+    }
+  });
 
+  const addTokenToWallet = async () => {
+    if (window.ethereum) {
+      try {
+        await window.ethereum.request({
+          method: "wallet_watchAsset",
+          params: {
+            type: "ERC20",
+            options: {
+              address: "0xB0C278AD98c0a43608889cF317Bd337921cabC51",
+              symbol: "DAVPLS",
+              decimals: "18",
+              image: { fisrtPumpBrt },
+            },
+          },
+        });
+      } catch (error) {
+        console.error("Failed to add token to wallet", error);
+      }
+    } else {
+      console.error("MetaMask is not installed");
+    }
+  };
   const ToBeClaimed = async () => {
     try {
       // Get the IPT and RPT rewards
@@ -305,7 +357,7 @@ export default function TrackingPage({ children }) {
     }
   };
 
-  const handleDeposit = async (address) => {
+  const handleDepositAV = async () => {
     try {
       allInOnePopup(null, "Create a new Vault", null, `OK`, null);
 
@@ -770,30 +822,52 @@ export default function TrackingPage({ children }) {
                             </span>
                           </div>
                         </div>
+
                         <div
-                          className="d-flex  pumpBoxImg deposit-bt"
-                          style={{
-                            marginTop: "30px",
-                            display: "flex",
-                            marginLeft: "0px",
-                          }}
+                          style={{ marginTop: "10px", marginRight: "45px" }}
+                          className={`info-item2  ${
+                            (theme === "darkTheme" && "Theme-btn-block") ||
+                            (theme === "dimTheme" && "dimThemeBtnBg")
+                          } `}
                         >
-                          <Link
-                            to={stateTokenNevegation}
-                            target="_blank"
-                            className={`info-link  ${spanDarkDim}`}
-                          >
-                            0xB0C278AD98c0a43608889cF317
-                            <br />
-                            Bd337921cabC51{" "}
-                          </Link>
+                          <p>
+                            DAV Contract Address -{" "}
+                            <Link
+                              to={statetokenNavigate}
+                              target="_blank"
+                              className={`info-link ${textTitle} ${spanDarkDim}`}
+                            >
+                              {conciseAddress(state_token)}
+                            </Link>
+                            
+                          </p>
+                        </div>
+                        <div
+                          style={{
+                            marginRight: "45px",
+                            marginTop: "10px",
+                          }}
+                          className={`info-item1  ${
+                            (theme === "darkTheme" && "Theme-btn-block") ||
+                            (theme === "dimTheme" && "dimThemeBtnBg")
+                          } `}
+                        >
+                          <p>
+                            DAV Holding - {HoldAMount} DAV token{" "}
+                            <img
+                              src={metamask}
+                              alt="MetaMask Logo"
+                              onClick={addTokenToWallet}
+                              className="metamask-logo"
+                            />
+                          </p>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="d-flex align-items-end ">
                     <span
-                      style={{ marginLeft: "260px", marginBottom: "35px" }}
+                      style={{ marginLeft: "260px" }}
                       className={`${tooltip} heightfixBug hoverText tooltipAlign`}
                       data-tooltip="ONLY APPLICABLE TO DAV TOKEN HOLDERS."
                       data-flow="bottom"
@@ -873,7 +947,7 @@ export default function TrackingPage({ children }) {
                     </div>
                     <div className="d-flex align-items-end pb-3">
                       <span
-                        style={{ marginBottom: "-15px" }}
+                        style={{ marginBottom: "-25px" }}
                         className={`${tooltip} heightfixBug hoverText tooltipAlign`}
                         data-tooltip="SEE WHITEPAPER FOR MORE INFO"
                         data-flow="bottom"
@@ -1057,52 +1131,56 @@ export default function TrackingPage({ children }) {
                         className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
                       >
                         <div>
-                          <div className={`${textTitle}`}>Deposit </div>
+                          <div className={`${textTitle}`}>Deposit</div>
+                          <form className="varSize">
+                            <input
+                              className={`form-control inputactive input-padding ${block} ${
+                                theme === "lightTheme"
+                                  ? "depositInputLight input-placeholder"
+                                  : theme === "dimTheme"
+                                  ? "depositInputGrey darkColor input-placeholder-dim"
+                                  : "depositInputDark darkColor input-placeholder-dark"
+                              }`}
+                              pattern="[0-9,.]*" // Only allow digits, commas, and dots
+                              type="text"
+                              disabled={isDashboardInputDisabled}
+                              onBlur={handleBlur}
+                              value={search}
+                              placeholder={placeHolder}
+                              onChange={(e) => addCommasAsYouType(e)}
+                              style={{
+                                backgroundColor: "transparent",
+                                color:
+                                  theme === "darkTheme" || theme === "dimTheme"
+                                    ? "#fff"
+                                    : "#000",
+                                width: "150px",
+                                height: "10px", // Adjust height as needed
+                                padding: "5px", // Adjust padding as needed
+                                fontSize: "12px", // Adjust font size as needed
+                              }}
+                            />
+                          </form>
                         </div>
                       </div>
                     </div>
-
-                    <form className="w-100 search-form">
-                      <input
-                      className={`w-75 ms-3 me-4 form-control inputactive ${block} ${
-                        (theme === "lightTheme" && "depositInputLight input-placeholder") ||
-                        (theme === "dimTheme" &&
-                          "depositInputGrey darkColor input-placeholder-dim")
-                      } ${
-                        theme === "darkTheme" &&
-                        "depositInputDark darkColor input-placeholder-dark"
-                      }`}
-                        pattern={`[0-9,.]*`} // Only allow digits, commas, and dots
-                        type="text"
-                        disabled={isDashboardInputDisabled}
-                        onBlur={handleBlur}
-                        value={search}
-                        placeholder={placeHolder}
-                        onChange={(e) => addCommasAsYouType(e)}
-                        style={{
-                          backgroundColor: "transparent",
-                          color:
-                            theme === "darkTheme" || theme === "dimTheme"
-                              ? "#fff"
-                              : "#000",
-                        }}
-                      />
+                    <div className="d-flex bt-padding align-items-center pumpBoxImg">
                       <button
-                        disabled={
-                          selectedValue === "Deposit" &&
-                          (Number(search) <= 0 && search === "" ? true : false)
-                        }
-                        className={`fist-pump-img first_pump_serchbar ${
-                          (theme === "darkTheme" && "firstdumDark") ||
-                          (theme === "dimTheme" && "dimThemeBg")
-                        } `}
                         onClick={(e) => {
                           isHandleDeposit(e);
                         }}
+                        className={`first_pump_boxIcon ${
+                          (theme === "darkTheme" && "firstdumDark") ||
+                          (theme === "dimTheme" && "dimThemeBg")
+                        } `}
                       >
-                        <img src={fisrtPumpBrt} className="w-100 h-100" />
+                        <img
+                          src={fisrtPumpBrt}
+                          alt="firstpump"
+                          className="w-100 h-100"
+                        />
                       </button>
-                    </form>
+                    </div>
                   </div>
                   <div className="hrp">
                     <hr className="my-3" />
@@ -1126,23 +1204,22 @@ export default function TrackingPage({ children }) {
 
                         <div className={`varSize ${spanDarkDim}`}>
                           <div
-                            className="d-flex  pumpBoxImg deposit-bt"
-                            style={{
-                              marginTop: "30px",
-                              display: "flex",
-                              marginLeft: "0px",
-                              fontSize: "12px",
-                            }}
+                            style={{ marginTop: "10px", marginRight: "35px" }}
+                            className={`info-item2  ${
+                              (theme === "darkTheme" && "Theme-btn-block") ||
+                              (theme === "dimTheme" && "dimThemeBtnBg")
+                            } `}
                           >
-                            <Link
-                              to={navigateToExplorer}
-                              target="_blank"
-                              className={`info-link  ${spanDarkDim}`}
-                            >
-                              0x1a0515aA54e013F37Eb6A2565
-                              <br />
-                              Ebf037bA2A9666E{" "}
-                            </Link>
+                            <p>
+                              VLP Contract Address -{" "}
+                              <Link
+                                to={navigateToExplorer}
+                                target="_blank"
+                                className={`info-link ${textTitle} ${spanDarkDim}`}
+                              >
+                                {conciseAddress(PSD_ADDRESS)}
+                              </Link>
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -1296,7 +1373,7 @@ export default function TrackingPage({ children }) {
                           <button
                             onClick={() => {
                               if (isButtonEnabled) {
-                                handleDeposit();
+                                handleDepositAV();
                               }
                             }}
                             className={`first_pump_boxIcon ${
@@ -1414,7 +1491,7 @@ export default function TrackingPage({ children }) {
                     <div className="d-flex align-items-end pb-3">
                       <span
                         className={`${tooltip} hoverText tooltipAlign`}
-                        style={{ marginTop: "65px" }}
+                        style={{ marginTop: "80px" }}
                         data-tooltip="The number of tokens in vaults * current price."
                         data-flow="bottom"
                       >
@@ -1426,19 +1503,21 @@ export default function TrackingPage({ children }) {
                     </div>
                   </div>
                   <div style={{ marginTop: "-1px" }}>
-                    <hr className="my-3" />
+                    <div className="hrp">
+                      <hr className="my-3 " />
+                    </div>
                   </div>
                   <div className="d-flex  h-50">
-                    <div className="margin-right">
+                    <div className="margin-right ">
                       <i
                         className={`iconSize fa-solid fa-comments-dollar ${theme}`}
                       ></i>
                     </div>
                     <div
-                      className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
+                      className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme} `}
                     >
                       <div>
-                        <div className={`${textTitle}`}>
+                        <div className={`${textTitle}  `}>
                           <div className={`${textTitle}  `}>
                             $ TVL ( LIQUIDITY )
                           </div>{" "}
@@ -1468,161 +1547,92 @@ export default function TrackingPage({ children }) {
               </div>
             ) : isAlpha ? (
               <>
-                <div className="row g-lg-10">
-                  <div
-                    className={`col-md-4 border-right ${borderDarkDim} col-lg-3 d-flex flex-column justify-content-between`}
-                  >
-                    <div>
-                      <div
-                        className={`d-flex uniqHeightxyz`}
-                        style={{ marginTop: "10px" }}
-                      >
-                        <div className=" margin-right">
-                          {/* <i
-                            className={`iconSize fa-solid fa-money-bill-transfer ${theme}`}
-                          ></i> */}
-                        </div>
+                <div className="container">
+                  <div className="row g-lg-10">
+                    <div
+                      className={`col-md-3 border-right ${borderDarkDim} d-flex flex-column justify-content-center`}
+                    >
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
-                          className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
                         >
-                          <div>
-                            <div
-                              className={`  ${
-                                theme === "darkTheme" || theme === "dimTheme"
-                              }varSize ${spanDarkDim} ${textTitle} `}
-                              style={{
-                                marginLeft: "100px",
-                                display: "flex",
-                                alignItems: "center",
-                                marginTop: "10px",
-                              }}
-                            >
-                              DATE
-                            </div>
-                            <div className="varSize"></div>
-                          </div>
+                          DATE
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  <div
-                    className={`col-md-4 border-right col-lg-3 d-flex flex-column justify-content-center ${borderDarkDim}`}
-                  >
-                    <hr className="d-block d-lg-none d-md-none " />
-                    <div className="d-flex ">
-                      <div className="margin-right">
-                        {/* <i
-                          className={`iconSize fa-regular fa-money-bill-1 ${theme}`}
-                        ></i> */}
-                      </div>
-                      <div
-                        className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
-                      >
-                        <div className={`${textTitle}`}>
-                          <div
-                            className={` ${textTitle}  ${spanDarkDim}`}
-                            style={{
-                              marginLeft: "100px",
-                              alignItems: "center",
-                              marginTop: "5px",
-                            }}
-                          >
-                            {" "}
-                            EVENT
-                          </div>
-                          <div className={`varSize `}></div>
-
-                          <div>
-                            <div className={`${textTitle}`}>
-                              {/* <div className={`varSize`}> PSD Rewards </div> */}
-                            </div>
-                            <div className={`varSize ${spanDarkDim}`}>
-                              {/* <span className={`spanText ${spanDarkDim} fs-5`}>
-                                $ {parityDollarClaimed}
-                              </span> */}
-                            </div>
-                          </div>
-                        </div>
-                        {/* <InfoBox data='Parity Shares in Dollars. Indicating the total $ value deposited' /> */}
-                        <div className="d-flex align-items-end pb-3"></div>
-                      </div>
-                    </div>
-                    {/* <hr className="my-3" /> */}
-                  </div>
-                  <div
-                    className={`col-md-4 border-right col-lg-3 d-flex flex-column justify-content-center ${borderDarkDim}`}
-                  >
-                    <hr className="d-block d-lg-none d-md-none " />
-
-                    <div className="d-flex">
-                      <div className="margin-right">
-                        {/* <i
-                          className={`iconSize fa-solid fa-arrow-up-right-dots ${theme}`}
-                        ></i> */}
-                      </div>
-                      <div
-                        className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
-                      >
-                        <div>
-                          <div
-                            className={`${textTitle} ${spanDarkDim}`}
-                            style={{
-                              marginLeft: "100px",
-                              alignItems: "center",
-                              marginTop: "5px",
-                            }}
-                          >
-                            <div className={``}> NOTES </div>
-                          </div>
-                          <div className={`varSize ${spanDarkDim}`}></div>
-                        </div>
-                        {/* <InfoBox data='Indicating the total $ value claimed' /> */}
-                        <div className="d-flex align-items-end pb-3"></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className=" col-lg-3 extraFlex">
-                    <hr className="d-lg-none d-block my-3" />
-
-                    <div className="d-flex pt-1" style={{ marginTop: "10px" }}>
-                      <div className="margin-right">
-                        {/* <i
-                          className={`iconSize fa-solid fa-comments-dollar ${theme}`}
-                        ></i> */}
-                      </div>
-                      <div
-                        className={`flex-grow-1 fontSize text-start justify-content-between ${textTheme}`}
-                      >
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
-                          className={`${textTitle} ${spanDarkDim} `}
-                          style={{
-                            marginLeft: "100px",
-                            alignItems: "center",
-                            marginTop: "10px",
-                          }}
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          DATE
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      className={`col-md-3 border-right ${borderDarkDim} d-flex flex-column justify-content-center`}
+                    >
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          EVENT
+                        </div>
+                      </div>
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          EVENT
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      className={`col-md-3 border-right ${borderDarkDim} d-flex flex-column justify-content-center`}
+                    >
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          NOTES
+                        </div>
+                      </div>
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          NOTES
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="col-md-3 d-flex flex-column justify-content-center">
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
                         >
                           LINKS
                         </div>
-                        {/* <div className={`varSize ${spanDarkDim}`}>
-                          <span className={`spanText ${spanDarkDim} fs-5`}>
-                            {" "}
-                            $ {totalVaultValue}
-                          </span>
-                        </div> */}
                       </div>
-                      {/* <div className="d-flex align-items-end pb-3">
-                        <span
-                          className={`${tooltip} hoverText tooltipAlign`}
-                          style={{ marginTop: "45px" }}
-                          data-tooltip="The number of tokens in vaults * current price."
-                          data-flow="bottom"
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
                         >
-                          {" "}
-                          <i
-                            className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                          ></i>
-                        </span>
-                      </div> */}
+                          LINKS
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
