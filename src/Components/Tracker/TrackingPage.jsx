@@ -1099,13 +1099,19 @@ export default function TrackingPage({ children }) {
                           </div>
                           <form>
                             <input
-                             className={`form-control inputactive input-padding place-padding ${block} ${textTitle} ${
-                              theme === "lightTheme" ? "depositInputLight input-placeholder-light" : ""
-                            } ${
-                              theme === "dimTheme" ? "depositInputGrey darkColor input-placeholder-dim" : ""
-                            } ${
-                              theme === "darkTheme" ? "depositInputDark darkColor input-placeholder-dark" : ""
-                            }`}
+                              className={`form-control inputactive input-padding place-padding ${block} ${textTitle} ${
+                                theme === "lightTheme"
+                                  ? "depositInputLight input-placeholder-light"
+                                  : ""
+                              } ${
+                                theme === "dimTheme"
+                                  ? "depositInputGrey darkColor input-placeholder-dim"
+                                  : ""
+                              } ${
+                                theme === "darkTheme"
+                                  ? "depositInputDark darkColor input-placeholder-dark"
+                                  : ""
+                              }`}
                               pattern="[0-9,.]*" // Only allow digits, commas, and dots
                               type="text"
                               disabled={isDashboardInputDisabled}
@@ -1176,10 +1182,7 @@ export default function TrackingPage({ children }) {
                                 target="_blank"
                                 className={`info-link ${textTitle} ${spanDarkDim}`}
                               >
-                                <p className="contract1">
-                                  {" "}
-                                  PENDING AUDIT
-                                </p>
+                                <p className="contract1"> PENDING AUDIT</p>
                               </Link>
                             </p>
                           </div>
@@ -1528,7 +1531,52 @@ export default function TrackingPage({ children }) {
                           className={`spanText ${spanDarkDim} fs-9`}
                           style={{ textAlign: "center", fontSize: "12px" }}
                         >
-                          {/* DATE */}
+                          01/07/2024
+                        </div>
+                      </div>
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          01/07/2024
+                        </div>
+                      </div>
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          02/07/2024{" "}
+                        </div>
+                      </div>
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          02/07/2024{" "}
+                        </div>
+                      </div>
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          02/07/2024
+                        </div>
+                      </div>
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          02/07/2024
                         </div>
                       </div>
                     </div>
@@ -1550,7 +1598,52 @@ export default function TrackingPage({ children }) {
                           className={`spanText ${spanDarkDim} fs-9`}
                           style={{ textAlign: "center", fontSize: "12px" }}
                         >
-                          {/* EVENT */}
+                          Documents
+                        </div>
+                      </div>
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          Document
+                        </div>
+                      </div>
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          Website
+                        </div>
+                      </div>
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          Smart Contract
+                        </div>
+                      </div>
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          Alpha
+                        </div>
+                      </div>
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          Alpha
                         </div>
                       </div>
                     </div>
@@ -1572,7 +1665,58 @@ export default function TrackingPage({ children }) {
                           className={`spanText ${spanDarkDim} fs-9`}
                           style={{ textAlign: "center", fontSize: "12px" }}
                         >
-                          {/* NOTES */}
+                          Launch documentation
+                        </div>
+                      </div>
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          Quick guide{" "}
+                        </div>
+                      </div>
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          Launch website{" "}
+                        </div>
+                      </div>
+
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          We deployed the DAVPLS smart contract. Verified and
+                          Immutable
+                        </div>
+                      </div>
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          We have accrued 10 billion pXEN for DAV Holders. 100
+                          billion is our target. pXEN to be airdropped to DAV
+                          holders. We will keep buying if it is within our price
+                          range and remove the friction to burn for DBXEN.
+                        </div>
+                      </div>
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          Market-making strategy for July will be announced
+                          within 7 days
                         </div>
                       </div>
                     </div>
@@ -1592,7 +1736,50 @@ export default function TrackingPage({ children }) {
                           className={`spanText ${spanDarkDim} fs-9`}
                           style={{ textAlign: "center", fontSize: "12px" }}
                         >
-                          {/* LINKS */}
+                          https://system-state-documentation.gitbook.io/system-state
+                        </div>
+                      </div>
+                      {/* <hr className="my-3" /> */}
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          {" "}
+                        </div>
+                      </div>
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          https://systemstate.io/
+                        </div>
+                      </div>
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          0x6e1Bdee57A8cD6C12c71f0fF7A6E67D9d1982dE9{" "}
+                        </div>
+                      </div>
+                      {/* <hr className="my-3" /> */}
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        ></div>
+                      </div>
+                      <hr className="my-3" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          n/a
                         </div>
                       </div>
                     </div>
