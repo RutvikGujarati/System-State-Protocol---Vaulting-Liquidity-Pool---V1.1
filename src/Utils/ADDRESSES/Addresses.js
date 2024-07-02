@@ -51,10 +51,18 @@ const PSD_ADDRESS = "0x1a0515aA54e013F37Eb6A2565Ebf037bA2A9666E"// live testnet 
 
 // const state_token = "0x14a568BA33AeF6f8Cc484E918e1638E597AC9fC1"  // for me
 // const state_token = "0x0348b818712D5248d7E5013F29378EDB5Ee0b842"  // for me.
-// const state_token = "0x32d526749dF9e56c25cc8b25A4ECb94779867453"  // for final live testnet.
-const state_token = "0xB0C278AD98c0a43608889cF317Bd337921cabC51"  //live Dav token with pDXN.
+// const state_token = "0x0B415D5482918A11B4Dc8bF68169E89293Cd3a02"  // for final live testnet.
+// const state_token = "0xB0C278AD98c0a43608889cF317Bd337921cabC51"  //live Dav token with pDXN.
 
-const pDXN = "0xbe4F7C4DF748cE32A5f4aADE815Bd7743fB0ea51"  //  pDXN token contract address (LOAN testnet address.).
+const LOAN = "0xbe4F7C4DF748cE32A5f4aADE815Bd7743fB0ea51"  //  pDXN token contract address (LOAN testnet address.).
+const pDXN = "0x6fE0ae3D5c993a3073333134db70613B0cb88a31"  //  pDXN token contract address (LOAN testnet address.).
+
+
+// ==> mainnet section
+
+const state_token = "0x6e1Bdee57A8cD6C12c71f0fF7A6E67D9d1982dE9"  //live on mainnet Dav token with pDXN.
+
+
 
 const allInOnePopup = (icon, title, text, button, confirmBtn, callback) => {
     return (

@@ -31,7 +31,6 @@ export default function Alpha() {
     return (
         <themeC.Provider value={{ theme, themeMode }}>
             <div style={pageStyle}>
-                <Layout />
                 <Searchbar />
                 <TrackingPage />
 

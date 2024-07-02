@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: SEE LICENSE IN LICENSE
-pragma solidity ^0.8.20;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -13,7 +13,7 @@ interface IPDXN {
 }
 
 contract DAVTOKEN is ERC20, Ownable {
-    uint256 public constant MAX_SUPPLY = 422000 * 10 ** 18;
+    uint256 public constant MAX_SUPPLY = 888888 * 10 ** 18;
     uint256 public constant MAX_PDXN_SUPPLY = 80000 * 10 ** 18;
     uint256 public pdxnMinted = 0;
 

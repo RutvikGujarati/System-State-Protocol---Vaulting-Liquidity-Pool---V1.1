@@ -107,20 +107,41 @@ export default function Index() {
   const location = useLocation();
   const currentPath = location.pathname;
   const isCreateVaultsPage = currentPath === "/vlp";
+  const isAlpha = currentPath === "/alpharoom";
+  const isInflation = currentPath === "/inflation-bank";
 
   let backgroundColor = "transparent";
+
   if (isCreateVaultsPage) {
-    if (theme === 'lightTheme') {
-      backgroundColor = '#000'; // Black for light theme
-    } else if (theme === 'dimTheme') {
-      backgroundColor = '#fff'; // White for dark theme
+    if (theme === "lightTheme") {
+      backgroundColor = "#000"; // Black for light theme
+    } else if (theme === "dimTheme") {
+      backgroundColor = "#fff"; // White for dark theme
+    }
+  }
+  if (isAlpha) {
+    if (theme === "lightTheme") {
+      backgroundColor = "#000"; // Black for light theme
+    } else if (theme === "dimTheme") {
+      backgroundColor = "#fff"; // White for dark theme
+    }
+  }
+  if (isInflation) {
+    if (theme === "lightTheme") {
+      backgroundColor = "#000"; // Black for light theme
+    } else if (theme === "dimTheme") {
+      backgroundColor = "#fff"; // White for dark theme
     }
   }
 
-  const buttonClass = 
-  theme === "lightTheme" ? "icon-btnLight" :
-  theme === "dimTheme" ? "icon-btnDim" :
-  theme === "darkTheme" ? "icon-btnDark" : "";
+  const buttonClass =
+    theme === "lightTheme"
+      ? "icon-btnLight"
+      : theme === "dimTheme"
+      ? "icon-btnDim"
+      : theme === "darkTheme"
+      ? "icon-btnDark"
+      : "";
 
   const isOnInscription = "active"; // const isOnInscription = location.pathname === '/inscription' ? 'active' : ''
 
@@ -301,8 +322,8 @@ export default function Index() {
 
             <div className={`d-flex navBar-btn me-3 ${isOnInscription}`}>
               {/* <Link className={`nav-link my-auto docs mx-3 ${location.pathname === '/inscription' && 'ins active'}`} role="button" to={'inscription'}>
-        Inscription
-    </Link> */}
+               Inscription
+               </Link> */}
               {/* <Link
                 className={`nav-link my-auto docs mx-3 ${
                   location.pathname === "/Create-Vaults" && "ins active"
@@ -362,8 +383,8 @@ export default function Index() {
             </button>
             <ul
               className={`dropdown-menu dropdown-menu-end  px-2 ${
-                (theme == "darkTheme" && theme + " darkUL") ||
-                (theme == "dimTheme" && theme + " dimUL")
+                (theme === "darkTheme" && theme + " darkUL") ||
+                (theme === "dimTheme" && theme + " dimUL")
               }`}
               aria-labelledby="dropdownMenuTopbarSettings"
               style={{
@@ -415,11 +436,6 @@ export default function Index() {
                   Dim
                 </button>
               </li>
-              {/* <li>
-                <button type="button" value={themeMode} className={`dropdown-item theme-btn ${themeMode === "dark" && "click"}`} data-bs-theme-value="dark" onClick={() => { setThemeMode("dark"); }} >
-                  <i className="far fa-moon fa-fw dropdown-item-icon theme-icon me-1" data-href="#fa-moon" ></i>  Dark
-                </button>
-              </li> */}
             </ul>
 
             <button
@@ -453,12 +469,12 @@ export default function Index() {
             </button>
             <ul
               className={`dropdown-menu ${
-                (theme == "lightTheme" && "logoLight") ||
-                (theme == "dimTheme" && theme + " logoDim") ||
-                (theme == "darkTheme" && "logoDark")
+                (theme === "lightTheme" && "logoLight") ||
+                (theme === "dimTheme" && theme + " logoDim") ||
+                (theme === "darkTheme" && "logoDark")
               } ${
-                (theme == "darkTheme" && theme + " darkUL") ||
-                (theme == "dimTheme" && theme + " dimUL")
+                (theme === "darkTheme" && theme + " darkUL") ||
+                (theme === "dimTheme" && theme + " dimUL")
               }`}
               style={{ fontSize: "13px" }}
               aria-labelledby="dropdownMenuLink"

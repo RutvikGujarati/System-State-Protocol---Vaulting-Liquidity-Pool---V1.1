@@ -74,7 +74,7 @@ export default function DAV() {
   const location = useLocation();
   const isHome = location.pathname === "/vlp";
   const isAlpha = location.pathname === "/alpharoom";
-  const isInflation = location.pathname === "/inflation";
+  const isInflation = location.pathname === "/inflation-bank";
 
   const explorer_URL = async () => {
     if ((await networkName) === "Polygon Mumbai") {
@@ -234,7 +234,7 @@ export default function DAV() {
         {isHome ? (
           <>
             <div style={pageStyle}>
-              <p style={{ marginLeft: "550px", marginTop: "-20px" }}>
+              <p style={{ marginLeft: "550px", marginTop: "-50px" }}>
                 DAV token must remain in the wallet that minted them.
               </p>
             </div>

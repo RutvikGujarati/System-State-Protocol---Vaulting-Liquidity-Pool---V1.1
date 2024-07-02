@@ -70,19 +70,15 @@ export default function Website() {
                   <p className="state-text">System State</p>
                 </div>
                 <div className="d-flex state-main res-1">
-                  <div className="col-md-9 text-justify mt-2 text-center text-lg-start">
+                  <div className=" col-md-9 text-justify mt-2 text-center text-lg-start">
+                    <p style={{fontSize:"16px"}}>
                     {/* Unlock Yield with Smart Contracts: Leveraging Increments,
                     Ratios, and the Velocity of Money Theory. Our smart contracts
                     employ incremental strategies and precise ratios to generate
                     gains with every deposit. They also securely lock up tokens
                     in escrow, ensuring consistent, long-term gains. */}
-                    Vaulting deploys ratio vaults to slow down the erosion of
-                    inflation created by the liquidity pool formula, resulting
-                    in the creation of multiple copies of the user's crypto
-                    assets. By securely locking up tokens in smart escrow vaults
-                    (iPT), and leveraging the power of natural market forces,
-                    the protocol generates sustainable and reliable yields over
-                    multiple crypto cycles.
+                  System State Protocol is the first crypto inflation vault known as an "inflation bank" to offer market-making services for crypto assets and crypto ecosystems with an emphasis on supporting the XEN ecosystem.
+                  </p>
                   </div>
                   <div className="icons d-flex justify-content-between width-icons">
                     <div className="TwitterXIcon-main">

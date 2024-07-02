@@ -8,6 +8,7 @@ import { faCloudMoon, faGasPump, faMoon, faSun, fas } from '@fortawesome/free-so
 import MetamskConnect from "./Utils/MetamskConnect";
 import Website from "./Website/Website";
 import Functions from "./Utils/Functions";
+import Layout from "./Protected Route/Layout";
 
 library.add(fas, faGasPump, faSun, faMoon, faCloudMoon);
 
@@ -38,10 +39,12 @@ function App() {
           <Functions>
             <Routes>
               <Route index element={<Website />} />
+              <Route path="/" element={<Layout />}>
 
               <Route path="/vlp" element={<Index />} />
               <Route path="/alpharoom" element={<Alpha />} />
-              <Route path="/inflation" element={<Inflation />} />
+              <Route path="/inflation-bank" element={<Inflation />} />
+              </Route>
 
             </Routes>
           </Functions>

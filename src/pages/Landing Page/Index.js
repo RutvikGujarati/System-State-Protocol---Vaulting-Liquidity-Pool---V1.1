@@ -15,7 +15,6 @@ export default function Index() {
 
   return (
     <div className={`${theme === "lightTheme" && "light-bg-for-theme"}`}>
-      <Layout />
       <Searchbar />
       <TrackingPage />
       <div

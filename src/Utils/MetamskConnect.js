@@ -1,5 +1,5 @@
-import React, { useEffect, createContext, useState } from 'react';
-import { ethers } from 'ethers';
+import React, { createContext, useEffect, useState } from "react";
+import { ethers } from "ethers";
 
 export const Web3WalletContext = createContext();
 
@@ -9,6 +9,7 @@ export default function MetamskConnect({ children }) {
   const [walletBalance, setWalletBalance] = useState('0');
   const [networkName, setNetworkName] = useState('');
   const [currencyName, setCurrencyName] = useState('');
+  const [loading, setLoading] = useState(false); // Loading state
 
   useEffect(() => {
     if (window.ethereum) {
@@ -69,13 +70,18 @@ export default function MetamskConnect({ children }) {
         return 'Ethereum Mainnet';
       case '943':
         return 'Pulsechain Testnet';
+      case '369':
+        return 'Pulsechain mainnet';
       default:
         return 'Unknown Network';
     }
   };
 
   const ProvidermetamaskLogin = async () => {
+    if (loading) return; // Prevent multiple requests
+
     if (typeof window.ethereum !== 'undefined') {
+      setLoading(true); // Set loading state to true
       try {
         const response = await getMetamaskAccount();
         if (response) {
@@ -85,6 +91,8 @@ export default function MetamskConnect({ children }) {
         }
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false); // Reset loading state
       }
     }
   };
@@ -103,7 +111,7 @@ export default function MetamskConnect({ children }) {
         method: 'eth_requestAccounts',
       });
       const networkId = window.ethereum.networkVersion;
-      if (['943', '80002', '11155111', '5', '80001'].includes(networkId)) {
+      if (['943','369', '80002', '11155111', '5', '80001'].includes(networkId)) {
         return metamaskAccounts[0];
       } else {
         alert('Connect to Mumbai, Sepolia, Pulsechain');
@@ -143,6 +151,8 @@ export default function MetamskConnect({ children }) {
       case '1':
         return 'ETH';
       case '943':
+        return 'PLS';
+      case '369':
         return 'PLS';
       default:
         return 'ETH';

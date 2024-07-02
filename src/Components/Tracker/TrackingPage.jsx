@@ -55,7 +55,7 @@ export default function TrackingPage({ children }) {
   const location = useLocation();
   const isHome = location.pathname === "/vlp";
   const isAlpha = location.pathname === "/alpharoom";
-  const isInflation = location.pathname === "/inflation";
+  const isInflation = location.pathname === "/inflation-bank";
   const isHei = !isHome && !isAlpha && !isInflation && "hei";
 
   const {
@@ -184,7 +184,7 @@ export default function TrackingPage({ children }) {
           params: {
             type: "ERC20",
             options: {
-              address: "0xB0C278AD98c0a43608889cF317Bd337921cabC51",
+              address: "0x0B415D5482918A11B4Dc8bF68169E89293Cd3a02",
               symbol: "DAVPLS",
               decimals: "18",
               image: { fisrtPumpBrt },
@@ -296,11 +296,28 @@ export default function TrackingPage({ children }) {
   };
 
   const getPlaceHolder = async () => {
-    if (isInflation) {
-      setPlaceHolder(balance);
-      setIsDashboardInputDisabled(false);
-    }
+    setPlaceHolder(balance);
+    setIsDashboardInputDisabled(false);
+
+    // // Apply theme class to the placeholder
+    // const inputElement = document.querySelector(".inputactive");
+    // if (inputElement) {
+    //   inputElement.classList.remove(
+    //     "textTitle-light",
+    //     "textTitle-dim",
+    //     "textTitle-dark"
+    //   );
+
+    //   if (theme === "lightTheme") {
+    //     inputElement.classList.add("textTitle-light");
+    //   } else if (theme === "dimTheme") {
+    //     inputElement.classList.add("textTitle-dim");
+    //   } else {
+    //     inputElement.classList.add("textTitle-dark");
+    //   }
+    // }
   };
+
   useEffect(() => {
     try {
       if (!userConnected) {
@@ -799,39 +816,42 @@ export default function TrackingPage({ children }) {
                   className={`col-md-4 border-right ${borderDarkDim} col-lg-3 d-flex flex-column justify-content-between`}
                 >
                   <div>
-                    <div className={`d-flex uniqHeightxyz`}>
+                    <div className="d-flex uniqHeightxyz">
                       <div className="margin-right">
                         <i
                           className={`iconSize fa-solid fa-cubes-stacked ${theme}`}
                         ></i>
                       </div>
                       <div
-                        className={`flex-grow-1 fontSize text-start  ${textTheme}`}
+                        className={`flex-grow-1 fontSize text-start ${textTheme}`}
                       >
                         <div>
-                          <div
-                            className={`${textTitle} `}
-                            style={{ fontSize: "11px" }}
-                          >
-                            MINT DAV TOKENS FOR PULSECHAIN{" "}
+                          <div className={`${textTitle} small-font`}>
+                            MINT DAV TOKENS FOR PULSECHAIN
                           </div>
                           <div className={`varSize ${spanDarkDim}`}>
-                            <span className={`spanText ${spanDarkDim} `}>
-                              {" "}
-                              DAVPLS
+                            <span className={`spanText ${spanDarkDim}`}>
+                              DAVPLS{""} - {HoldAMount}
+                              <img
+                                src={metamask}
+                                alt="MetaMask Logo"
+                                onClick={addTokenToWallet}
+                                className="metamask-logo"
+                              />
                             </span>
                           </div>
                         </div>
-
                         <div
-                          style={{ marginTop: "10px", marginRight: "45px" }}
-                          className={`info-item2  ${
-                            (theme === "darkTheme" && "Theme-btn-block") ||
-                            (theme === "dimTheme" && "dimThemeBtnBg")
-                          } `}
+                          className={`info-item2 ${
+                            theme === "darkTheme"
+                              ? "Theme-btn-block"
+                              : theme === "dimTheme"
+                              ? "dimThemeBtnBg"
+                              : ""
+                          }`}
                         >
                           <p>
-                            DAV Contract Address -{" "}
+                            CONTRACT VERIFIED AND IMMUTABLE -<br />
                             <Link
                               to={statetokenNavigate}
                               target="_blank"
@@ -839,21 +859,19 @@ export default function TrackingPage({ children }) {
                             >
                               {conciseAddress(state_token)}
                             </Link>
-                            
                           </p>
                         </div>
-                        <div
-                          style={{
-                            marginRight: "45px",
-                            marginTop: "10px",
-                          }}
-                          className={`info-item1  ${
-                            (theme === "darkTheme" && "Theme-btn-block") ||
-                            (theme === "dimTheme" && "dimThemeBtnBg")
-                          } `}
+                        {/* <div
+                          className={`info-item1 holding ${
+                            theme === "darkTheme"
+                              ? "Theme-btn-block"
+                              : theme === "dimTheme"
+                              ? "dimThemeBtnBg"
+                              : ""
+                          }`}
                         >
                           <p>
-                            DAV Holding - {HoldAMount} DAV token{" "}
+                            DAV Holding - {HoldAMount} DAV token
                             <img
                               src={metamask}
                               alt="MetaMask Logo"
@@ -861,60 +879,46 @@ export default function TrackingPage({ children }) {
                               className="metamask-logo"
                             />
                           </p>
-                        </div>
+                        </div> */}
+                      </div>
+                      <div className="d-flex align-items-end tooltips-container">
+                        <span
+                          className={`${tooltip} heightfixBug hoverText tooltipAlign`}
+                          data-tooltip="CONTRACT RENOUNCED"
+                          data-flow="bottom"
+                        >
+                          <i
+                            className={`fas mx-2 fa-exclamation-circle ${theme}`}
+                          ></i>
+                        </span>
                       </div>
                     </div>
-                  </div>
-                  <div className="d-flex align-items-end ">
-                    <span
-                      style={{ marginLeft: "260px" }}
-                      className={`${tooltip} heightfixBug hoverText tooltipAlign`}
-                      data-tooltip="ONLY APPLICABLE TO DAV TOKEN HOLDERS."
-                      data-flow="bottom"
-                    >
-                      {" "}
-                      <i
-                        className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                      ></i>
-                    </span>
                   </div>
                 </div>
                 <div
                   className={`col-md-4 border-right col-lg-3 d-flex flex-column justify-content-center ${borderDarkDim}`}
                 >
-                  <hr className="d-block d-lg-none d-md-none " />
-                  <div className="d-flex" style={{ marginTop: "-35px" }}>
-                    <div className="margin-right ">
+                  <hr className="d-block d-lg-none d-md-none" />
+                  <div className="d-flex mint-token-container">
+                    <div className="margin-right">
                       <i
-                        className={`iconSize fa-solid fa-coins fa-money-bill-transfer ${theme} `}
+                        className={`iconSize fa-solid fa-coins fa-money-bill-transfer ${theme}`}
                       ></i>
                     </div>
                     <div
                       className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
                     >
-                      <div className={`${textTitle}`}>
-                        <div className={` ${textTitle} `}>
-                          {" "}
-                          MINT 2 DAV TOKENS
-                        </div>
+                      <div className={`${textTitle} mint-two`}>
+                        <div>MINT 2 DAV TOKENS</div>
                         <div className="d-flex flex-column mb-0.1 button-group ">
                           <button
-                            style={{
-                              whiteSpace: "nowrap",
-                              marginLeft: "10px",
-                              marginTop: "10px",
-                              left: "-8px",
-                              backgroundColor: "transparent",
-                              fontWeight: "bold",
-                              fontSize: "10px",
-                              marginBottom: "5px",
-                              width: "110px",
-                              height: "30px", // Set a fixed width for all buttons
-                            }}
-                            className={`box-3   mx-2 glowing-button  ${
-                              (theme === "darkTheme" && "Theme-btn-block") ||
-                              (theme === "dimTheme" && "dimThemeBtnBg")
-                            } `}
+                            className={`  box-4 mx-2 glowing-button  ${
+                              theme === "darkTheme"
+                                ? "Theme-btn-block"
+                                : theme === "dimTheme"
+                                ? "dimThemeBtnBg"
+                                : ""
+                            } ${theme}`}
                             onClick={() => BuyTokens(2, 500000)}
                           >
                             500,000 PLS
@@ -922,22 +926,13 @@ export default function TrackingPage({ children }) {
                         </div>
                         <div className="d-flex flex-column mb-0.1 button-group">
                           <button
-                            style={{
-                              whiteSpace: "nowrap",
-                              marginLeft: "10px",
-                              left: "-8px",
-                              marginTop: "10px",
-                              backgroundColor: "transparent",
-                              fontWeight: "bold",
-                              // marginBottom: "5px",
-                              fontSize: "10px",
-                              width: "110px",
-                              height: "30px", // Set a fixed width for all buttons
-                            }}
-                            className={`box-3   mx-2 glowing-button  ${
-                              (theme === "darkTheme" && "Theme-btn-block") ||
-                              (theme === "dimTheme" && "dimThemeBtnBg")
-                            } `}
+                            className={`  box-4 mx-2 glowing-button  ${
+                              theme === "darkTheme"
+                                ? "Theme-btn-block"
+                                : theme === "dimTheme"
+                                ? "dimThemeBtnBg"
+                                : ""
+                            } ${theme}`}
                             onClick={() => mintWithPDXN(2, 800)}
                           >
                             800 pDXN
@@ -945,14 +940,15 @@ export default function TrackingPage({ children }) {
                         </div>
                       </div>
                     </div>
-                    <div className="d-flex align-items-end pb-3">
+                    <div
+                      className="d-flex align-items-end pb-3 "
+                      style={{ marginBottom: "10px" }}
+                    >
                       <span
-                        style={{ marginBottom: "-25px" }}
                         className={`${tooltip} heightfixBug hoverText tooltipAlign`}
                         data-tooltip="SEE WHITEPAPER FOR MORE INFO"
                         data-flow="bottom"
                       >
-                        {" "}
                         <i
                           className={`fas mx-2 fa-exclamation-circle ${theme}`}
                         ></i>
@@ -963,10 +959,9 @@ export default function TrackingPage({ children }) {
                 <div
                   className={`col-md-4 border-right col-lg-3 d-flex flex-column justify-content-center ${borderDarkDim}`}
                 >
-                  <hr className="d-block d-lg-none d-md-none " />
-
-                  <div className="d-flex h-50" style={{ marginTop: "-15px" }}>
-                    <div className="margin-right">
+                  <hr className="d-block d-lg-none d-md-none" />
+                  <div className="d-flex mint-token-container">
+                    <div className="margin-right icon-c">
                       <i
                         className={`iconSize fa-solid fa-coins fa-money-bill-transfer ${theme}`}
                       ></i>
@@ -975,27 +970,23 @@ export default function TrackingPage({ children }) {
                       className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
                     >
                       <div>
-                        <div className={`${textTitle}`}>
-                          <div className={``}> MINT 5 DAV TOKENS </div>
+                        <div
+                          className={`${textTitle} `}
+                          style={{
+                            marginTop: "-15px",
+                          }}
+                        >
+                          MINT 5 DAV TOKENS
                         </div>
-                        <div className="d-flex flex-column mb-0.1 button-group">
+                        <div className=" d-flex flex-column mb-0.1 button-group">
                           <button
-                            style={{
-                              whiteSpace: "nowrap",
-                              marginLeft: "10px",
-                              marginTop: "10px",
-                              left: "-8px",
-                              backgroundColor: "transparent",
-                              fontWeight: "bold",
-                              marginBottom: "5px",
-                              fontSize: "10px",
-                              width: "110px",
-                              height: "30px", // Set a fixed width for all buttons
-                            }}
-                            className={`box-3   mx-2 glowing-button  ${
-                              (theme === "darkTheme" && "Theme-btn-block") ||
-                              (theme === "dimTheme" && "dimThemeBtnBg")
-                            } `}
+                            className={`  box-4 mx-2 glowing-button  ${
+                              theme === "darkTheme"
+                                ? "Theme-btn-block"
+                                : theme === "dimTheme"
+                                ? "dimThemeBtnBg"
+                                : ""
+                            } ${theme}`}
                             onClick={() => BuyTokens(5, 1000000)}
                           >
                             1,000,000 PLS
@@ -1003,22 +994,13 @@ export default function TrackingPage({ children }) {
                         </div>
                         <div className="d-flex flex-column mb-0.1 button-group">
                           <button
-                            style={{
-                              whiteSpace: "nowrap",
-                              marginLeft: "10px",
-                              left: "-8px",
-                              marginTop: "10px",
-                              backgroundColor: "transparent",
-                              fontWeight: "bold",
-                              fontSize: "10px",
-                              marginBottom: "5px",
-                              width: "110px",
-                              height: "30px", // Set a fixed width for all buttons
-                            }}
-                            className={`box-3   mx-2 glowing-button  ${
-                              (theme === "darkTheme" && "Theme-btn-block") ||
-                              (theme === "dimTheme" && "dimThemeBtnBg")
-                            } `}
+                            className={`  box-4 mx-2 glowing-button  ${
+                              theme === "darkTheme"
+                                ? "Theme-btn-block"
+                                : theme === "dimTheme"
+                                ? "dimThemeBtnBg"
+                                : ""
+                            } ${theme}`}
                             onClick={() => mintWithPDXN(5, 1750)}
                           >
                             1,750 pDXN
@@ -1026,25 +1008,22 @@ export default function TrackingPage({ children }) {
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="d-flex align-items-end pb-3">
-                    <span
-                      style={{ marginLeft: "260px", marginTop: "20px" }}
-                      className={`${tooltip} hoverText tooltipAlign`}
-                      data-tooltip="SEE WHITEPAPER FOR MORE INFO"
-                      data-flow="bottom"
-                    >
-                      {" "}
-                      <i
-                        className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                      ></i>
-                    </span>
+                    <div className="tooltips d-flex align-items-end pb-3">
+                      <span
+                        className={`${tooltip} hoverText tooltipAlign`}
+                        data-tooltip="SEE WHITEPAPER FOR MORE INFO"
+                        data-flow="bottom"
+                      >
+                        <i
+                          className={`fas mx-2 fa-exclamation-circle ${theme}`}
+                        ></i>
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <div className=" col-lg-3 extraFlex">
+                <div className="col-lg-3 extraFlex">
                   <hr className="d-lg-none d-block my-3" />
-
-                  <div className="d-flex pt-1" style={{ marginTop: "-2px" }}>
+                  <div className="d-flex pt-1 mint-token-container">
                     <div className="margin-right">
                       <i
                         className={`iconSize fa-solid fa-coins fa-money-bill-transfer ${theme}`}
@@ -1053,24 +1032,18 @@ export default function TrackingPage({ children }) {
                     <div
                       className={`flex-grow-1 fontSize text-start justify-content-between ${textTheme}`}
                     >
-                      <div className={`${textTitle}  `}>MINT 13 DAV TOKENS</div>
+                      <div className={`${textTitle} mint-thir`}>
+                        MINT 13 DAV TOKENS
+                      </div>
                       <div className="d-flex flex-column mb-0.1 button-group">
                         <button
-                          style={{
-                            whiteSpace: "nowrap",
-                            marginLeft: "10px",
-                            left: "-8px",
-                            backgroundColor: "transparent",
-                            fontWeight: "bold",
-                            fontSize: "10px",
-                            marginTop: "7px",
-                            width: "110px",
-                            height: "30px",
-                          }}
-                          className={`box-3   mx-2 glowing-button  ${
-                            (theme === "darkTheme" && "Theme-btn-block") ||
-                            (theme === "dimTheme" && "dimThemeBtnBg")
-                          } `}
+                          className={`  box-4 mx-2 glowing-button  ${
+                            theme === "darkTheme"
+                              ? "Theme-btn-block"
+                              : theme === "dimTheme"
+                              ? "dimThemeBtnBg"
+                              : ""
+                          } ${theme}`}
                           onClick={() => BuyTokens(13, 2000000)}
                         >
                           2,000,000 PLS
@@ -1078,21 +1051,13 @@ export default function TrackingPage({ children }) {
                       </div>
                       <div className="d-flex flex-column mb-0.1 button-group">
                         <button
-                          style={{
-                            whiteSpace: "nowrap",
-                            marginLeft: "10px",
-                            left: "-8px",
-                            marginTop: "15px",
-                            backgroundColor: "transparent",
-                            fontWeight: "bold",
-                            fontSize: "10px",
-                            width: "110px",
-                            height: "30px",
-                          }}
-                          className={`box-3   mx-2 glowing-button  ${
-                            (theme === "darkTheme" && "Theme-btn-block") ||
-                            (theme === "dimTheme" && "dimThemeBtnBg")
-                          } `}
+                          className={`  box-4 mx-2 glowing-button  ${
+                            theme === "darkTheme"
+                              ? "Theme-btn-block"
+                              : theme === "dimTheme"
+                              ? "dimThemeBtnBg"
+                              : ""
+                          } ${theme}`}
                           onClick={() => mintWithPDXN(13, 2500)}
                         >
                           2,500 pDXN
@@ -1102,11 +1067,9 @@ export default function TrackingPage({ children }) {
                     <div className="d-flex align-items-end pb-3">
                       <span
                         className={`${tooltip} hoverText tooltipAlign`}
-                        style={{ marginTop: "95px" }}
                         data-tooltip="SEE WHITEPAPER FOR MORE INFO"
                         data-flow="bottom"
                       >
-                        {" "}
                         <i
                           className={`fas mx-2 fa-exclamation-circle ${theme}`}
                         ></i>
@@ -1131,16 +1094,18 @@ export default function TrackingPage({ children }) {
                         className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
                       >
                         <div>
-                          <div className={`${textTitle}`}>Deposit</div>
-                          <form className="varSize">
+                          <div className={`${textTitle}`}>
+                            DEPOSIT TOKENS INTO THE INFLATION BANK
+                          </div>
+                          <form>
                             <input
-                              className={`form-control inputactive input-padding ${block} ${
-                                theme === "lightTheme"
-                                  ? "depositInputLight input-placeholder"
-                                  : theme === "dimTheme"
-                                  ? "depositInputGrey darkColor input-placeholder-dim"
-                                  : "depositInputDark darkColor input-placeholder-dark"
-                              }`}
+                             className={`form-control inputactive input-padding place-padding ${block} ${textTitle} ${
+                              theme === "lightTheme" ? "depositInputLight input-placeholder-light" : ""
+                            } ${
+                              theme === "dimTheme" ? "depositInputGrey darkColor input-placeholder-dim" : ""
+                            } ${
+                              theme === "darkTheme" ? "depositInputDark darkColor input-placeholder-dark" : ""
+                            }`}
                               pattern="[0-9,.]*" // Only allow digits, commas, and dots
                               type="text"
                               disabled={isDashboardInputDisabled}
@@ -1150,14 +1115,10 @@ export default function TrackingPage({ children }) {
                               onChange={(e) => addCommasAsYouType(e)}
                               style={{
                                 backgroundColor: "transparent",
-                                color:
-                                  theme === "darkTheme" || theme === "dimTheme"
-                                    ? "#fff"
-                                    : "#000",
-                                width: "150px",
-                                height: "10px", // Adjust height as needed
+                                width: "235px",
+                                height: "40px", // Adjust height as needed
                                 padding: "5px", // Adjust padding as needed
-                                fontSize: "12px", // Adjust font size as needed
+                                fontWeight: "normal",
                               }}
                             />
                           </form>
@@ -1182,13 +1143,11 @@ export default function TrackingPage({ children }) {
                       </button>
                     </div>
                   </div>
-                  <div className="hrp">
-                    <hr className="my-3" />
-                  </div>
-                  <div className="d-flex h-50">
+                  <div className="hrp">{/* <hr className="my-3" /> */}</div>
+                  <div className="d-flex h-40">
                     <div className="margin-right">
                       <i
-                        className={`iconSize fa-solid fa-cubes-stacked ${theme}`}
+                      // className={`iconSize fa-solid fa-cubes-stacked ${theme}`}
                       ></i>
                     </div>
                     <div
@@ -1197,7 +1156,7 @@ export default function TrackingPage({ children }) {
                       <div>
                         <div
                           className={`${textTitle} `}
-                          style={{ fontSize: "11px" }}
+                          style={{ fontSize: "11px", marginLeft: "60px" }}
                         >
                           Contract Address{" "}
                         </div>
@@ -1210,14 +1169,17 @@ export default function TrackingPage({ children }) {
                               (theme === "dimTheme" && "dimThemeBtnBg")
                             } `}
                           >
-                            <p>
-                              VLP Contract Address -{" "}
+                            <p className="contract">
+                              Contract Address{" "}
                               <Link
-                                to={navigateToExplorer}
+                                // to={navigateToExplorer}
                                 target="_blank"
                                 className={`info-link ${textTitle} ${spanDarkDim}`}
                               >
-                                {conciseAddress(PSD_ADDRESS)}
+                                <p className="contract1">
+                                  {" "}
+                                  PENDING AUDIT
+                                </p>
                               </Link>
                             </p>
                           </div>
@@ -1225,7 +1187,7 @@ export default function TrackingPage({ children }) {
                       </div>
                     </div>
                     <div className="d-flex align-items-end pb-3">
-                      <span
+                      {/* <span
                         className={`${tooltip} heightfixBug hoverText tooltipAlign`}
                         data-tooltip="ONLY APPLICABLE TO DAV TOKEN HOLDERS."
                         data-flow="bottom"
@@ -1234,7 +1196,7 @@ export default function TrackingPage({ children }) {
                         <i
                           className={`fas mx-2 fa-exclamation-circle ${theme}`}
                         ></i>
-                      </span>
+                      </span> */}
                     </div>
                   </div>
                 </div>
@@ -1281,7 +1243,7 @@ export default function TrackingPage({ children }) {
                       <div className="d-flex align-items-end pb-3">
                         <span
                           className={`${tooltip} heightfixBug hoverText tooltipAlign`}
-                          data-tooltip="Parity Shares in Dollars. Indicating the total $ value deposited  AND CLAIMED"
+                          data-tooltip="CLAIM REWARDS"
                           data-flow="bottom"
                         >
                           {" "}
@@ -1348,7 +1310,7 @@ export default function TrackingPage({ children }) {
                   <div className="d-flex h-50">
                     <div className="margin-right">
                       <i
-                        className={`iconSize fa-solid fa-cubes-stacked ${theme}`}
+                        className={`iconSize fa-solid fa-money-bill-transfer ${theme}`}
                       ></i>
                     </div>
                     <div
@@ -1492,7 +1454,7 @@ export default function TrackingPage({ children }) {
                       <span
                         className={`${tooltip} hoverText tooltipAlign`}
                         style={{ marginTop: "80px" }}
-                        data-tooltip="The number of tokens in vaults * current price."
+                        data-tooltip="CURRENT TOKEN PRICE"
                         data-flow="bottom"
                       >
                         {" "}
@@ -1566,7 +1528,7 @@ export default function TrackingPage({ children }) {
                           className={`spanText ${spanDarkDim} fs-9`}
                           style={{ textAlign: "center", fontSize: "12px" }}
                         >
-                          DATE
+                          {/* DATE */}
                         </div>
                       </div>
                     </div>
@@ -1588,7 +1550,7 @@ export default function TrackingPage({ children }) {
                           className={`spanText ${spanDarkDim} fs-9`}
                           style={{ textAlign: "center", fontSize: "12px" }}
                         >
-                          EVENT
+                          {/* EVENT */}
                         </div>
                       </div>
                     </div>
@@ -1610,7 +1572,7 @@ export default function TrackingPage({ children }) {
                           className={`spanText ${spanDarkDim} fs-9`}
                           style={{ textAlign: "center", fontSize: "12px" }}
                         >
-                          NOTES
+                          {/* NOTES */}
                         </div>
                       </div>
                     </div>
@@ -1630,7 +1592,7 @@ export default function TrackingPage({ children }) {
                           className={`spanText ${spanDarkDim} fs-9`}
                           style={{ textAlign: "center", fontSize: "12px" }}
                         >
-                          LINKS
+                          {/* LINKS */}
                         </div>
                       </div>
                     </div>

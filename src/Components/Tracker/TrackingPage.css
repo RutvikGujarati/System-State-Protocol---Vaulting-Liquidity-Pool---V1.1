@@ -27,8 +27,10 @@
 .info-item2 {
   background-color: transparent;
   font-size: 10px;
+  margin-top: 20px;
   font-weight: bold;
   border: 1px solid #ccc;
+  height: 60px;
   border-radius: 5px;
 }
 
@@ -41,20 +43,21 @@
   margin: 0;
   padding: 10px;
 }
-.input-placeholder::placeholder {
-  color: #000; /* Dark color for light theme */
-}
 
 .input-padding {
-  margin-top: 1px;
+  margin-top: 10px;
+  margin-left: -30px;
   box-sizing: content-box;
   box-sizing: initial;
   display: flex;
-  margin-right: 10px;
+  width: 80px;
 }
-
+.place-padding {
+  padding-left: 10px;
+}
 .bt-padding {
-  margin-top: 3px;
+  margin-top: 60px;
+  margin-left: 80px;
 }
 
 .col-size {
@@ -66,10 +69,6 @@
 
 .tvl-padding {
   margin-top: 10px;
-}
-/* Dark theme placeholder */
-.input-placeholder-dark::placeholder {
-  color: #fff; /* White color for dark theme */
 }
 
 .glowing-button {
@@ -85,7 +84,7 @@
 }
 
 .whiteThemeBtn {
-  background-color: #fff; /* White background */
+  background-color: transparent; /* White background */
 }
 
 .translite {
@@ -93,9 +92,41 @@
 }
 
 .whiteThemeBtn:hover {
-  background-color: #f0f0f0;
+  background-color: transparent;
 }
 
+.input-placeholder-dim::placeholder {
+  font-family: "Roboto", sans-serif;
+  color: #fff; /* Adjust color as needed */
+}
+
+
+.mint-two {
+  margin-bottom: 15px;
+}
+.mint-five {
+  margin-bottom: 30px;
+}
+
+.tooltips-container {
+  margin-top: 107px;
+}
+
+.icon-c {
+  margin-top: -15px;
+}
+.mint-thir {
+  margin-top: -3px;
+}
+.holding {
+  margin-top: 10px;
+}
+.info-item2  .contract{
+  margin-left: 55px;
+}
+.info-item2  .contract1{
+  margin-left: 1px;
+}
 @media (max-width: 992px) {
   .border-right {
     border-right: none !important;
@@ -128,8 +159,8 @@
     align-items: center;
   }
 
-  .tooltip-container {
-    margin-left: 0;
+  .tooltip-containers {
+    margin-left: 20px;
   }
 
   .heightfixBug {
@@ -149,13 +180,24 @@
   }
 }
 
-/* Dim theme placeholder */
-.input-placeholder-dim::placeholder {
-  color: #fff; /* White color for dim theme */
-}
+
 .deposit-bt {
   margin-left: -40px;
   margin-top: 10px;
+}
+
+.box-4 {
+  white-space: nowrap;
+  margin-left: 10px;
+  margin-top: 10px;
+  left: -8px;
+  font-weight: bold;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 10px;
+  margin-bottom: 5px;
+  width: 110px;
+  height: 30px;
 }
 
 .buy-btn {
@@ -180,28 +222,7 @@
   width: 110px;
   height: 30px;
 }
-.claim-btn {
-  white-space: nowrap;
-  margin-left: 10px;
-  margin-top: 10px;
-  left: -8px;
-  background-color: transparent;
-  font-weight: bold;
-  margin-bottom: 5px;
-  width: 110px;
-  height: 30px;
-}
-.claim-btn2 {
-  white-space: nowrap;
-  margin-left: 10px;
-  left: -8px;
-  margin-top: 10px;
-  background-color: transparent;
-  font-weight: bold;
-  margin-bottom: 15px;
-  width: 110px;
-  height: 30px;
-}
+
 /* styles.css */
 .glowing-button {
   position: relative;

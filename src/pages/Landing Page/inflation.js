@@ -15,7 +15,6 @@ export default function Inflation() {
 
   return (
     <div className={`${theme === "lightTheme" && "light-bg-for-theme"}`}>
-      <Layout />
       <Searchbar />
       <TrackingPage />
       <div
