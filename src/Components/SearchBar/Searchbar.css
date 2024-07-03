@@ -48,11 +48,13 @@
 }
 
 .info-item .mint-dav-tokens {
-  margin-left: 80px;
+  margin-left: 90px;
+
 }
 .info-item .mint-dav-tokens a {
   text-decoration: none;
 }
+
 .info-item a {
   text-decoration: none; /* Removes underline from links */
 }

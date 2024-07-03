@@ -128,6 +128,11 @@ input {
   margin-top: 107px;
 }
 
+
+
+
+/* Add more styling as per your theme */
+
 .icon-c {
   margin-top: -15px;
 }
@@ -137,16 +142,17 @@ input {
 .holding {
   margin-top: 10px;
 }
-.info-item2  .contract{
+.info-item2 .contract {
   margin-left: 55px;
 }
-.info-item2  .contract1{
+.info-item2 .contract1 {
   margin-left: 1px;
 }
 
-/* .hrpa{
-  margin-top: -20px;
-} */
+.hrpa {
+  color: #6a6f75;
+  border: 1px solid #323b4c;
+}
 @media (max-width: 992px) {
   .border-right {
     border-right: none !important;
@@ -199,7 +205,6 @@ input {
     font-size: 10px;
   }
 }
-
 
 .deposit-bt {
   margin-left: -40px;

@@ -184,7 +184,7 @@ export default function TrackingPage({ children }) {
           params: {
             type: "ERC20",
             options: {
-              address: "0x0B415D5482918A11B4Dc8bF68169E89293Cd3a02",
+              address: "0x6e1Bdee57A8cD6C12c71f0fF7A6E67D9d1982dE9",
               symbol: "DAVPLS",
               decimals: "18",
               image: { fisrtPumpBrt },
@@ -619,6 +619,82 @@ export default function TrackingPage({ children }) {
 
     return totalPrice;
   };
+
+  const EntryColumn = ({ title, items }) => (
+    <div className="d-flex flex-column justify-content-center align-items-center">
+      <div
+        className={`spanText ${spanDarkDim} fs-9`}
+        style={{ textAlign: "center", fontSize: "12px", marginTop: "-5px" }}
+      >
+        {title}
+      </div>
+      <hr className="w-100" />
+      {items.map((item, index) => (
+        <div
+          key={index}
+          className="d-flex align-items-center justify-content-center flex-grow-1"
+        >
+          <div
+            className={`spanText ${spanDarkDim} fs-9`}
+            style={{ textAlign: "center", fontSize: "12px" }}
+          >
+            {item.text}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const data = [
+    {
+      date: "01/07/2024",
+      event: "Documents",
+      notes: "Launch documentation",
+      links: "https://system-state-documentation.gitbook.io/system-state",
+    },
+    {
+      date: "02/07/2024",
+      event: "Document",
+      notes: "Quick guide",
+      links: "https://systemstate.io/",
+    },
+    {
+      date: "02/07/2024",
+      event: "Website",
+      notes: "Launch website",
+      links: "https://systemstate.io/",
+    },
+    {
+      date: "02/07/2024",
+      event: "Smart Contract",
+      notes: "We deployed the DAVPLS smart contract. Verified and Immutable",
+      links: "0x6e1Bdee57A8cD6C12c71f0fF7A6E67D9d1982dE9",
+    },
+    {
+      date: "02/07/2024",
+      event: "Alpha",
+      notes:
+        "We have accrued 10 billion pXEN for DAV Holders. 100 billion is our target. pXEN to be airdropped to DAV holders. We will keep buying if it is within our price range and remove the friction to burn for DBXEN.",
+      links: "https://systemstate.io/",
+    },
+  ];
+
+  const adjustRowHeights = () => {
+    const rows = document.querySelectorAll(".main-container .grid-item");
+    for (let i = 0; i < rows.length; i += 4) {
+      const rowItems = [rows[i], rows[i + 1], rows[i + 2], rows[i + 3]];
+      let maxHeight = 0;
+      rowItems.forEach((item) => {
+        maxHeight = Math.max(maxHeight, item.scrollHeight);
+      });
+      rowItems.forEach((item) => {
+        item.style.height = `${maxHeight}px`;
+      });
+    }
+  };
+  useEffect(() => {
+    adjustRowHeights();
+  }, []);
 
   useEffect(() => {
     if (userConnected) {
@@ -1514,10 +1590,9 @@ export default function TrackingPage({ children }) {
             ) : isAlpha ? (
               <>
                 <div className="main-container">
-                  <div className="row g-lg-10 " >
+                  <div className="row g-lg-10 ">
                     <div
                       className={`col-md-3 border-right ${borderDarkDim} d-flex flex-column justify-content-center align-items-center`}
-                      style={{ minHeight: '50rem' }}
                     >
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
@@ -1528,7 +1603,20 @@ export default function TrackingPage({ children }) {
                         </div>
                       </div>
                       <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                      {data.map((item, index) => (
+                        <React.Fragment key={index}>
+                          <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                            <div
+                              className={`spanText ${spanDarkDim}  fs-9`}
+                              style={{ textAlign: "center", fontSize: "12px" }}
+                            >
+                              {item.date}
+                            </div>
+                          </div>
+                          <hr className="w-100" />
+                        </React.Fragment>
+                      ))}
+                      {/* <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
                           style={{ textAlign: "center", fontSize: "12px" }}
@@ -1580,12 +1668,12 @@ export default function TrackingPage({ children }) {
                         >
                           02/07/2024
                         </div>
-                      </div>
+                      </div> */}
                     </div>
 
                     <div
                       className={`col-md-3 border-right ${borderDarkDim} d-flex flex-column justify-content-center align-items-center`}
-                      style={{ minHeight: '50rem' }}
+                      style={{ minHeight: "50rem" }}
                     >
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
@@ -1596,7 +1684,20 @@ export default function TrackingPage({ children }) {
                         </div>
                       </div>
                       <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                      {data.map((item, index) => (
+                        <React.Fragment key={index}>
+                          <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                            <div
+                              className={`spanText ${spanDarkDim}  fs-9`}
+                              style={{ textAlign: "center", fontSize: "12px" }}
+                            >
+                              {item.event}
+                            </div>
+                          </div>
+                          <hr className="w-100" />
+                        </React.Fragment>
+                      ))}
+                      {/* <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
                           style={{ textAlign: "center", fontSize: "12px" }}
@@ -1648,12 +1749,12 @@ export default function TrackingPage({ children }) {
                         >
                           Alpha
                         </div>
-                      </div>
+                      </div> */}
                     </div>
 
                     <div
                       className={`col-md-3 border-right ${borderDarkDim} d-flex flex-column justify-content-center align-items-center`}
-                      style={{ minHeight: '50rem',marginTop:"10px" }}
+                      style={{ minHeight: "50rem", marginTop: "10px" }}
                     >
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
@@ -1664,7 +1765,20 @@ export default function TrackingPage({ children }) {
                         </div>
                       </div>
                       <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                      {data.map((item, index) => (
+                        <React.Fragment key={index}>
+                          <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                            <div
+                              className={`spanText ${spanDarkDim}  fs-9`}
+                              style={{ textAlign: "center", fontSize: "12px" }}
+                            >
+                              {item.notes}
+                            </div>
+                          </div>
+                          <hr className="w-100" />
+                        </React.Fragment>
+                      ))}
+                      {/* <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
                           style={{ textAlign: "center", fontSize: "12px" }}
@@ -1721,11 +1835,11 @@ export default function TrackingPage({ children }) {
                           Market-making strategy for July will be announced
                           within 7 days
                         </div>
-                      </div>
+                      </div> */}
                     </div>
 
                     <div className="col-md-3 d-flex flex-column justify-content-center align-items-center">
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1" >
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
                           style={{
@@ -1738,7 +1852,20 @@ export default function TrackingPage({ children }) {
                         </div>
                       </div>
                       <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                      {data.map((item, index) => (
+                        <React.Fragment key={index}>
+                          <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                            <div
+                              className={`spanText ${spanDarkDim}  fs-9`}
+                              style={{ textAlign: "center", fontSize: "12px" }}
+                            >
+                              {item.links}
+                            </div>
+                          </div>
+                          <hr className="w-100" />
+                        </React.Fragment>
+                      ))}
+                      {/* <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
                           style={{ textAlign: "center", fontSize: "10px" }}
@@ -1790,7 +1917,7 @@ export default function TrackingPage({ children }) {
                         >
                           n/a
                         </div>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>
