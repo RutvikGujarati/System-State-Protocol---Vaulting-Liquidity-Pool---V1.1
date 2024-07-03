@@ -99,7 +99,7 @@ export default function TrackingPage({ children }) {
   const [navigateToExplorer, setNavigateToExplorer] = useState("");
   const [autoVaultAmount, setAutoVaultAmount] = useState("0");
   const [selectedValue, setSelectedValue] = useState("Deposit");
-  const [balance, setBalance] = useState("Enter Amount");
+  const [balance, setBalance] = useState("ENTER AMOUNT");
   const [placeHolder, setPlaceHolder] = useState("");
   const [isDashboardInputDisabled, setIsDashboardInputDisabled] =
     useState(false);
@@ -184,7 +184,7 @@ export default function TrackingPage({ children }) {
           params: {
             type: "ERC20",
             options: {
-              address: "0x6e1Bdee57A8cD6C12c71f0fF7A6E67D9d1982dE9",
+              address: "0x0B415D5482918A11B4Dc8bF68169E89293Cd3a02",
               symbol: "DAVPLS",
               decimals: "18",
               image: { fisrtPumpBrt },
@@ -456,6 +456,40 @@ export default function TrackingPage({ children }) {
     }
   };
 
+  const data = [
+    {
+      date: "01/07/2024",
+      event: "Documents",
+      notes: "Launch documentation",
+      links: "https://system-state-documentation.gitbook.io/system-state",
+    },
+    {
+      date: "02/07/2024",
+      event: "Document",
+      notes: "Quick guide",
+      links: "https://systemstate.io/",
+    },
+    {
+      date: "02/07/2024",
+      event: "Website",
+      notes: "Launch website",
+      links: "https://systemstate.io/",
+    },
+    {
+      date: "02/07/2024",
+      event: "Smart Contract",
+      notes: "We deployed the DAVPLS smart contract. Verified and Immutable",
+      links: "0x6e1Bdee57A8cD6C12c71f0fF7A6E67D9d1982dE9",
+    },
+    {
+      date: "02/07/2024",
+      event: "Alpha",
+      notes:
+        "We have accrued 10 billion pXEN for DAV Holders. 100 billion is our target. pXEN to be airdropped to DAV holders. We will keep buying if it is within our price range and remove the friction to burn for DBXEN.",
+      links: "https://systemstate.io/",
+    },
+  ];
+
   // eslint-disable-next-line no-extend-native
   Number.prototype.noExponents = function () {
     let data = String(this).split(/[eE]/);
@@ -619,82 +653,6 @@ export default function TrackingPage({ children }) {
 
     return totalPrice;
   };
-
-  const EntryColumn = ({ title, items }) => (
-    <div className="d-flex flex-column justify-content-center align-items-center">
-      <div
-        className={`spanText ${spanDarkDim} fs-9`}
-        style={{ textAlign: "center", fontSize: "12px", marginTop: "-5px" }}
-      >
-        {title}
-      </div>
-      <hr className="w-100" />
-      {items.map((item, index) => (
-        <div
-          key={index}
-          className="d-flex align-items-center justify-content-center flex-grow-1"
-        >
-          <div
-            className={`spanText ${spanDarkDim} fs-9`}
-            style={{ textAlign: "center", fontSize: "12px" }}
-          >
-            {item.text}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-
-  const data = [
-    {
-      date: "01/07/2024",
-      event: "Documents",
-      notes: "Launch documentation",
-      links: "https://system-state-documentation.gitbook.io/system-state",
-    },
-    {
-      date: "02/07/2024",
-      event: "Document",
-      notes: "Quick guide",
-      links: "https://systemstate.io/",
-    },
-    {
-      date: "02/07/2024",
-      event: "Website",
-      notes: "Launch website",
-      links: "https://systemstate.io/",
-    },
-    {
-      date: "02/07/2024",
-      event: "Smart Contract",
-      notes: "We deployed the DAVPLS smart contract. Verified and Immutable",
-      links: "0x6e1Bdee57A8cD6C12c71f0fF7A6E67D9d1982dE9",
-    },
-    {
-      date: "02/07/2024",
-      event: "Alpha",
-      notes:
-        "We have accrued 10 billion pXEN for DAV Holders. 100 billion is our target. pXEN to be airdropped to DAV holders. We will keep buying if it is within our price range and remove the friction to burn for DBXEN.",
-      links: "https://systemstate.io/",
-    },
-  ];
-
-  const adjustRowHeights = () => {
-    const rows = document.querySelectorAll(".main-container .grid-item");
-    for (let i = 0; i < rows.length; i += 4) {
-      const rowItems = [rows[i], rows[i + 1], rows[i + 2], rows[i + 3]];
-      let maxHeight = 0;
-      rowItems.forEach((item) => {
-        maxHeight = Math.max(maxHeight, item.scrollHeight);
-      });
-      rowItems.forEach((item) => {
-        item.style.height = `${maxHeight}px`;
-      });
-    }
-  };
-  useEffect(() => {
-    adjustRowHeights();
-  }, []);
 
   useEffect(() => {
     if (userConnected) {
@@ -1590,24 +1548,27 @@ export default function TrackingPage({ children }) {
             ) : isAlpha ? (
               <>
                 <div className="main-container">
-                  <div className="row g-lg-10 ">
+                  <div className="">
+                    {/* DATE Section */}
                     <div
-                      className={`col-md-3 border-right ${borderDarkDim} d-flex flex-column justify-content-center align-items-center`}
+                      className={` d-flex flex-column justify-content-center align-items-center`}
                     >
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          DATE
-                        </div>
+                        <p className={`${spanDarkDim} spanText5`} >
+                          Date - 01/07/2024 <br />
+                          Event - Documents <br />
+                          Notes - Launch documentation
+                          <br /> Link -
+                          https://system-state-documentation.gitbook.io/system-state
+                        </p>
                       </div>
                       <hr className="w-100" />
+                      {/* <hr className="w-100" />
                       {data.map((item, index) => (
                         <React.Fragment key={index}>
                           <div className="d-flex align-items-center justify-content-center flex-grow-1">
                             <div
-                              className={`spanText ${spanDarkDim}  fs-9`}
+                              className={`spanText ${spanDarkDim} fs-9`}
                               style={{ textAlign: "center", fontSize: "12px" }}
                             >
                               {item.date}
@@ -1615,76 +1576,21 @@ export default function TrackingPage({ children }) {
                           </div>
                           <hr className="w-100" />
                         </React.Fragment>
-                      ))}
-                      {/* <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          01/07/2024
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          {""}
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          02/07/2024
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          02/07/2024
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          02/07/2024
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          02/07/2024
-                        </div>
-                      </div> */}
+                      ))} */}
                     </div>
-
                     <div
-                      className={`col-md-3 border-right ${borderDarkDim} d-flex flex-column justify-content-center align-items-center`}
-                      style={{ minHeight: "50rem" }}
+                      className={`   d-flex flex-column justify-content-center align-items-center`}
                     >
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          EVENT
-                        </div>
+                        <p className={`${spanDarkDim} spanText1`}>
+                          Date - 01/07/2024 <br />
+                          Event - Document <br />
+                          Notes - Quick guide
+                          <br /> Link -
+                        </p>
                       </div>
                       <hr className="w-100" />
-                      {data.map((item, index) => (
+                      {/* {data.map((item, index) => (
                         <React.Fragment key={index}>
                           <div className="d-flex align-items-center justify-content-center flex-grow-1">
                             <div
@@ -1696,163 +1602,82 @@ export default function TrackingPage({ children }) {
                           </div>
                           <hr className="w-100" />
                         </React.Fragment>
-                      ))}
-                      {/* <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          Documents
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          Document
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          Website
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          Smart Contract
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          Alpha
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          Alpha
-                        </div>
-                      </div> */}
+                      ))} */}
                     </div>
 
                     <div
-                      className={`col-md-3 border-right ${borderDarkDim} d-flex flex-column justify-content-center align-items-center`}
-                      style={{ minHeight: "50rem", marginTop: "10px" }}
+                      className={`  d-flex flex-column justify-content-center align-items-center`}
                     >
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          NOTES
-                        </div>
+                        <p className={`${spanDarkDim} spanText2`}>
+                          Date - 02/07/2024
+                          <br />
+                          Event - Website <br />
+                          Notes - Launch website
+                          <br /> Link - https://systemstate.io/
+                        </p>
                       </div>
+
                       <hr className="w-100" />
-                      {data.map((item, index) => (
+                      {/* {data.map((item, index) => (
                         <React.Fragment key={index}>
                           <div className="d-flex align-items-center justify-content-center flex-grow-1">
                             <div
                               className={`spanText ${spanDarkDim}  fs-9`}
-                              style={{ textAlign: "center", fontSize: "12px" }}
+                              style={{ textAlign: "center", fontSize: "12px" , maxHeight: '60px'}}
                             >
                               {item.notes}
                             </div>
                           </div>
                           <hr className="w-100" />
                         </React.Fragment>
-                      ))}
-                      {/* <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          Launch documentation
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          Quick guide
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          Launch website
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          We deployed the DAVPLS smart contract. Verified and
-                          Immutable
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          We have accrued 10 billion pXEN for DAV Holders. 100
-                          billion is our target. pXEN to be airdropped to DAV
-                          holders. We will keep buying if it is within our price
-                          range and remove the friction to burn for DBXEN.
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          Market-making strategy for July will be announced
-                          within 7 days
-                        </div>
-                      </div> */}
+                      ))} */}
                     </div>
 
-                    <div className="col-md-3 d-flex flex-column justify-content-center align-items-center">
+                    <div className=" d-flex flex-column justify-content-center align-items-center">
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{
-                            textAlign: "center",
-                            fontSize: "12px",
-                            marginTop: "-5px",
-                          }}
-                        >
-                          LINKS
-                        </div>
+                        <p className={`${spanDarkDim} spanText3`} >
+                          Date -02/07/2024 <br /> Event - Smart Contract <br />
+                          Notes - We deployed the DAVPLS smart contract.
+                          Verified and Immutable <br />
+                          Link - 0x6e1Bdee57A8cD6C12c71f0fF7A6E67D9d1982dE9
+                        </p>
                       </div>
                       <hr className="w-100" />
-                      {data.map((item, index) => (
+                      <div className=" d-flex flex-column justify-content-center align-items-center">
+                        <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                          <p
+                            className={`${spanDarkDim}  spanText4 `}
+                            style={{ whiteSpace: "stable" }}
+
+                          >
+                            Date -02/07/2024 <br /> Event - Alpha <br />
+                            Notes - We have accrued 10 billion pXEN for DAV
+                            Holders. 100 billion is our target. pXEN to be
+                            airdropped to DAV holders. If it is within our price
+                            range, we will keep buying and remove the friction
+                            to burn for DBXEN. Verified and Immutable <br />
+                            Link - 0x6e1Bdee57A8cD6C12c71f0fF7A6E67D9d1982dE9
+                          </p>
+                        </div>
+                        <hr className="w-100" />
+                      </div>
+                      <div className=" d-flex flex-column justify-content-center align-items-center">
+                        <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                          <p
+                            className={`${spanDarkDim} spanText3`}
+                            style={{ whiteSpace: "stable" }}
+                          >
+                            Date -02/07/2024 <br /> Event - Alpha <br />
+                            Notes - Market-making strategy for July will be
+                            announced within 7 days
+                            <br />
+                            Link - n/a
+                          </p>
+                        </div>
+                        {/* <hr className="w-100" /> */}
+                      </div>
+                      {/* {data.map((item, index) => (
                         <React.Fragment key={index}>
                           <div className="d-flex align-items-center justify-content-center flex-grow-1">
                             <div
@@ -1864,60 +1689,7 @@ export default function TrackingPage({ children }) {
                           </div>
                           <hr className="w-100" />
                         </React.Fragment>
-                      ))}
-                      {/* <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "10px" }}
-                        >
-                          https://system-state-documentation.gitbook.io/system-state
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          {""}
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          https://systemstate.io/
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          0x6e1Bdee57A8cD6C12c71f0fF7A6E67D9d1982dE9
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          {""}
-                        </div>
-                      </div>
-                      <hr className="w-100" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          n/a
-                        </div>
-                      </div> */}
+                      ))} */}
                     </div>
                   </div>
                 </div>

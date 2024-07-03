@@ -127,9 +127,38 @@ input {
 .tooltips-container {
   margin-top: 107px;
 }
+.main-container {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+.container {
+  margin-top: -20px; /* Adjust margin as needed */
+}
 
+.spanText5 {
+  margin-right: 795px;
+}
+.spanText1 {
+  margin-right: 1120px;
+  /* display: flex; */
+}
+.spanText2 {
+  margin-right: 1060px;
+  /* display: flex; */
+}
+.spanText3 {
+  margin-right: 750px;
+  /* display: flex; */
+}
+.spanText4{
+  margin-left: 3px;
+}
 
-
+hr {
+  border: 1px solid #444; /* Make sure to set this to your desired color */
+  width: 100%;
+}
 
 /* Add more styling as per your theme */
 
