@@ -851,7 +851,7 @@ export default function TrackingPage({ children }) {
                           }`}
                         >
                           <p>
-                            CONTRACT VERIFIED AND IMMUTABLE -<br />
+                            CONTRACT VERIFIED AND IMMUTABLE <br />
                             <Link
                               to={statetokenNavigate}
                               target="_blank"
@@ -1099,7 +1099,7 @@ export default function TrackingPage({ children }) {
                           </div>
                           <form>
                             <input
-                              className={`form-control inputactive input-padding place-padding ${block} ${textTitle} ${
+                              className={` form-control inputactive input-padding place-padding ${block} ${textTitle} ${
                                 theme === "lightTheme"
                                   ? "depositInputLight input-placeholder-light"
                                   : ""
@@ -1125,6 +1125,7 @@ export default function TrackingPage({ children }) {
                                 height: "40px", // Adjust height as needed
                                 padding: "5px", // Adjust padding as needed
                                 fontWeight: "normal",
+                                fontSize: "15px",
                               }}
                             />
                           </form>
@@ -1512,10 +1513,11 @@ export default function TrackingPage({ children }) {
               </div>
             ) : isAlpha ? (
               <>
-                <div className="container">
-                  <div className="row g-lg-10">
+                <div className="main-container">
+                  <div className="row g-lg-10 " >
                     <div
-                      className={`col-md-3 border-right ${borderDarkDim} d-flex flex-column justify-content-center`}
+                      className={`col-md-3 border-right ${borderDarkDim} d-flex flex-column justify-content-center align-items-center`}
+                      style={{ minHeight: '50rem' }}
                     >
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
@@ -1525,7 +1527,7 @@ export default function TrackingPage({ children }) {
                           DATE
                         </div>
                       </div>
-                      <hr className="my-3" />
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
@@ -1534,34 +1536,16 @@ export default function TrackingPage({ children }) {
                           01/07/2024
                         </div>
                       </div>
-                      <hr className="my-3" />
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
                           style={{ textAlign: "center", fontSize: "12px" }}
                         >
-                          01/07/2024
+                          {""}
                         </div>
                       </div>
-                      <hr className="my-3" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          02/07/2024{" "}
-                        </div>
-                      </div>
-                      <hr className="my-3" />
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <div
-                          className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
-                        >
-                          02/07/2024{" "}
-                        </div>
-                      </div>
-                      <hr className="my-3" />
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
@@ -1570,7 +1554,25 @@ export default function TrackingPage({ children }) {
                           02/07/2024
                         </div>
                       </div>
-                      <hr className="my-3" />
+                      <hr className="w-100" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          02/07/2024
+                        </div>
+                      </div>
+                      <hr className="w-100" />
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                        <div
+                          className={`spanText ${spanDarkDim} fs-9`}
+                          style={{ textAlign: "center", fontSize: "12px" }}
+                        >
+                          02/07/2024
+                        </div>
+                      </div>
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
@@ -1582,7 +1584,8 @@ export default function TrackingPage({ children }) {
                     </div>
 
                     <div
-                      className={`col-md-3 border-right ${borderDarkDim} d-flex flex-column justify-content-center`}
+                      className={`col-md-3 border-right ${borderDarkDim} d-flex flex-column justify-content-center align-items-center`}
+                      style={{ minHeight: '50rem' }}
                     >
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
@@ -1592,7 +1595,7 @@ export default function TrackingPage({ children }) {
                           EVENT
                         </div>
                       </div>
-                      <hr className="my-3" />
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
@@ -1601,7 +1604,7 @@ export default function TrackingPage({ children }) {
                           Documents
                         </div>
                       </div>
-                      <hr className="my-3" />
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
@@ -1610,7 +1613,7 @@ export default function TrackingPage({ children }) {
                           Document
                         </div>
                       </div>
-                      <hr className="my-3" />
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
@@ -1619,7 +1622,7 @@ export default function TrackingPage({ children }) {
                           Website
                         </div>
                       </div>
-                      <hr className="my-3" />
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
@@ -1628,7 +1631,7 @@ export default function TrackingPage({ children }) {
                           Smart Contract
                         </div>
                       </div>
-                      <hr className="my-3" />
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
@@ -1637,7 +1640,7 @@ export default function TrackingPage({ children }) {
                           Alpha
                         </div>
                       </div>
-                      <hr className="my-3" />
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
@@ -1649,7 +1652,8 @@ export default function TrackingPage({ children }) {
                     </div>
 
                     <div
-                      className={`col-md-3 border-right ${borderDarkDim} d-flex flex-column justify-content-center`}
+                      className={`col-md-3 border-right ${borderDarkDim} d-flex flex-column justify-content-center align-items-center`}
+                      style={{ minHeight: '50rem',marginTop:"10px" }}
                     >
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
@@ -1659,7 +1663,7 @@ export default function TrackingPage({ children }) {
                           NOTES
                         </div>
                       </div>
-                      <hr className="my-3" />
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
@@ -1668,26 +1672,25 @@ export default function TrackingPage({ children }) {
                           Launch documentation
                         </div>
                       </div>
-                      <hr className="my-3" />
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
                           style={{ textAlign: "center", fontSize: "12px" }}
                         >
-                          Quick guide{" "}
+                          Quick guide
                         </div>
                       </div>
-                      <hr className="my-3" />
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
                           style={{ textAlign: "center", fontSize: "12px" }}
                         >
-                          Launch website{" "}
+                          Launch website
                         </div>
                       </div>
-
-                      <hr className="my-3" />
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
@@ -1697,7 +1700,7 @@ export default function TrackingPage({ children }) {
                           Immutable
                         </div>
                       </div>
-                      <hr className="my-3" />
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
@@ -1709,7 +1712,7 @@ export default function TrackingPage({ children }) {
                           range and remove the friction to burn for DBXEN.
                         </div>
                       </div>
-                      <hr className="my-3" />
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
@@ -1721,34 +1724,38 @@ export default function TrackingPage({ children }) {
                       </div>
                     </div>
 
-                    <div className="col-md-3 d-flex flex-column justify-content-center">
-                      <div className="d-flex align-items-center justify-content-center flex-grow-1">
+                    <div className="col-md-3 d-flex flex-column justify-content-center align-items-center">
+                      <div className="d-flex align-items-center justify-content-center flex-grow-1" >
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
+                          style={{
+                            textAlign: "center",
+                            fontSize: "12px",
+                            marginTop: "-5px",
+                          }}
                         >
                           LINKS
                         </div>
                       </div>
-                      <hr className="my-3" />
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
-                          style={{ textAlign: "center", fontSize: "12px" }}
+                          style={{ textAlign: "center", fontSize: "10px" }}
                         >
                           https://system-state-documentation.gitbook.io/system-state
                         </div>
                       </div>
-                      {/* <hr className="my-3" /> */}
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
                           style={{ textAlign: "center", fontSize: "12px" }}
                         >
-                          {" "}
+                          {""}
                         </div>
                       </div>
-                      <hr className="my-3" />
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
@@ -1757,23 +1764,25 @@ export default function TrackingPage({ children }) {
                           https://systemstate.io/
                         </div>
                       </div>
-                      <hr className="my-3" />
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
                           style={{ textAlign: "center", fontSize: "12px" }}
                         >
-                          0x6e1Bdee57A8cD6C12c71f0fF7A6E67D9d1982dE9{" "}
+                          0x6e1Bdee57A8cD6C12c71f0fF7A6E67D9d1982dE9
                         </div>
                       </div>
-                      {/* <hr className="my-3" /> */}
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}
                           style={{ textAlign: "center", fontSize: "12px" }}
-                        ></div>
+                        >
+                          {""}
+                        </div>
                       </div>
-                      <hr className="my-3" />
+                      <hr className="w-100" />
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
                         <div
                           className={`spanText ${spanDarkDim} fs-9`}

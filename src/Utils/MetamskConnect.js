@@ -114,7 +114,7 @@ export default function MetamskConnect({ children }) {
       if (['943','369', '80002', '11155111', '5', '80001'].includes(networkId)) {
         return metamaskAccounts[0];
       } else {
-        alert('Connect to Mumbai, Sepolia, Pulsechain');
+        alert('Connect to Pulsechain');
         throw new Error('Connect to Mumbai Network');
       }
     } catch (error) {

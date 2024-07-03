@@ -54,8 +54,9 @@ const PSD_ADDRESS = "0x1a0515aA54e013F37Eb6A2565Ebf037bA2A9666E"// live testnet 
 // const state_token = "0x0B415D5482918A11B4Dc8bF68169E89293Cd3a02"  // for final live testnet.
 // const state_token = "0xB0C278AD98c0a43608889cF317Bd337921cabC51"  //live Dav token with pDXN.
 
-const LOAN = "0xbe4F7C4DF748cE32A5f4aADE815Bd7743fB0ea51"  //  pDXN token contract address (LOAN testnet address.).
-const pDXN = "0x6fE0ae3D5c993a3073333134db70613B0cb88a31"  //  pDXN token contract address (LOAN testnet address.).
+const LOAN = "0xbe4F7C4DF748cE32A5f4aADE815Bd7743fB0ea51"  //  loan token contract address (LOAN testnet address.).
+
+const pDXN = "0x6fE0ae3D5c993a3073333134db70613B0cb88a31"  //  pDXN token contract address (PDXN mainnet address.).
 
 
 // ==> mainnet section

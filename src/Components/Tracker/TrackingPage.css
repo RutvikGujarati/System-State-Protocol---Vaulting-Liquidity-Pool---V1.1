@@ -99,13 +99,29 @@
   font-family: "Roboto", sans-serif;
   color: #fff; /* Adjust color as needed */
 }
+input::placeholder {
+  text-align: center;
+  font-size: 15px;
+}
 
+input {
+  text-align: left;
+}
 
+.form-control {
+  border: 1px solid #323b4c; /* Match the border color and style of the contract box */
+  border-radius: 4px; /* Adjust border radius if needed */
+}
 .mint-two {
   margin-bottom: 15px;
 }
 .mint-five {
   margin-bottom: 30px;
+}
+
+/* styles.css */
+.custom-row-height {
+  min-height: 200px; /* Adjust the value based on your needs */
 }
 
 .tooltips-container {
@@ -127,6 +143,10 @@
 .info-item2  .contract1{
   margin-left: 1px;
 }
+
+/* .hrpa{
+  margin-top: -20px;
+} */
 @media (max-width: 992px) {
   .border-right {
     border-right: none !important;
