@@ -53,7 +53,7 @@ export default function TrackingPage({ children }) {
   let dark = theme === "lightTheme" && "text-dark";
 
   const location = useLocation();
-  const isHome = location.pathname === "/vlp";
+  const isHome = location.pathname === "/mint";
   const isAlpha = location.pathname === "/alpharoom";
   const isInflation = location.pathname === "/inflation-bank";
   const isHei = !isHome && !isAlpha && !isInflation && "hei";
@@ -115,6 +115,8 @@ export default function TrackingPage({ children }) {
       return `https://mumbai.polygonscan.com/address`;
     } else if ((await networkName) === "Pulsechain Testnet") {
       return `https://scan.v4.testnet.pulsechain.com/#/address`;
+    } else if ((await networkName) === "Pulsechain mainnet") {
+      return `https://otter.pulsechain.com/address`;
     } else {
       return `https://mumbai.polygonscan.com/address`;
     }
@@ -884,8 +886,8 @@ export default function TrackingPage({ children }) {
                               : ""
                           }`}
                         >
-                          <p>
-                            CONTRACT VERIFIED AND IMMUTABLE <br />
+                          <p style={{ margin: 0 }}>
+                            CONTRACT VERIFIED - {""}
                             <Link
                               to={statetokenNavigate}
                               target="_blank"
@@ -921,9 +923,9 @@ export default function TrackingPage({ children }) {
                           data-tooltip="CONTRACT RENOUNCED"
                           data-flow="bottom"
                         >
-                          <i
+                          {/* <i
                             className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                          ></i>
+                          ></i> */}
                         </span>
                       </div>
                     </div>
@@ -1133,7 +1135,7 @@ export default function TrackingPage({ children }) {
                           </div>
                           <form>
                             <input
-                              className={` form-control inputactive input-padding place-padding ${block} ${textTitle} ${
+                              className={` form-control   inputactive input-padding place-padding ${block} ${textTitle} ${
                                 theme === "lightTheme"
                                   ? "depositInputLight input-placeholder-light"
                                   : ""
@@ -1145,7 +1147,7 @@ export default function TrackingPage({ children }) {
                                 theme === "darkTheme"
                                   ? "depositInputDark darkColor input-placeholder-dark"
                                   : ""
-                              }`}
+                              }${theme === "dimTheme" && "dimThemeBtnBg"}`}
                               pattern="[0-9,.]*" // Only allow digits, commas, and dots
                               type="text"
                               disabled={isDashboardInputDisabled}
@@ -1156,7 +1158,7 @@ export default function TrackingPage({ children }) {
                               style={{
                                 backgroundColor: "transparent",
                                 width: "235px",
-                                height: "40px", // Adjust height as needed
+                                height: "37px", // Adjust height as needed
                                 padding: "5px", // Adjust padding as needed
                                 fontWeight: "normal",
                                 fontSize: "15px",
@@ -1168,6 +1170,7 @@ export default function TrackingPage({ children }) {
                     </div>
                     <div className="d-flex bt-padding align-items-center pumpBoxImg">
                       <button
+                        disabled={true}
                         onClick={(e) => {
                           isHandleDeposit(e);
                         }}
@@ -1175,6 +1178,9 @@ export default function TrackingPage({ children }) {
                           (theme === "darkTheme" && "firstdumDark") ||
                           (theme === "dimTheme" && "dimThemeBg")
                         } `}
+                        style={{
+                          cursor: "not-allowed",
+                        }}
                       >
                         <img
                           src={fisrtPumpBrt}
@@ -1199,12 +1205,12 @@ export default function TrackingPage({ children }) {
                           className={`${textTitle} `}
                           style={{ fontSize: "11px", marginLeft: "60px" }}
                         >
-                          Contract Address{" "}
+                          {/* Contract Address{" "} */}
                         </div>
 
                         <div className={`varSize ${spanDarkDim}`}>
                           <div
-                            style={{ marginTop: "10px", marginRight: "35px" }}
+                            style={{ marginTop: "-50px", marginRight: "35px" }}
                             className={`info-item2  ${
                               (theme === "darkTheme" && "Theme-btn-block") ||
                               (theme === "dimTheme" && "dimThemeBtnBg")
@@ -1212,13 +1218,13 @@ export default function TrackingPage({ children }) {
                           >
                             <p className="contract">
                               Contract Address{" "}
-                              <Link
+                              <div
                                 // to={navigateToExplorer}
                                 target="_blank"
                                 className={`info-link ${textTitle} ${spanDarkDim}`}
                               >
                                 <p className="contract1"> PENDING AUDIT</p>
-                              </Link>
+                              </div>
                             </p>
                           </div>
                         </div>
@@ -1554,12 +1560,18 @@ export default function TrackingPage({ children }) {
                       className={` d-flex flex-column justify-content-center align-items-center`}
                     >
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <p className={`${spanDarkDim} spanText5`} >
+                        <p className={`${spanDarkDim} spanText5`}>
                           Date - 01/07/2024 <br />
                           Event - Documents <br />
                           Notes - Launch documentation
                           <br /> Link -
-                          https://system-state-documentation.gitbook.io/system-state
+                          <a
+                            href="https://system-state-documentation.gitbook.io/system-state"
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            https://system-state-documentation.gitbook.io/system-state
+                          </a>
                         </p>
                       </div>
                       <hr className="w-100" />
@@ -1586,7 +1598,14 @@ export default function TrackingPage({ children }) {
                           Date - 01/07/2024 <br />
                           Event - Document <br />
                           Notes - Quick guide
-                          <br /> Link -
+                          <br /> Link -{" "}
+                          <a
+                            href="https://systemstate-mainnet-test.netlify.app/static/media/Quick%20Guide%20-%20System%20State%20V1.5.d612ee6d013ca3f8a7ad.pdf"
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Quick Guide
+                          </a>
                         </p>
                       </div>
                       <hr className="w-100" />
@@ -1614,7 +1633,14 @@ export default function TrackingPage({ children }) {
                           <br />
                           Event - Website <br />
                           Notes - Launch website
-                          <br /> Link - https://systemstate.io/
+                          <br /> Link -{" "}
+                          <a
+                            href="https://systemstate.io"
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            https://systemstate.io/
+                          </a>
                         </p>
                       </div>
 
@@ -1636,20 +1662,26 @@ export default function TrackingPage({ children }) {
 
                     <div className=" d-flex flex-column justify-content-center align-items-center">
                       <div className="d-flex align-items-center justify-content-center flex-grow-1">
-                        <p className={`${spanDarkDim} spanText3`} >
+                        <p className={`${spanDarkDim} spanText3`}>
                           Date -02/07/2024 <br /> Event - Smart Contract <br />
                           Notes - We deployed the DAVPLS smart contract.
-                          Verified and Immutable <br />
-                          Link - 0x6e1Bdee57A8cD6C12c71f0fF7A6E67D9d1982dE9
+                          <br />
+                          Link -{" "}
+                          <a
+                            href="https://repo.sourcify.dev/contracts/full_match/369/0x6e1Bdee57A8cD6C12c71f0fF7A6E67D9d1982dE9/"
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            0x6e1Bdee57A8cD6C12c71f0fF7A6E67D9d1982dE9
+                          </a>
                         </p>
                       </div>
-                      <hr className="w-100" />
+                      {/* <hr className="w-100" />
                       <div className=" d-flex flex-column justify-content-center align-items-center">
                         <div className="d-flex align-items-center justify-content-center flex-grow-1">
                           <p
                             className={`${spanDarkDim}  spanText4 `}
                             style={{ whiteSpace: "stable" }}
-
                           >
                             Date -02/07/2024 <br /> Event - Alpha <br />
                             Notes - We have accrued 10 billion pXEN for DAV
@@ -1661,8 +1693,8 @@ export default function TrackingPage({ children }) {
                           </p>
                         </div>
                         <hr className="w-100" />
-                      </div>
-                      <div className=" d-flex flex-column justify-content-center align-items-center">
+                      </div> */}
+                      {/* <div className=" d-flex flex-column justify-content-center align-items-center">
                         <div className="d-flex align-items-center justify-content-center flex-grow-1">
                           <p
                             className={`${spanDarkDim} spanText3`}
@@ -1675,8 +1707,8 @@ export default function TrackingPage({ children }) {
                             Link - n/a
                           </p>
                         </div>
-                        {/* <hr className="w-100" /> */}
-                      </div>
+                        <hr className="w-100" />
+                      </div> */}
                       {/* {data.map((item, index) => (
                         <React.Fragment key={index}>
                           <div className="d-flex align-items-center justify-content-center flex-grow-1">

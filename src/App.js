@@ -23,7 +23,7 @@ function App() {
 
   const navigate = useNavigate();
   const navigateToDEX = async () => {
-    navigate('/vlp');
+    navigate('/mint');
   };
 
   const navigateToDocs = async () => {
@@ -41,7 +41,7 @@ function App() {
               <Route index element={<Website />} />
               <Route path="/" element={<Layout />}>
 
-              <Route path="/vlp" element={<Index />} />
+              <Route path="/mint" element={<Index />} />
               <Route path="/alpharoom" element={<Alpha />} />
               <Route path="/inflation-bank" element={<Inflation />} />
               </Route>

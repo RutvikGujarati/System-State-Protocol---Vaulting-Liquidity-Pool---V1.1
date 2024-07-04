@@ -72,7 +72,7 @@ export default function DAV() {
     }
   };
   const location = useLocation();
-  const isHome = location.pathname === "/vlp";
+  const isHome = location.pathname === "/mint";
   const isAlpha = location.pathname === "/alpharoom";
   const isInflation = location.pathname === "/inflation-bank";
 
@@ -235,7 +235,7 @@ export default function DAV() {
           <>
             <div style={pageStyle}>
               <p style={{ marginLeft: "550px", marginTop: "-50px" }}>
-                DAV token must remain in the wallet that minted them.
+                DAV tokens must remain in the wallet that minted them.
               </p>
             </div>
           </>

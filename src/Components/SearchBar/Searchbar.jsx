@@ -51,7 +51,7 @@ export default function Searchbar() {
     }
   };
   const location = useLocation();
-  const isHome = location.pathname === "/vlp";
+  const isHome = location.pathname === "/mint";
   const isAlpha = location.pathname === "/alpharoom";
   const isInflation = location.pathname === "/inflation-bank";
   const isVisible = !isHome && "isVisible";
@@ -421,7 +421,7 @@ export default function Searchbar() {
                         (theme === "dimTheme" && "dimThemeBtnBg")
                       }`}
                     >
-                      <Link to={"/vlp"}>
+                      <Link to={"/mint"}>
                         <p className="mint-dav-tokens">MINT DAV TOKENS</p>
                       </Link>
                     </div>
@@ -458,7 +458,7 @@ export default function Searchbar() {
                         (theme === "dimTheme" && "dimThemeBtnBg")
                       }`}
                     >
-                      <Link to={"/vlp"}>
+                      <Link to={"/mint"}>
                         <p className="mint-dav-tokens">MINT DAV TOKENS</p>
                       </Link>
                     </div>

@@ -77,6 +77,39 @@ export default function MetamskConnect({ children }) {
     }
   };
 
+  const switchToPulsechainMainnet = async () => {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x171' }], // '0x171' is the hexadecimal representation of 369 for Pulsechain Mainnet
+      });
+    } catch (switchError) {
+      // This error code indicates that the chain has not been added to MetaMask
+      if (switchError.code === 4902) {
+        try {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [
+              {
+                chainId: '0x171',
+                chainName: 'Pulsechain Mainnet',
+                rpcUrls: ['https://rpc.pulsechain.com/'], // Replace with the actual RPC URL
+                nativeCurrency: {
+                  name: 'Pulse',
+                  symbol: 'PLS',
+                  decimals: 18,
+                },
+                blockExplorerUrls: ['https://explorer.pulsechain.com/'], // Replace with the actual block explorer URL
+              },
+            ],
+          });
+        } catch (addError) {
+          console.error('Failed to add Pulsechain Mainnet to MetaMask:', addError);
+        }
+      }
+    }
+  };
+
   const ProvidermetamaskLogin = async () => {
     if (loading) return; // Prevent multiple requests
 
@@ -111,11 +144,16 @@ export default function MetamskConnect({ children }) {
         method: 'eth_requestAccounts',
       });
       const networkId = window.ethereum.networkVersion;
-      if (['943','369', '80002', '11155111', '5', '80001'].includes(networkId)) {
+      if (['943', '369'].includes(networkId)) {
         return metamaskAccounts[0];
       } else {
-        alert('Connect to Pulsechain');
-        throw new Error('Connect to Mumbai Network');
+        const shouldSwitch = window.confirm('You are not connected to Pulsechain Mainnet. switch to Pulsechain Mainnet?');
+        if (shouldSwitch) {
+          await switchToPulsechainMainnet();
+        } else {
+          alert('Please connect to Pulsechain Mainnet to proceed.');
+          throw new Error('User rejected switching to Pulsechain Mainnet');
+        }
       }
     } catch (error) {
       console.error(error);
@@ -151,7 +189,6 @@ export default function MetamskConnect({ children }) {
       case '1':
         return 'ETH';
       case '943':
-        return 'PLS';
       case '369':
         return 'PLS';
       default:

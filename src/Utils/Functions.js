@@ -196,7 +196,7 @@ export default function Functions({ children }) {
     }
     const BuyTokens = async (quantity, price) => {
         try {
-            allInOnePopup(null, 'Minting DAV Tokens', null, `OK`, null)
+            allInOnePopup(null, 'Minting DAVPLS', null, `OK`, null)
 
             const contract = await getStatetokenContract();
             const value = ethers.utils.parseEther(price.toString());
@@ -225,7 +225,7 @@ export default function Functions({ children }) {
             const approveTx = await contract.approve(state_token, value);
             await approveTx.wait();
 
-            allInOnePopup(null, 'Step 2 - Minting DAV Tokens', null, `OK`, null)
+            allInOnePopup(null, 'Step 2 - Minting DAVPLS', null, `OK`, null)
 
             let BuyTx = await state.mintWithPDXN(
                 quantity
