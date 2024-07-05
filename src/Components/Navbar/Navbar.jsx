@@ -106,7 +106,7 @@ export default function Index() {
 
   const location = useLocation();
   const currentPath = location.pathname;
-  const isCreateVaultsPage = currentPath === "/vlp";
+  const isCreateVaultsPage = currentPath === "/inflation-bank";
 
   let backgroundColor = "transparent";
   if (isCreateVaultsPage) {
@@ -144,7 +144,7 @@ export default function Index() {
               <div className="token-price me-0.1">
                 <Link
                   className={`btn btn-lg btn-white mx-1 content-center p-0 ${buttonClass}`}
-                  to="/vlp"
+                  to="/inflation-bank"
                   style={{ backgroundColor }}
                 >
                   <div className="theme-btn-main">

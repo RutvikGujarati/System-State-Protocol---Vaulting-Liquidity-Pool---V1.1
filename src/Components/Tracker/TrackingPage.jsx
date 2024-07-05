@@ -48,7 +48,7 @@ export default function TrackingPage({ children }) {
     (theme === "dimTheme" && "dimSh") ||
     (theme === "darkTheme" && "darkSh");
   const location = useLocation();
-  const isHome = location.pathname == "/vlp";
+  const isHome = location.pathname == "/inflation-bank";
   const isHei = !isHome && "hei";
 
   const {

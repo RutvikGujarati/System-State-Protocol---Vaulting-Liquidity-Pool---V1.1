@@ -22,7 +22,7 @@ export default function Index() {
 
   return (
     <div className={`${theme === "lightTheme" && "light-bg-for-theme"}`}>
-       <Layout />
+       {/* <Layout /> */}
       <Searchbar />
       <TrackingPage />
       <div

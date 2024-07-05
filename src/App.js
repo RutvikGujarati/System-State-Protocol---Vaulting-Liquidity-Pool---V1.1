@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from "react";
 import Layout from "./Protected Route/Layout";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import Index from "./pages/Landing Page/Index";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCloudMoon, faGasPump, faMoon, faSun, fas } from '@fortawesome/free-solid-svg-icons';
@@ -21,7 +21,7 @@ function App() {
 
   const navigate = useNavigate();
   const navigateToDEX = async () => {
-    navigate('/vlp');
+    navigate('/inflation-bank');
   };
 
   const navigateToDocs = async () => {
@@ -36,10 +36,10 @@ function App() {
         <MetamskConnect>
           <Functions>
             <Routes>
-              <Route index element={<Website />} />
-
-              <Route path="/vlp" element={<Index />} />
-
+              <Route path="/" element={<Navigate to="/inflation-bank" replace />} />
+              <Route path="/inflation-bank" element={<Layout />}>
+                <Route index element={<Index />} />
+              </Route>
             </Routes>
           </Functions>
         </MetamskConnect>

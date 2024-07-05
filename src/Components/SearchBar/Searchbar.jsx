@@ -51,7 +51,7 @@ export default function Searchbar() {
     }
   };
   const location = useLocation();
-  const isHome = location.pathname == "/vlp";
+  const isHome = location.pathname == "/inflation-bank";
   const isVisible = !isHome && "isVisible";
   const [totalDeposits, setTotalDeposits] = useState(0);
   const [selectedValue, setSelectedValue] = useState("Deposit");
@@ -363,15 +363,15 @@ export default function Searchbar() {
                   style={{
                     fontSize: "14px",
                     color: "#ffffff",
-                    marginBottom: "15px",
+                    marginTop: "25px",
                     marginLeft: "10px",
-                    marginTop: "-30px",
+                    // marginTop: "-30px",
                   }}
                 >
-                  Vaulting Liquidity Pools (VLP) is the process through which a
+                  {/* Vaulting Liquidity Pools (VLP) is the process through which a
                   smart contract employs ratio vaults to mitigate token
                   inflation-erosion and directly create multiple copies of your
-                  crypto assets over natural market cycles.
+                  crypto assets over natural market cycles. */}
                 </div>
                 {isHome ? (
                   <>
@@ -428,7 +428,11 @@ export default function Searchbar() {
                             isHandleDeposit(e);
                           }}
                         >
-                          <img src={fistPump} alt="depositBtn" className="w-100 h-100" />
+                          <img
+                            src={fistPump}
+                            alt="depositBtn"
+                            className="w-100 h-100"
+                          />
                         </button>
                       </form>
                     </div>
@@ -458,9 +462,9 @@ export default function Searchbar() {
                 )}
               </div>
               <a
-                href="/"
-                target="_blank"
-                rel="noopener noreferrer"
+                // href="/"
+                // target="_blank"
+                // rel="noopener noreferrer"
                 className="serachIconLink State searchBar2_small d-flex flex-wrap justify-content-lg-center justify-content-md-start justify-content-sm-start"
               >
                 <div className="under-state">
