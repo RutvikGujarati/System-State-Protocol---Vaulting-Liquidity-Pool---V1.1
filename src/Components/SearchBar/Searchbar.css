@@ -49,14 +49,29 @@
 
 .info-item .mint-dav-tokens {
   margin-left: 90px;
-
 }
+
 .info-item .mint-dav-tokens a {
   text-decoration: none;
+  color: white;
 }
 
 .info-item a {
   text-decoration: none; /* Removes underline from links */
+  color: white;
+}
+.info-item a {
+  text-decoration: none; /* Removes underline from links */
+  color: blue;
+}
+.info-item.quick{
+  border: 1px solid blue !important;
+
+}
+.info-item.first,
+.info-item.second,
+.info-item.third {
+  border: 1px solid white !important;
 }
 
 .info-item.info-column.column-center.first {
@@ -78,6 +93,7 @@
 .info-item.quick {
   background-color: blue;
 }
+
 .lightThemeBtnBg {
   background-color: blue;
 }

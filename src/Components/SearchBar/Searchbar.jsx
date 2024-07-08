@@ -334,6 +334,8 @@ export default function Searchbar() {
   }, [socket]);
 
   const isOnInscription = "active";
+  const isActive = (path) => location.pathname === path;
+  const isDarkOrDimTheme = theme === 'darkTheme' || theme === 'dimTheme';
 
   return (
     <>
@@ -373,15 +375,15 @@ export default function Searchbar() {
                 </div>
                 {isHome ? (
                   <>
-                    <div className={`info-item quick `}>
+                    <div className={`info-item quick  `}>
                       <Link target="_blank" to={Quick_Guide}>
                         <p className="quick-guide">QUICK GUIDE</p>
                       </Link>
                     </div>
                     <div
-                      className={`info-item info-column column-center first ${
+                      className={` info-item info-column column-center first ${
                         (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBtnBg") ||
+                        (theme === "dimTheme" && "dimThemeBorder" ) ||
                         (theme === "lightTheme" && theme + " translite")
                       }`}
                     >
@@ -390,7 +392,7 @@ export default function Searchbar() {
                     <div
                       className={`info-item info-column column-center second ${
                         (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBtnBg")
+                        (theme === "dimTheme" && "dimThemeBorder")
                       } ${isOnInscription} `}
                     >
                       <Link to={"/inflation-bank"}>
@@ -398,10 +400,10 @@ export default function Searchbar() {
                       </Link>
                     </div>
                     <div
-                      className={`info-item info-column column-right ${
+                      className={`info-item info-column column-right third ${
                         (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBtnBg")
-                      }`}
+                        (theme === "dimTheme" && "dimThemeBorder")
+                      }  ${isOnInscription} `}
                     >
                       <Link to={"/alpharoom"}>
                         <p className="alpha-room">ALPHA ROOM</p>
@@ -418,7 +420,7 @@ export default function Searchbar() {
                     <div
                       className={`info-item info-column column-center first ${
                         (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBtnBg")
+                        (theme === "dimTheme" && "dimThemeBorder")
                       }`}
                     >
                       <Link to={"/mint"}>
@@ -428,7 +430,7 @@ export default function Searchbar() {
                     <div
                       className={`info-item info-column column-center second ${
                         (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBtnBg")
+                        (theme === "dimTheme" && "dimThemeBorder")
                       }`}
                     >
                       <Link to={"/inflation-bank"}>
@@ -436,9 +438,9 @@ export default function Searchbar() {
                       </Link>
                     </div>
                     <div
-                      className={`info-item info-column column-right ${
+                      className={`info-item info-column column-right third ${
                         (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBtnBg") ||
+                        (theme === "dimTheme" && "dimThemeBorder") ||
                         (theme === "lightTheme" && theme + " translite")
                       }`}
                     >
@@ -455,7 +457,7 @@ export default function Searchbar() {
                     <div
                       className={`info-item info-column column-center first ${
                         (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBtnBg")
+                        (theme === "dimTheme" && "dimThemeBorder")
                       }`}
                     >
                       <Link to={"/mint"}>
@@ -465,16 +467,16 @@ export default function Searchbar() {
                     <div
                       className={`info-item info-column column-center second ${
                         (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBtnBg") ||
+                        (theme === "dimTheme" && "dimThemeBorder") ||
                         (theme === "lightTheme" && theme + " translite")
                       }`}
                     >
                       <p className="inflation-bank">INFLATION BANK</p>
                     </div>
                     <div
-                      className={`info-item info-column column-right ${
+                      className={`info-item info-column column-right third ${
                         (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBtnBg")
+                        (theme === "dimTheme" && "dimThemeBorder")
                       }`}
                     >
                       <Link to={"/alpharoom"}>

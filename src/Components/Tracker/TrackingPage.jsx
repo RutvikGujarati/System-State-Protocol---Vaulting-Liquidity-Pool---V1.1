@@ -186,7 +186,7 @@ export default function TrackingPage({ children }) {
           params: {
             type: "ERC20",
             options: {
-              address: "0x0B415D5482918A11B4Dc8bF68169E89293Cd3a02",
+              address: "0x6e1Bdee57A8cD6C12c71f0fF7A6E67D9d1982dE9",
               symbol: "DAVPLS",
               decimals: "18",
               image: { fisrtPumpBrt },
@@ -982,7 +982,7 @@ export default function TrackingPage({ children }) {
                     >
                       <span
                         className={`${tooltip} heightfixBug hoverText tooltipAlign`}
-                        data-tooltip="SEE WHITEPAPER FOR MORE INFO"
+                        data-tooltip="DAV TOKENS MUST REMAIN IN THE WALLET THAT MINTED THEM."
                         data-flow="bottom"
                       >
                         <i
@@ -1047,7 +1047,7 @@ export default function TrackingPage({ children }) {
                     <div className="tooltips d-flex align-items-end pb-3">
                       <span
                         className={`${tooltip} hoverText tooltipAlign`}
-                        data-tooltip="SEE WHITEPAPER FOR MORE INFO"
+                        data-tooltip="DAV TOKENS MUST REMAIN IN THE WALLET THAT MINTED THEM."
                         data-flow="bottom"
                       >
                         <i
@@ -1103,7 +1103,7 @@ export default function TrackingPage({ children }) {
                     <div className="d-flex align-items-end pb-3">
                       <span
                         className={`${tooltip} hoverText tooltipAlign`}
-                        data-tooltip="SEE WHITEPAPER FOR MORE INFO"
+                        data-tooltip="DAV TOKENS MUST REMAIN IN THE WALLET THAT MINTED THEM."
                         data-flow="bottom"
                       >
                         <i
