@@ -270,9 +270,7 @@ export default function DAV() {
                   (theme === "lightTheme" && theme + " translite")
                 }`}
               >
-                <Link to={"/inflation-bank"}>
-                  <p className="inflation-bank">CLAIM REWARDS / AUTO-VAULTS</p>
-                </Link>
+                <p>CLAIM REWARDS / AUTO-VAULTS</p>
               </div>
 
               <div className="tracking" style={{ marginTop: "100px" }}>
@@ -314,12 +312,6 @@ export default function DAV() {
                               className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
                             >
                               <div className={`${textTitle} mint-two`}>
-                                {/* <div> CLAIM PLS REWARDS</div>
-                                <div className="varSize">
-                                  <span className={`spanText ${spanDarkDim}`}>
-                                    0 PLS
-                                  </span>
-                                </div> */}
                                 <div className="d-flex  button-group  ">
                                   <button
                                     className={`  box-4 items mx-2 glowing-button  ${
@@ -334,7 +326,7 @@ export default function DAV() {
                                     CLAIM
                                   </button>
                                   <span className={`spanValue2 ${spanDarkDim}`}>
-                                    500,000
+                                    0.00
                                   </span>
                                 </div>
                                 <div className="d-flex  button-group items">
@@ -346,30 +338,21 @@ export default function DAV() {
                                         ? "dimThemeBtnBg"
                                         : ""
                                     } ${theme}`}
-                                    // onClick={() => mintWithPDXN(2, 800)}
+                                    // onClick={() => mintWithPDXN(2, 0.00)}
                                   >
                                     AUTO-VAULT
                                   </button>
                                   <span className={`spanValue ${spanDarkDim}`}>
-                                    800
+                                    0.00
                                   </span>
+                                </div>
+                                <div className={`spanCenter1 ${spanDarkDim}`}>
+                                <span >
+                                  0.00
+                                </span>
                                 </div>
                               </div>
                             </div>
-                            {/* <div
-                              className="d-flex align-items-end pb-3 "
-                              style={{ marginBottom: "10px" }}
-                            >
-                              <span
-                                className={`${tooltip} heightfixBug hoverText tooltipAlign`}
-                                data-tooltip="INFLATION BANK REWARDS"
-                                data-flow="bottom"
-                              >
-                                <i
-                                  className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                                ></i>
-                              </span>
-                            </div> */}
                           </div>
                         </div>
                         <div
@@ -378,7 +361,7 @@ export default function DAV() {
                           <hr className="d-block d-lg-none d-md-none" />
                           <div
                             className="d-flex mint-token-container"
-                            style={{ marginTop: "-20px" }}
+                            // style={{ marginTop: "-20px" }}
                           >
                             <div className="margin-right">
                               <img
@@ -393,12 +376,6 @@ export default function DAV() {
                               className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
                             >
                               <div className={`${textTitle} `}>
-                                {/* <div> CLAIM PXEN REWARDS</div>
-                                <div className="varSize">
-                                  <span className={`spanText ${spanDarkDim}`}>
-                                    0 PXEN
-                                  </span>
-                                </div> */}
                                 <div className="d-flex  button-group items-a ">
                                   <button
                                     className={`  box-4 mx-1 glowing-button  ${
@@ -413,7 +390,7 @@ export default function DAV() {
                                     CLAIM
                                   </button>
                                   <span className={`spanValue2 ${spanDarkDim}`}>
-                                    500,000
+                                    0.00
                                   </span>
                                 </div>
                                 <div className="d-flex  button-group items-b">
@@ -425,41 +402,30 @@ export default function DAV() {
                                         ? "dimThemeBtnBg"
                                         : ""
                                     } ${theme}`}
-                                    // onClick={() => mintWithPDXN(2, 800)}
+                                    // onClick={() => mintWithPDXN(2, 0.00)}
                                   >
                                     AUTO-VAULT
                                   </button>
-                                  <span className={`spanValue2 ${spanDarkDim}`}>
-                                    800
+                                  <span className={`spanValue8 ${spanDarkDim}`}>
+                                    0.00
                                   </span>
                                 </div>
+                                <span className={`spanCenter ${spanDarkDim}`}>
+                                  0.00
+                                </span>
                               </div>
                             </div>
-                            {/* <div
-                              className="d-flex align-items-end pb-3 "
-                              style={{ marginBottom: "10px" }}
-                            >
-                              <span
-                                className={`${tooltip} heightfixBug hoverText tooltipAlign`}
-                                data-tooltip="INFLATION BANK REWARDS"
-                                data-flow="bottom"
-                              >
-                                <i
-                                  className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                                ></i>
-                              </span>
-                            </div> */}
                           </div>
                         </div>
                         <div
                           className={`col-md-4 border-right col-lg-3 d-flex flex-column justify-content-center ${borderDarkDim}`}
                         >
                           <hr className="d-block d-lg-none d-md-none" />
-                          <div className="d-flex mint-token-container"  style={{ marginTop: "-15px" }}>
-                            <div
-                              className="margin-right"
-                             
-                            >
+                          <div
+                            className="d-flex mint-token-container"
+                            // style={{ marginTop: "-15px" }}
+                          >
+                            <div className="margin-right">
                               <img
                                 src={pdxn}
                                 alt="Logo"
@@ -472,19 +438,6 @@ export default function DAV() {
                               className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
                             >
                               <div>
-                                {/* <div
-                                  className={`${textTitle} `}
-                                  style={{
-                                    marginTop: "-15px",
-                                  }}
-                                >
-                                  CLAIM PDXN REWARDS
-                                </div>
-                                <div className="varSize">
-                                  <span className={`spanText ${spanDarkDim}`}>
-                                    0 PDXN
-                                  </span>
-                                </div> */}
                                 <div className=" d-flex  button-group">
                                   <button
                                     className={`  box-4 mx-2 glowing-button  ${
@@ -499,7 +452,7 @@ export default function DAV() {
                                     CLAIM
                                   </button>
                                   <span className={`spanValue ${spanDarkDim}`}>
-                                    500,000
+                                    0.00
                                   </span>
                                 </div>
                                 <div className="d-flex  button-group">
@@ -516,27 +469,22 @@ export default function DAV() {
                                     AUTO-VAULT
                                   </button>
                                   <span className={`spanValue ${spanDarkDim}`}>
-                                    800
+                                    0.00
                                   </span>
                                 </div>
+                                <span className={`spanCenter ${spanDarkDim}`}>
+                                  0.00
+                                </span>
                               </div>
                             </div>
-                            {/* <div className="tooltips d-flex align-items-end pb-3">
-                              <span
-                                className={`${tooltip} hoverText tooltipAlign`}
-                                data-tooltip="INFLATION BANK REWARDS"
-                                data-flow="bottom"
-                              >
-                                <i
-                                  className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                                ></i>
-                              </span>
-                            </div> */}
                           </div>
                         </div>
                         <div className="col-lg-3 extraFlex">
                           <hr className="d-lg-none d-block my-3" />
-                          <div className="d-flex pt-1 mint-token-container"  style={{ marginTop: "-5px" }}>
+                          <div
+                            className="d-flex pt-1 mint-token-container"
+                            style={{ marginTop: "-5px" }}
+                          >
                             <div className="margin-right">
                               <img
                                 src={PFENIX}
@@ -549,14 +497,6 @@ export default function DAV() {
                             <div
                               className={`flex-grow-1 fontSize text-start justify-content-between ${textTheme}`}
                             >
-                              {/* <div className={`${textTitle} mint-thir`}>
-                                CLAIM PFENIX REWARDS
-                              </div>
-                              <div className="varSize">
-                                <span className={`spanText ${spanDarkDim}`}>
-                                  0 PFENIX
-                                </span>
-                              </div> */}
                               <div className=" d-flex  button-group ">
                                 <button
                                   className={`  box-4 mx-2 glowing-button  ${
@@ -571,12 +511,12 @@ export default function DAV() {
                                   CLAIM
                                 </button>
                                 <span className={`spanValue ${spanDarkDim}`}>
-                                  500,000
+                                  0.00
                                 </span>
                               </div>
                               <div className="d-flex  button-group ">
                                 <button
-                                  className={`  box-4 mx-2 glowing-button  ${
+                                  className={` box-4 mx-2 glowing-button  ${
                                     theme === "darkTheme"
                                       ? "Theme-btn-block"
                                       : theme === "dimTheme"
@@ -588,21 +528,13 @@ export default function DAV() {
                                   AUTO-VAULT
                                 </button>
                                 <span className={`spanValue ${spanDarkDim}`}>
-                                  800
+                                  0.00
                                 </span>
                               </div>
-                            </div>
-                            {/* <div className="d-flex align-items-end pb-3">
-                              <span
-                                className={`${tooltip} hoverText tooltipAlign`}
-                                data-tooltip="INFLATION BANK REWARDS"
-                                data-flow="bottom"
-                              >
-                                <i
-                                  className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                                ></i>
+                              <span className={`spanCenter ${spanDarkDim}`}>
+                                0.00
                               </span>
-                            </div> */}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -616,9 +548,7 @@ export default function DAV() {
                     (theme === "lightTheme" && theme + " translite")
                   }`}
                 >
-                  <Link to={"/alpharoom"}>
-                    <p className="alpha-room">ALPHA ROOM</p>
-                  </Link>
+                  <p className="alpha-room">ALPHA ROOM</p>
                 </div>
                 <div
                   className={`top-container ${
@@ -640,7 +570,7 @@ export default function DAV() {
                       }`}
                     >
                       <div className="row g-lg-10">
-                      <div
+                        <div
                           className={`col-md-4 border-right col-lg-3 d-flex flex-column justify-content-center ${borderDarkDim}`}
                         >
                           <hr className="d-block d-lg-none d-md-none" />
@@ -660,9 +590,13 @@ export default function DAV() {
                               <div>
                                 <div className="varSize">
                                   <span className={`spanTex ${spanDarkDim}`}>
-                                  PLS
+                                    PLS
                                   </span>
                                 </div>
+                                <span className={` ${spanDarkDim}`}>
+                                  Market making strategies has not commenced
+                                  yet.
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -687,9 +621,13 @@ export default function DAV() {
                               <div>
                                 <div className="varSize">
                                   <span className={`spanTex ${spanDarkDim}`}>
-                                  PXEN
+                                    PXEN
                                   </span>
                                 </div>
+                                <span className={` ${spanDarkDim}`}>
+                                  Market making strategies has not commenced
+                                  yet.
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -717,12 +655,16 @@ export default function DAV() {
                                     PDXN
                                   </span>
                                 </div>
+                                <span className={` ${spanDarkDim}`}>
+                                  Market making strategies has not commenced
+                                  yet.
+                                </span>
                               </div>
                             </div>
                           </div>
                         </div>
                         <div
-                          className={`col-md-4 border-right col-lg-3 d-flex flex-column justify-content-center ${borderDarkDim}`}
+                          className={`col-md-4  col-lg-3 d-flex flex-column justify-content-center `}
                         >
                           <hr className="d-block d-lg-none d-md-none" />
                           <div className="d-flex mint-token-container">
@@ -741,9 +683,13 @@ export default function DAV() {
                               <div>
                                 <div className="varSize">
                                   <span className={`spanTex ${spanDarkDim}`}>
-                                  PFENIX
+                                    PFENIX
                                   </span>
                                 </div>
+                                <span className={` ${spanDarkDim}`}>
+                                  Market making strategies has not commenced
+                                  yet.
+                                </span>
                               </div>
                             </div>
                           </div>

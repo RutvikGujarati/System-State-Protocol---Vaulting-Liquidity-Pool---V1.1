@@ -5,7 +5,7 @@ import { themeContext } from "../../App";
 import "../../Utils/Theme.css";
 import "./Searchbar.css";
 import { Web3WalletContext } from "../../Utils/MetamskConnect";
-import Quick_Guide from "../../Assets/Docs/Quick Guide - System State V1.5.pdf";
+import Quick_Guide from "../../Assets/Docs/Quick Guide - System State V1.6.pdf";
 import { Link, useLocation } from "react-router-dom";
 import fistPump from "../../Assets/High-Resolutions-Svg/Updated/fist pump small.svg";
 import SystemStateLogo from "../../Assets/High-Resolutions-Svg/Updated/logo.svg";
@@ -335,7 +335,7 @@ export default function Searchbar() {
 
   const isOnInscription = "active";
   const isActive = (path) => location.pathname === path;
-  const isDarkOrDimTheme = theme === 'darkTheme' || theme === 'dimTheme';
+  const isDarkOrDimTheme = theme === "darkTheme" || theme === "dimTheme";
 
   return (
     <>
@@ -375,15 +375,10 @@ export default function Searchbar() {
                 </div>
                 {isHome ? (
                   <>
-                    <div className={`info-item quick  `}>
-                      <Link target="_blank" to={Quick_Guide}>
-                        <p className="quick-guide">QUICK GUIDE</p>
-                      </Link>
-                    </div>
                     <div
-                      className={` info-item info-column column-center first ${
+                      className={` info-item info-column  column-center first ${
                         (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBorder" ) ||
+                        (theme === "dimTheme" && "dimThemeBorder") ||
                         (theme === "lightTheme" && theme + " translite")
                       }`}
                     >
@@ -412,11 +407,6 @@ export default function Searchbar() {
                   </>
                 ) : isAlpha ? (
                   <>
-                    <div className={`info-item quick `}>
-                      <Link target="_blank" to={Quick_Guide}>
-                        <p className="quick-guide">QUICK GUIDE</p>
-                      </Link>
-                    </div>
                     <div
                       className={`info-item info-column column-center first ${
                         (theme === "darkTheme" && "Theme-btn-block") ||
@@ -449,11 +439,6 @@ export default function Searchbar() {
                   </>
                 ) : isInflation ? (
                   <>
-                    <div className={`info-item quick `}>
-                      <Link target="_blank" to={Quick_Guide}>
-                        <p className="quick-guide">QUICK GUIDE</p>
-                      </Link>
-                    </div>
                     <div
                       className={`info-item info-column column-center first ${
                         (theme === "darkTheme" && "Theme-btn-block") ||

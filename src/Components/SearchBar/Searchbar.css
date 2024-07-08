@@ -75,8 +75,8 @@
 }
 
 .info-item.info-column.column-center.first {
-  margin-left: 210px;
-  margin-top: -47px;
+  margin-right: 450px;
+  margin-top: 130px;
 }
 
 .info-item.info-column.column-center.first .quick-guide {
@@ -98,7 +98,7 @@
   background-color: blue;
 }
 .info-item.info-column.column-center.second {
-  margin-left: 870px;
+  margin-left: 550px;
   margin-top: -46px;
 }
 

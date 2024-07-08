@@ -6,6 +6,7 @@ import { themeContext } from "../../App";
 import LogoTransparent from "../../Assets/LogoTransparent.png";
 import bnblogo from "../../Assets/bnb.png";
 import baseIcon from "../../Assets/base.png";
+import Quick_Guide from "../../Assets/Docs/Quick Guide - System State V1.6.pdf";
 import ton from "../../Assets/ton.png";
 import fantom from "../../Assets//fantom.png";
 import tron from "../../Assets/tron.png";
@@ -343,6 +344,18 @@ export default function Index() {
               >
                 Documentation
               </Link> */}
+
+              <div
+                className={`box-3 quicks ${
+                  (theme === "darkTheme" && "Theme-btn-block") ||
+                  (theme === "dimTheme" && "dimThemeBtnBg")
+                }`}
+                style={{ marginTop: "3px", fontSize: "10px" }}
+              >
+                <span className="text">
+                  <Link target="_blank" to={Quick_Guide}>QUICK GUIDE</Link>
+                </span>
+              </div>
               <div
                 className={`box-3 ${
                   (theme === "darkTheme" && "Theme-btn-block") ||
@@ -360,7 +373,6 @@ export default function Index() {
                       )}`
                     : "Not Connected"}
                 </span>
-                <span data-bs-toggle="tooltip" data-bs-placement="top"></span>
               </div>
             </div>
           </div>

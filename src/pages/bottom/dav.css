@@ -1,90 +1,93 @@
+.pad {
+  margin-top: -100px;
+}
+.info-title {
+  margin-left: 10px;
+}
 .information-container {
   display: flex;
   flex-direction: column;
   font-size: 14px;
   font-weight: bold;
-  margin-top: -10px;
 }
 
-.pad {
-  margin-top: -100px;
-}
+
 .info-header {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
 }
-.spanValue {
-  margin: 15px;
-  margin-left: 0px;
-}
-.spanValue5 {
-  margin: 15px;
+
+.spanValue,
+.spanValue2,
+.spanValue3,
+.spanValue4,
+.spanValue5,
+.spanValue8 {
+  margin: 10px 0;
   margin-top: 15px;
-  margin-left: 0px;
-}
-.spanValue2 {
-  margin: 10px;
-  margin-top: 15px;
-  margin-left: 0px;
-}
-.spanValue4 {
-  margin: 15px;
-  /* margin-top: 15px; */
-  margin-left: 25px;
+  
 }
 
 .info-item.info-columns.boxes.new1 {
-  margin-left: 100px;
-  margin-top: -25px;
-}
-.info-item.info-columns.box.new {
-  margin-left: 100px;
-  margin-top: -46px;
-}
-.info-item.info-columns.boxes {
-  margin-left: 100px;
-  margin-top: 30px;
+  background-color: #323b4c;
+  color: white;
   display: flex;
-}
-.info-item.info-columns.boxes p{
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
   margin-left: 100px;
-  display: flex;
-}
-.info-item.info-columns.box p{
-  margin-left: 50px;
-  display: flex;
+  margin-top: -30px;
 }
 
-.spanValue3 {
-  margin: 10px;
-  margin-left: -5px;
-}
-.button-group.items-a {
-  margin-left: 5px;
-}
-.button-group.items-b {
-  margin-left: 0px;
-}
-.button-group.items {
-  margin-left: 0px;
+.info-item.info-columns.box.new {
+  background-color: #323b4c;
+  color: white;
   display: flex;
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
+  margin-left: 100px;
+  margin-top: -50px;
 }
-.spanTex{
-  font-size: 25px;
+
+.info-item.info-columns.boxes {
+  display: flex;
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
 }
+
+.info-item.info-columns.boxes p,
+.info-item.info-columns.box p {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+
+.spanCenter,
+.spanCenter1 {
+  display: flex;
+  justify-content: center; /* Center items horizontally */
+}
+
+.button-group.items-a,
+.button-group.items-b,
+.button-group.items,
 .button-group.items2 {
-  margin-left: 25px;
+  display: flex;
+  justify-content: center; /* Center items horizontally */
 }
-.info-title {
-  margin-left: 10px;
+
+.spanTex {
+  font-size: 25px;
 }
 
 .info-content {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  gap: 0px; /* Adjust gap between groups */
+  gap: 10px; /* Adjust gap between groups */
 }
 
 .info-column {
@@ -99,16 +102,15 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  white-space: nowrap; /* Ensure text is in a single line */
-  overflow: hidden; /* Hide overflow text */
-  text-overflow: ellipsis; /* Add ellipsis for overflow text */
-  min-height: 10px; /* Adjust the height as needed */
-  max-height: 50px; /* Ensure consistent height */
-  min-width: 300px; /* Adjust the width as needed */
-  max-width: 300px; /* Ensure consistent width */
-  margin-bottom: 10px; /* Add space between items */
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 10px;
+  max-height: 50px;
+  width: 300px; /* Ensure consistent width */
+  margin-bottom: 10px;
 }
 
 .info-item p {
@@ -126,9 +128,8 @@
 
 .metamask-logo {
   cursor: pointer;
-  margin-left: 10px;
-  width: 20px; /* Adjust size as needed */
-  height: 20px; /* Adjust size as needed */
+  width: 20px;
+  height: 20px;
 }
 
 .column-left {
@@ -146,7 +147,6 @@
 /* Add media query for mobile responsiveness */
 @media (max-width: 768px) {
   .information-container {
-    margin-left: 0;
     margin-top: 0;
   }
 
