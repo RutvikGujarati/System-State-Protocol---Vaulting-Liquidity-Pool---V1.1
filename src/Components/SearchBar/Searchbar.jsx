@@ -45,17 +45,11 @@ export default function Searchbar() {
     }
   }
 
-  const handleBlur = () => {
-    if (search != undefined && search != "" && !search.includes(".")) {
-      setSearch(`${search}.00`);
-    }
-  };
   const location = useLocation();
   const isHome = location.pathname === "/mint";
   const isAlpha = location.pathname === "/alpharoom";
   const isInflation = location.pathname === "/inflation-bank";
   const isVisible = !isHome && "isVisible";
-  const [totalDeposits, setTotalDeposits] = useState(0);
   const [selectedValue, setSelectedValue] = useState("Deposit");
   const [buyTokenSelector, setBuyTokenSelector] = useState("Inscribe");
   const [balance, setBalance] = useState("Enter Amount");
@@ -90,38 +84,6 @@ export default function Searchbar() {
     currencyName,
   } = useContext(Web3WalletContext);
 
-  // const ParityTokensDeposits = async () => {
-  //   try {
-  //     let ParityTokensDeposits = await getParityTokensDeposits(accountAddress);
-  //     let formattedParityTokensDeposits = ethers.utils.formatEther(
-  //       ParityTokensDeposits || "0"
-  //     );
-  //     let limtDeposit = parseFloat(formattedParityTokensDeposits).toFixed(2);
-  //     console.log("limit deposit from search", LimitDeposit);
-  //     setLimitDeposit(limtDeposit);
-  //     setTotalDeposits(parseFloat(limtDeposit));
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-  // const isHandleDeposit = async (e) => {
-  //   e.preventDefault();
-
-  //   if (selectedValue === "Deposit") {
-  //     const isSuccess = await handleDeposit(depositAmount);
-  //     if (isSuccess) {
-  //       setSearch("");
-  //     }
-  //   } else if (selectedValue === "Claim IPT & RPT") {
-  //     handle_Claim_IPT_and_RPT(accountAddress);
-  //   } else if (selectedValue === "Claim Parity Tokens") {
-  //     handle_Claim_Parity_Tokens(accountAddress);
-  //   } else if (selectedValue === "Claim Protocol Fee") {
-  //     handle_Claim_Protocol_Fee(accountAddress);
-  //   } else if (selectedValue === "Claim All Reward") {
-  //     handle_Claim_All_Reward_Amount(accountAddress);
-  //   }
-  // };
   const fetchPrice = async () => {
     try {
       let price = await getPrice();
@@ -162,16 +124,7 @@ export default function Searchbar() {
       }
     }
   };
-  // const ProtocolFee = async () => {
-  //   try {
-  //     let protocolFee = await getProtocolFee(accountAddress);
-  //     let protocolAmount = await protocolFee?.protocolAmount;
-  //     let fixed = Number(protocolAmount).toFixed(4) + " " + currencyName;
-  //     setProtocolFee(fixed);
-  //   } catch (error) {
-  //     console.error("error:", error);
-  //   }
-  // };
+
   const getSelector = () => {
     if (userConnected && networkName === "Polygon Mumbai") {
       return (
@@ -257,52 +210,6 @@ export default function Searchbar() {
     }
   };
 
-  // // Done
-  // const ToBeClaimed = async () => {
-  //   try {
-  //     let toBeClaimed = await getToBeClaimed(accountAddress);
-  //     let formattedToBeClaimed = ethers.utils.formatEther(
-  //       toBeClaimed ? toBeClaimed : "0"
-  //     );
-  //     let fixed = Number(formattedToBeClaimed).toFixed(4);
-  //     setToBeClaimed(fixed);
-  //   } catch (error) {
-  //     console.log("error:", error);
-  //   }
-  // };
-  // const getClaimParityTokens = async () => {
-  //   let ParityShareTokensDetail = await getParityDollarClaimed(accountAddress);
-  //   let parityClaimableAmount = ParityShareTokensDetail?.parityClaimableAmount;
-  //   let parityClaimableAmountFormatted = await getFormatEther(
-  //     parityClaimableAmount
-  //   );
-  //   let fixed = Number(parityClaimableAmountFormatted).toFixed(4);
-  //   setClaimParityTokens(fixed);
-  // };
-  // const AllRewardAmount = async () => {
-  //   let userBucketBalance = await getToBeClaimed(accountAddress);
-  //   let formattedToBeClaimed = await getFormatEther(userBucketBalance || "0");
-
-  //   let ParityShareTokensDetail = await getParityDollarClaimed(accountAddress);
-  //   let parityClaimableAmount = ParityShareTokensDetail?.parityClaimableAmount;
-  //   let parityClaimableAmountFormatted = await getFormatEther(
-  //     parityClaimableAmount
-  //   );
-
-  //   let protocolFee = await getProtocolFee(accountAddress);
-  //   let protocolAmount = await protocolFee?.protocolAmount;
-
-  //   let AllFee =
-  //     Number(formattedToBeClaimed) +
-  //     Number(parityClaimableAmountFormatted) +
-  //     Number(protocolAmount);
-
-  //   let fixed =
-  //     (AllFee.toFixed(4) === "NaN" ? "0" : AllFee.toFixed(4)) +
-  //     " " +
-  //     currencyName;
-  //   setAllRewardAmount(fixed);
-  // };
   useEffect(() => {
     try {
       getSelector();
@@ -349,30 +256,6 @@ export default function Searchbar() {
           <div className="d-flex w-100 my-auto">
             <div className="d-flex flex-wrap justify-content-between w-100 searchBar">
               <div className="input-search firstSeach_small col-md-7 py-3">
-                <div
-                  style={{
-                    fontSize: "14px",
-                    color: "#ffffff",
-                    marginBottom: "15px",
-                    marginLeft: "3px",
-                    marginTop: "-10px",
-                  }}
-                >
-                  {/* <p>
-                    {" "}
-                    <br/>
-                    System State Protocol is the first crypto INFLATION BANK to
-                    provide market-making services for crypto assets.
-                    <br />
-                    Mint DAV tokens to access the ALPHA ROOM, where users gain
-                    insights into projects receiving our market-making services.
-                    <br />
-                    INFLATION BANK - Locks inflation into ratio-based vaults,
-                    releasing assets to users and DAV token holders when price
-                    targets are met.
-                    <br/>
-                  </p> */}
-                </div>
                 {isHome ? (
                   <>
                     <div
@@ -384,17 +267,17 @@ export default function Searchbar() {
                     >
                       <p className="mint-dav-tokens">MINT DAV TOKENS</p>
                     </div>
-                    <div
+                    {/* <div
                       className={`info-item info-column column-center second ${
                         (theme === "darkTheme" && "Theme-btn-block") ||
                         (theme === "dimTheme" && "dimThemeBorder")
                       } ${isOnInscription} `}
                     >
-                      <Link to={"/inflation-bank"}>
-                        <p className="inflation-bank">INFLATION BANK</p>
+                      <Link to={"/inflation-bank"} target="_blank">
+                        <p className="inflation-bank">TESTNET PLS</p>
                       </Link>
-                    </div>
-                    <div
+                    </div> */}
+                    {/* <div
                       className={`info-item info-column column-right third ${
                         (theme === "darkTheme" && "Theme-btn-block") ||
                         (theme === "dimTheme" && "dimThemeBorder")
@@ -403,74 +286,14 @@ export default function Searchbar() {
                       <Link to={"/alpharoom"}>
                         <p className="alpha-room">ALPHA ROOM</p>
                       </Link>
-                    </div>
+                    </div> */}
                   </>
                 ) : isAlpha ? (
-                  <>
-                    <div
-                      className={`info-item info-column column-center first ${
-                        (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBorder")
-                      }`}
-                    >
-                      <Link to={"/mint"}>
-                        <p className="mint-dav-tokens">MINT DAV TOKENS</p>
-                      </Link>
-                    </div>
-                    <div
-                      className={`info-item info-column column-center second ${
-                        (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBorder")
-                      }`}
-                    >
-                      <Link to={"/inflation-bank"}>
-                        <p className="inflation-bank">INFLATION BANK</p>
-                      </Link>
-                    </div>
-                    <div
-                      className={`info-item info-column column-right third ${
-                        (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBorder") ||
-                        (theme === "lightTheme" && theme + " translite")
-                      }`}
-                    >
-                      <p className="alpha-room">ALPHA ROOM</p>
-                    </div>
-                  </>
+                  null
                 ) : isInflation ? (
-                  <>
-                    <div
-                      className={`info-item info-column column-center first ${
-                        (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBorder")
-                      }`}
-                    >
-                      <Link to={"/mint"}>
-                        <p className="mint-dav-tokens">MINT DAV TOKENS</p>
-                      </Link>
-                    </div>
-                    <div
-                      className={`info-item info-column column-center second ${
-                        (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBorder") ||
-                        (theme === "lightTheme" && theme + " translite")
-                      }`}
-                    >
-                      <p className="inflation-bank">INFLATION BANK</p>
-                    </div>
-                    <div
-                      className={`info-item info-column column-right third ${
-                        (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBorder")
-                      }`}
-                    >
-                      <Link to={"/alpharoom"}>
-                        <p className="alpha-room">ALPHA ROOM</p>
-                      </Link>
-                    </div>
-                  </>
+                  <></>
                 ) : (
-                  <div></div>
+                null
                 )}
               </div>
               <div style={{ marginBottom: "50px" }}>

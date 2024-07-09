@@ -171,12 +171,13 @@ export default function Index() {
                   to="/mint"
                   style={{ backgroundColor }}
                 >
-                  <div className="theme-btn-main">
+                  <div className={`theme-btn-main `}>
                     <img
                       src={LogoTransparent}
                       alt="pls"
                       width="30"
                       height="30"
+                      className="theme-img-round"
                     />
                   </div>
                 </Link>
@@ -191,7 +192,13 @@ export default function Index() {
                   type="button"
                 >
                   <div className="theme-btn-main ">
-                    <img src={bnblogo} alt="pls" width="25" height="25" />
+                    <img
+                      src={bnblogo}
+                      alt="pls"
+                      width="25"
+                      height="25"
+                      className="theme-img-round"
+                    />
                   </div>
                 </button>{" "}
               </div>
@@ -205,7 +212,13 @@ export default function Index() {
                   type="button"
                 >
                   <div className="theme-btn-main ">
-                    <img src={mumbaiIcon} alt="pls" width="25" height="25" />
+                    <img
+                      src={mumbaiIcon}
+                      alt="pls"
+                      width="25"
+                      height="25"
+                      className="theme-img-round"
+                    />
                   </div>
                 </button>{" "}
               </div>
@@ -219,7 +232,13 @@ export default function Index() {
                   type="button"
                 >
                   <div className="theme-btn-main ">
-                    <img src={AvaxIcon} alt="pls" width="25" height="25" />
+                    <img
+                      src={AvaxIcon}
+                      alt="pls"
+                      width="25"
+                      height="25"
+                      className="theme-img-round"
+                    />
                   </div>
                 </button>{" "}
               </div>
@@ -233,7 +252,13 @@ export default function Index() {
                   type="button"
                 >
                   <div className="theme-btn-main ">
-                    <img src={baseIcon} alt="pls" width="25" height="25" />
+                    <img
+                      src={baseIcon}
+                      alt="pls"
+                      width="25"
+                      height="25"
+                      className="theme-img-round"
+                    />
                   </div>
                 </button>{" "}
               </div>
@@ -247,7 +272,13 @@ export default function Index() {
                   type="button"
                 >
                   <div className="theme-btn-main ">
-                    <img src={ton} alt="pls" width="25" height="25" />
+                    <img
+                      src={ton}
+                      alt="pls"
+                      width="25"
+                      height="25"
+                      className="theme-img-round"
+                    />
                   </div>
                 </button>{" "}
               </div>
@@ -261,7 +292,13 @@ export default function Index() {
                   type="button"
                 >
                   <div className="theme-btn-main ">
-                    <img src={fantom} alt="pls" width="55" height="35" />
+                    <img
+                      src={fantom}
+                      alt="pls"
+                      width="55"
+                      height="35"
+                      className="theme-img-round"
+                    />
                   </div>
                 </button>{" "}
               </div>
@@ -275,7 +312,13 @@ export default function Index() {
                   type="button"
                 >
                   <div className="theme-btn-main ">
-                    <img src={tron} alt="pls" width="25" height="25" />
+                    <img
+                      src={tron}
+                      alt="pls"
+                      width="25"
+                      height="25"
+                      className="theme-img-round"
+                    />
                   </div>
                 </button>{" "}
               </div>
@@ -289,7 +332,13 @@ export default function Index() {
                   type="button"
                 >
                   <div className="theme-btn-main ">
-                    <img src={solana} alt="pls" width="30" height="30" />
+                    <img
+                      src={solana}
+                      alt="pls"
+                      width="30"
+                      height="30"
+                      className="theme-img-round"
+                    />
                   </div>
                 </button>{" "}
               </div>
@@ -303,7 +352,13 @@ export default function Index() {
                   type="button"
                 >
                   <div className="theme-btn-main ">
-                    <img src={optimism} alt="pls" width="25" height="25" />
+                    <img
+                      src={optimism}
+                      alt="pls"
+                      width="25"
+                      height="25"
+                      className="theme-img-round"
+                    />
                   </div>
                 </button>{" "}
               </div>
@@ -317,7 +372,13 @@ export default function Index() {
                   type="button"
                 >
                   <div className="theme-btn-main ">
-                    <img src={arbitrum} alt="pls" width="25" height="25" />
+                    <img
+                      src={arbitrum}
+                      alt="pls"
+                      width="25"
+                      height="25"
+                      className="theme-img-round"
+                    />
                   </div>
                 </button>{" "}
               </div>
@@ -353,7 +414,9 @@ export default function Index() {
                 style={{ marginTop: "3px", fontSize: "10px" }}
               >
                 <span className="text">
-                  <Link target="_blank" to={Quick_Guide}>QUICK GUIDE</Link>
+                  <Link target="_blank" to={Quick_Guide}>
+                  Quick Guide
+                  </Link>
                 </span>
               </div>
               <div
@@ -467,7 +530,7 @@ export default function Index() {
             >
               {/* <div className="theme-btn-main minLogo h-100 w-100"> */}
               <img
-                className={`w-200 h-200   ${
+                className={`w-200 h-200 theme-img-round  ${
                   theme === "lightTheme" ||
                   (theme === "dimTheme" && "logoDimTwo") ||
                   (theme === "darkTheme" && "logoDarkTwo") ||

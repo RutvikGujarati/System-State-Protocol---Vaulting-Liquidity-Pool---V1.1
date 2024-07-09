@@ -64,10 +64,10 @@
   text-decoration: none; /* Removes underline from links */
   color: blue;
 }
-.info-item.quick{
+.info-item.quick {
   border: 1px solid blue !important;
-
 }
+
 .info-item.first,
 .info-item.second,
 .info-item.third {
@@ -98,7 +98,7 @@
   background-color: blue;
 }
 .info-item.info-column.column-center.second {
-  margin-left: 550px;
+  margin-left: 1530px;
   margin-top: -46px;
 }
 
@@ -116,10 +116,31 @@
 }
 
 /* Responsive styles */
+@media only screen and (max-width: 1530px) {
+  .info-item.info-column.column-center.second {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .info-item.info-column.column-center.first {
+    margin-right: auto;
+    margin-left: auto;
+  }
+}
+
 @media only screen and (max-width: 1278px) {
   .searchBar {
     flex-direction: column-reverse;
     align-items: flex-start;
+    width: 100%;
+  }
+  .info-item {
+    margin-top: 20px;
+  }
+  .info-item.info-column.column-center.first,
+  .info-item.info-column.column-center.second,
+  .info-item.info-column.column-right {
+    margin: 10px 0;
+    text-align: center;
   }
 }
 
@@ -139,13 +160,28 @@
   .open_vault_view {
     width: 100%;
   }
-  .searchBar2_small {
-    width: 100%;
-  }
+  .searchBar2_small,
   .firstSeach_small {
     width: 100%;
   }
   .graph_inscription_main {
     margin-top: 13rem;
+  }
+}
+
+@media only screen and (max-width: 576px) {
+  .info-item {
+    margin-top: 10px;
+    margin-left: 0;
+    margin-right: 0;
+    text-align: center;
+  }
+  .info-item .mint-dav-tokens {
+    margin-left: 0;
+  }
+  .info-item.info-column.column-center.first,
+  .info-item.info-column.column-center.second,
+  .info-item.info-column.column-right {
+    margin: 5px 0;
   }
 }

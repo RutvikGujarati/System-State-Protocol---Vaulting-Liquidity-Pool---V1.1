@@ -3,8 +3,8 @@ import "./dav.css";
 import "../../Utils/Theme.css";
 import { Link } from "react-router-dom";
 import LogoTransparent from "../../Assets/LogoTransparent.png";
-import pxen from "../../Assets/pxen.png";
-import pdxn from "../../Assets/Token List Icon/pdxn.png";
+import pxen from "../../Assets/XEN.png";
+import pdxn from "../../Assets/Token List Icon/DXN.svg";
 import PFENIX from "../../Assets/Token List Icon/pfenix.svg";
 import fantom from "../../Assets//fantom.png";
 import tron from "../../Assets/tron.png";
@@ -185,6 +185,16 @@ export default function DAV() {
     }
   });
 
+  const data = [
+    {
+      PLS: "Our daily market-making strategies have not yet begun. These strategies will be accessible exclusively to DAV token holders.",
+      PXEN: "Our daily market-making strategies have not yet begun. These strategies will be accessible exclusively to DAV token holders.",
+      PDXN: "Our daily market-making strategies have not yet begun. These strategies will be accessible exclusively to DAV token holders.",
+      PFENIX:
+        "Our daily market-making strategies have not yet begun. These strategies will be accessible exclusively to DAV token holders.",
+    },
+  ];
+
   const ParityTokensDepositforPoint = async () => {
     try {
       let ParityTokensDeposits = await getParityTokensDeposits(accountAddress);
@@ -302,8 +312,8 @@ export default function DAV() {
                               <img
                                 src={LogoTransparent}
                                 alt="Logo"
-                                width="40"
-                                height="40"
+                                width="30"
+                                height="30"
                                 className={`iconSize ${theme}`}
                               />
                             </div>
@@ -347,9 +357,7 @@ export default function DAV() {
                                   </span>
                                 </div>
                                 <div className={`spanCenter1 ${spanDarkDim}`}>
-                                <span >
-                                  0.00
-                                </span>
+                                  <span>0.00</span>
                                 </div>
                               </div>
                             </div>
@@ -360,15 +368,15 @@ export default function DAV() {
                         >
                           <hr className="d-block d-lg-none d-md-none" />
                           <div
-                            className="d-flex mint-token-container"
+                            className={`d-flex mint-token-container ${theme}`}
                             // style={{ marginTop: "-20px" }}
                           >
-                            <div className="margin-right">
+                            <div className="margin-right ">
                               <img
                                 src={pxen}
                                 alt="Logo"
-                                width="40"
-                                height="40"
+                                width="30"
+                                height="30"
                                 className={`iconSize ${theme}`}
                               />
                             </div>
@@ -425,7 +433,9 @@ export default function DAV() {
                             className="d-flex mint-token-container"
                             // style={{ marginTop: "-15px" }}
                           >
-                            <div className="margin-right">
+                            <div
+                              className={`margin-right iconContainer ${theme} `}
+                            >
                               <img
                                 src={pdxn}
                                 alt="Logo"
@@ -485,7 +495,7 @@ export default function DAV() {
                             className="d-flex pt-1 mint-token-container"
                             style={{ marginTop: "-5px" }}
                           >
-                            <div className="margin-right">
+                            <div className={`margin-right ${theme}`}>
                               <img
                                 src={PFENIX}
                                 alt="Logo"
@@ -575,13 +585,13 @@ export default function DAV() {
                         >
                           <hr className="d-block d-lg-none d-md-none" />
                           <div className="d-flex mint-token-container">
-                            <div className="margin-right">
+                            <div className={`margin-right`}>
                               <img
                                 src={LogoTransparent}
                                 alt="Logo"
-                                width="40"
-                                height="40"
-                                className={`iconSize ${theme}`}
+                                width="30"
+                                height="30"
+                                className={`iconSize `}
                               />
                             </div>
                             <div
@@ -593,9 +603,12 @@ export default function DAV() {
                                     PLS
                                   </span>
                                 </div>
-                                <span className={` ${spanDarkDim}`}>
-                                  Market making strategies has not commenced
-                                  yet.
+                                <span className={`normalText ${spanDarkDim}`}>
+                                  {data.map((dataItem, index) => (
+                                    <React.Fragment key={index}>
+                                      {dataItem.PLS}
+                                    </React.Fragment>
+                                  ))}
                                 </span>
                               </div>
                             </div>
@@ -606,12 +619,12 @@ export default function DAV() {
                         >
                           <hr className="d-block d-lg-none d-md-none" />
                           <div className="d-flex mint-token-container">
-                            <div className="margin-right">
+                            <div className={`margin-right ${theme}`}>
                               <img
                                 src={pxen}
                                 alt="Logo"
-                                width="40"
-                                height="40"
+                                width="30"
+                                height="30"
                                 className={`iconSize ${theme}`}
                               />
                             </div>
@@ -624,9 +637,12 @@ export default function DAV() {
                                     PXEN
                                   </span>
                                 </div>
-                                <span className={` ${spanDarkDim}`}>
-                                  Market making strategies has not commenced
-                                  yet.
+                                <span className={`normalText ${spanDarkDim}`}>
+                                  {data.map((dataItem, index) => (
+                                    <React.Fragment key={index}>
+                                      {dataItem.PXEN}
+                                    </React.Fragment>
+                                  ))}
                                 </span>
                               </div>
                             </div>
@@ -636,7 +652,9 @@ export default function DAV() {
                           className={`col-md-4 border-right col-lg-3 d-flex flex-column justify-content-center ${borderDarkDim}`}
                         >
                           <hr className="d-block d-lg-none d-md-none" />
-                          <div className="d-flex mint-token-container">
+                          <div
+                            className={`d-flex mint-token-container ${theme}`}
+                          >
                             <div className="margin-right">
                               <img
                                 src={pdxn}
@@ -655,9 +673,12 @@ export default function DAV() {
                                     PDXN
                                   </span>
                                 </div>
-                                <span className={` ${spanDarkDim}`}>
-                                  Market making strategies has not commenced
-                                  yet.
+                                <span className={`normalText ${spanDarkDim}`}>
+                                  {data.map((dataItem, index) => (
+                                    <React.Fragment key={index}>
+                                      {dataItem.PDXN}
+                                    </React.Fragment>
+                                  ))}
                                 </span>
                               </div>
                             </div>
@@ -668,9 +689,9 @@ export default function DAV() {
                         >
                           <hr className="d-block d-lg-none d-md-none" />
                           <div className="d-flex mint-token-container">
-                            <div className="margin-right">
+                            <div className={`margin-right ${theme}`}>
                               <img
-                                src={[PFENIX]}
+                                src={PFENIX}
                                 alt="Logo"
                                 width="30"
                                 height="30"
@@ -686,9 +707,12 @@ export default function DAV() {
                                     PFENIX
                                   </span>
                                 </div>
-                                <span className={` ${spanDarkDim}`}>
-                                  Market making strategies has not commenced
-                                  yet.
+                                <span className={`normalText ${spanDarkDim}`}>
+                                  {data.map((dataItem, index) => (
+                                    <React.Fragment key={index}>
+                                      {dataItem.PFENIX}
+                                    </React.Fragment>
+                                  ))}
                                 </span>
                               </div>
                             </div>

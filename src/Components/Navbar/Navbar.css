@@ -9,11 +9,18 @@
   width: 30px;
   height: 30px;
 }
-.quicks{
-    margin-right: 10px;
+.quicks {
+  margin-right: 10px;
 }
-.quicks a{
-text-decoration: none;}
+
+
+.lightTheme .theme-img-round {
+  filter: invert(0%);
+}
+
+.quicks a {
+  text-decoration: none;
+}
 
 .anchor {
   text-decoration: none;
@@ -328,7 +335,6 @@ text-decoration: none;}
   font-family: "Roboto", sans-serif;
   font-size: 1rem;
 }
-
 
 .modal-btn {
   border: none;

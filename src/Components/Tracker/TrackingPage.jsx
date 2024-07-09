@@ -897,25 +897,6 @@ export default function TrackingPage({ children }) {
                             </Link>
                           </p>
                         </div>
-                        {/* <div
-                          className={`info-item1 holding ${
-                            theme === "darkTheme"
-                              ? "Theme-btn-block"
-                              : theme === "dimTheme"
-                              ? "dimThemeBtnBg"
-                              : ""
-                          }`}
-                        >
-                          <p>
-                            DAV Holding - {HoldAMount} DAV token
-                            <img
-                              src={metamask}
-                              alt="MetaMask Logo"
-                              onClick={addTokenToWallet}
-                              className="metamask-logo"
-                            />
-                          </p>
-                        </div> */}
                       </div>
                       <div className="d-flex align-items-end tooltips-container">
                         <span

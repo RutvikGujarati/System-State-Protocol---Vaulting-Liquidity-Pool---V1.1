@@ -144,7 +144,7 @@ export default function MetamskConnect({ children }) {
         method: 'eth_requestAccounts',
       });
       const networkId = window.ethereum.networkVersion;
-      if (['943', '369'].includes(networkId)) {
+      if (['369'].includes(networkId)) {
         return metamaskAccounts[0];
       } else {
         const shouldSwitch = window.confirm('You are not connected to Pulsechain Mainnet. switch to Pulsechain Mainnet?');
