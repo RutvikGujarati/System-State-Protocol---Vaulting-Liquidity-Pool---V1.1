@@ -259,9 +259,9 @@ export default function Searchbar() {
                 {isHome ? (
                   <>
                     <div
-                      className={` info-item info-column  column-center first ${
+                      className={` info-item info-column column-center first ${
                         (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBorder") ||
+                        (theme === "dimTheme" && "dimThemeBtnBg") ||
                         (theme === "lightTheme" && theme + " translite")
                       }`}
                     >
