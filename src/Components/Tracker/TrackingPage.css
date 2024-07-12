@@ -27,7 +27,7 @@
 .info-item2 {
   background-color: transparent;
   font-size: 10px;
-  margin-top: 2rem; 
+  margin-top: 18px;
   align-items: center;
   justify-content: center;
   font-weight: bold;
@@ -36,6 +36,18 @@
   border: 1px solid #ccc;
   height: 50px;
   border-radius: 5px;
+}
+@media (max-width: 768px) {
+  .info-item2 {
+    max-width: 90%;
+    max-height: 60%;
+    padding: 8px;
+  }
+
+  .info-link {
+    margin-left: 0;
+    margin-bottom: -105px;
+  }
 }
 
 .info-item1 p {
@@ -157,7 +169,7 @@ input {
   margin-right: 860px;
   font-size: 15px;
 }
-.spanText4{
+.spanText4 {
   margin-left: 3px;
   font-size: 15px;
 }
@@ -178,7 +190,8 @@ hr {
 .holding {
   margin-top: 10px;
 }
-.depositInputLight,  .inputactive {
+.depositInputLight,
+.inputactive {
   border: 1px solid #ccc; /* Adjust the color as needed */
   border-radius: 5px; /* Optional: To match the style */
 }
@@ -194,8 +207,6 @@ hr {
 .hrpa {
   color: #6a6f75;
   border: 1px solid #323b4c;
-
-  
 }
 @media (max-width: 992px) {
   .border-right {

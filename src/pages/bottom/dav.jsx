@@ -12,7 +12,7 @@ import tron from "../../Assets/tron.png";
 import { themeContext } from "../../App";
 import { useLocation } from "react-router-dom";
 // import { TotalSumProvider  } from "../../Components/Tracker/TrackingPage";
-import { Web3WalletContext } from "../../Utils/MetamskConnect";
+import { Web3WalletContext } from "../../Utils/MetamaskConnect";
 import { functionsContext } from "../../Utils/Functions";
 import { ethers } from "ethers";
 import metamask from "../../Assets/metamask.png";
@@ -58,6 +58,7 @@ export default function DAV() {
     // getRatioPriceTargets,
     // getPrice,
     // getDepositors,
+    isHolder,
     getTimeStampForCreateValut,
     getParityTokensDeposits,
     getParityDollardeposits,
@@ -101,7 +102,8 @@ export default function DAV() {
   const location = useLocation();
   const isHome = location.pathname === "/mint";
   const isAlpha = location.pathname === "/alpharoom";
-  const isInflation = location.pathname === "/inflation-bank";
+  const isInflationPLS = location.pathname === "/inflation-bank-PLS";
+  const isInflationXEN = location.pathname === "/inflation-bank-XEN";
 
   const explorer_URL = async () => {
     if ((await networkName) === "Polygon Mumbai") {
@@ -254,21 +256,37 @@ export default function DAV() {
     }
   });
 
+  const [isHolders, setIsHolder] = useState(false);
+
+  useEffect(() => {
+    const checkIsHolder = async () => {
+      try {
+        const isHoldingTokens = await isHolder();
+
+        setIsHolder(isHoldingTokens);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    checkIsHolder();
+  }, [accountAddress]);
+
   const pageStyle = {
     backgroundColor:
       theme === "dimTheme" ? "#141f35" : theme === "dimTheme" ? "#555" : "#fff",
     color: theme === "darkTheme" || theme === "dimTheme" ? "#fff" : "#000",
-    minHeight: "60vh",
+    minHeight: "100vh",
   };
 
-  const isHei = !isHome && !isAlpha && !isInflation && "hei";
+  const isHei =
+    !isHome && !isAlpha && !isInflationPLS && !isInflationXEN && "hei";
 
   return (
     <>
       <div
         className={`flex-grow-1 fontSize text-start ${textTitle} mb-0 ms-3 ${
           theme === "dimTheme" && "text-white"
-        }`}
+        } `}
       >
         {isHome ? (
           <>
@@ -309,13 +327,15 @@ export default function DAV() {
                           <hr className="d-block d-lg-none d-md-none" />
                           <div className="d-flex mint-token-container">
                             <div className="margin-right">
-                              <img
-                                src={LogoTransparent}
-                                alt="Logo"
-                                width="30"
-                                height="30"
-                                className={`iconSize ${theme}`}
-                              />
+                              <Link to="/inflation-bank-PLS">
+                                <img
+                                  src={LogoTransparent}
+                                  alt="Logo"
+                                  width="30"
+                                  height="30"
+                                  className={`iconSize ${theme}`}
+                                />
+                              </Link>
                             </div>
 
                             <div
@@ -372,13 +392,15 @@ export default function DAV() {
                             // style={{ marginTop: "-20px" }}
                           >
                             <div className="margin-right ">
-                              <img
-                                src={pxen}
-                                alt="Logo"
-                                width="30"
-                                height="30"
-                                className={`iconSize ${theme}`}
-                              />
+                              <Link to={"/inflation-bank-XEN"}>
+                                <img
+                                  src={pxen}
+                                  alt="Logo"
+                                  width="30"
+                                  height="30"
+                                  className={`iconSize ${theme}`}
+                                />
+                              </Link>
                             </div>
                             <div
                               className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
@@ -551,169 +573,191 @@ export default function DAV() {
                     </div>
                   </div>
                 </div>
-                <div
-                  className={` info-item info-columns boxes new1 ${
-                    (theme === "darkTheme" && "Theme-btn-block") ||
-                    (theme === "dimTheme" && "dimThemeBorder") ||
-                    (theme === "lightTheme" && theme + " translite")
-                  }`}
-                >
-                  <p className="alpha-room">ALPHA ROOM</p>
-                </div>
-                <div
-                  className={`top-container ${
-                    (theme === "darkTheme" && "darkThemeTrackingBg") ||
-                    (theme === "dimTheme" && "dimTheme-index-class")
-                  }`}
-                  style={{ marginTop: "100px" }}
-                >
-                  <div
-                    className={`top-container ${isHei} container-xxl  ${
-                      (theme === "darkTheme" && "darkThemeTrackingBg") ||
-                      (theme === "dimTheme" && "dimTheme-index-class")
-                    }`}
-                  >
+
+                {isHolders && (
+                  <div>
                     <div
-                      className={`main-section ${shadow} me-auto card d-flex flex-wrap py-3 px-3 ${
-                        (theme === "darkTheme" && "Theme-block-container") ||
-                        (theme === "dimTheme" && "dimThemeBg")
+                      className={` info-item info-columns boxes new1 ${
+                        (theme === "darkTheme" && "Theme-btn-block") ||
+                        (theme === "dimTheme" && "dimThemeBorder") ||
+                        (theme === "lightTheme" && theme + " translite")
                       }`}
                     >
-                      <div className="row g-lg-10">
+                      <p className="alpha-room">ALPHA ROOM</p>
+                    </div>
+                    <div
+                      className={`top-container ${
+                        (theme === "darkTheme" && "darkThemeTrackingBg") ||
+                        (theme === "dimTheme" && "dimTheme-index-class")
+                      }`}
+                      style={{ marginTop: "100px" }}
+                    >
+                      <div
+                        className={`top-container ${isHei} container-xxl  ${
+                          (theme === "darkTheme" && "darkThemeTrackingBg") ||
+                          (theme === "dimTheme" && "dimTheme-index-class")
+                        }`}
+                      >
                         <div
-                          className={`col-md-4 border-right col-lg-3 d-flex flex-column justify-content-center ${borderDarkDim}`}
+                          className={`main-section ${shadow} me-auto card d-flex flex-wrap py-3 px-3 ${
+                            (theme === "darkTheme" &&
+                              "Theme-block-container") ||
+                            (theme === "dimTheme" && "dimThemeBg")
+                          }`}
                         >
-                          <hr className="d-block d-lg-none d-md-none" />
-                          <div className="d-flex mint-token-container">
-                            <div className={`margin-right`}>
-                              <img
-                                src={LogoTransparent}
-                                alt="Logo"
-                                width="30"
-                                height="30"
-                                className={`iconSize `}
-                              />
-                            </div>
+                          <div className="row g-lg-10">
                             <div
-                              className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
+                              className={`col-md-4 border-right col-lg-3 d-flex flex-column justify-content-center ${borderDarkDim}`}
                             >
-                              <div>
-                                <div className="varSize">
-                                  <span className={`spanTex ${spanDarkDim}`}>
-                                    PLS
-                                  </span>
+                              <hr className="d-block d-lg-none d-md-none" />
+                              <div className="d-flex mint-token-container">
+                                <div className={`margin-right`}>
+                                  <img
+                                    src={LogoTransparent}
+                                    alt="Logo"
+                                    width="30"
+                                    height="30"
+                                    className={`iconSize `}
+                                  />
                                 </div>
-                                <span className={`normalText ${spanDarkDim}`}>
-                                  {data.map((dataItem, index) => (
-                                    <React.Fragment key={index}>
-                                      {dataItem.PLS}
-                                    </React.Fragment>
-                                  ))}
-                                </span>
+                                <div
+                                  className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
+                                >
+                                  <div>
+                                    <div className="varSize">
+                                      <span
+                                        className={`spanTex ${spanDarkDim}`}
+                                      >
+                                        PLS
+                                      </span>
+                                    </div>
+                                    <span
+                                      className={`normalText ${spanDarkDim}`}
+                                    >
+                                      {data.map((dataItem, index) => (
+                                        <React.Fragment key={index}>
+                                          {dataItem.PLS}
+                                        </React.Fragment>
+                                      ))}
+                                    </span>
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </div>
-                        <div
-                          className={`col-md-4 border-right col-lg-3 d-flex flex-column justify-content-center ${borderDarkDim}`}
-                        >
-                          <hr className="d-block d-lg-none d-md-none" />
-                          <div className="d-flex mint-token-container">
-                            <div className={`margin-right ${theme}`}>
-                              <img
-                                src={pxen}
-                                alt="Logo"
-                                width="30"
-                                height="30"
-                                className={`iconSize ${theme}`}
-                              />
-                            </div>
                             <div
-                              className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
+                              className={`col-md-4 border-right col-lg-3 d-flex flex-column justify-content-center ${borderDarkDim}`}
                             >
-                              <div>
-                                <div className="varSize">
-                                  <span className={`spanTex ${spanDarkDim}`}>
-                                    PXEN
-                                  </span>
+                              <hr className="d-block d-lg-none d-md-none" />
+                              <div className="d-flex mint-token-container">
+                                <div className={`margin-right ${theme}`}>
+                                  <img
+                                    src={pxen}
+                                    alt="Logo"
+                                    width="30"
+                                    height="30"
+                                    className={`iconSize ${theme}`}
+                                  />
                                 </div>
-                                <span className={`normalText ${spanDarkDim}`}>
-                                  {data.map((dataItem, index) => (
-                                    <React.Fragment key={index}>
-                                      {dataItem.PXEN}
-                                    </React.Fragment>
-                                  ))}
-                                </span>
+                                <div
+                                  className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
+                                >
+                                  <div>
+                                    <div className="varSize">
+                                      <span
+                                        className={`spanTex ${spanDarkDim}`}
+                                      >
+                                        PXEN
+                                      </span>
+                                    </div>
+                                    <span
+                                      className={`normalText ${spanDarkDim}`}
+                                    >
+                                      {data.map((dataItem, index) => (
+                                        <React.Fragment key={index}>
+                                          {dataItem.PXEN}
+                                        </React.Fragment>
+                                      ))}
+                                    </span>
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </div>
-                        <div
-                          className={`col-md-4 border-right col-lg-3 d-flex flex-column justify-content-center ${borderDarkDim}`}
-                        >
-                          <hr className="d-block d-lg-none d-md-none" />
-                          <div
-                            className={`d-flex mint-token-container ${theme}`}
-                          >
-                            <div className="margin-right">
-                              <img
-                                src={pdxn}
-                                alt="Logo"
-                                width="30"
-                                height="30"
-                                className={`iconSize ${theme}`}
-                              />
-                            </div>
                             <div
-                              className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
+                              className={`col-md-4 border-right col-lg-3 d-flex flex-column justify-content-center ${borderDarkDim}`}
                             >
-                              <div>
-                                <div className="varSize">
-                                  <span className={`spanTex ${spanDarkDim}`}>
-                                    PDXN
-                                  </span>
+                              <hr className="d-block d-lg-none d-md-none" />
+                              <div
+                                className={`d-flex mint-token-container ${theme}`}
+                              >
+                                <div className="margin-right">
+                                  <img
+                                    src={pdxn}
+                                    alt="Logo"
+                                    width="30"
+                                    height="30"
+                                    className={`iconSize ${theme}`}
+                                  />
                                 </div>
-                                <span className={`normalText ${spanDarkDim}`}>
-                                  {data.map((dataItem, index) => (
-                                    <React.Fragment key={index}>
-                                      {dataItem.PDXN}
-                                    </React.Fragment>
-                                  ))}
-                                </span>
+                                <div
+                                  className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
+                                >
+                                  <div>
+                                    <div className="varSize">
+                                      <span
+                                        className={`spanTex ${spanDarkDim}`}
+                                      >
+                                        PDXN
+                                      </span>
+                                    </div>
+                                    <span
+                                      className={`normalText ${spanDarkDim}`}
+                                    >
+                                      {data.map((dataItem, index) => (
+                                        <React.Fragment key={index}>
+                                          {dataItem.PDXN}
+                                        </React.Fragment>
+                                      ))}
+                                    </span>
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </div>
-                        <div
-                          className={`col-md-4  col-lg-3 d-flex flex-column justify-content-center `}
-                        >
-                          <hr className="d-block d-lg-none d-md-none" />
-                          <div className="d-flex mint-token-container">
-                            <div className={`margin-right ${theme}`}>
-                              <img
-                                src={PFENIX}
-                                alt="Logo"
-                                width="30"
-                                height="30"
-                                className={`iconSize ${theme}`}
-                              />
-                            </div>
                             <div
-                              className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
+                              className={`col-md-4  col-lg-3 d-flex flex-column justify-content-center `}
                             >
-                              <div>
-                                <div className="varSize">
-                                  <span className={`spanTex ${spanDarkDim}`}>
-                                    PFENIX
-                                  </span>
+                              <hr className="d-block d-lg-none d-md-none" />
+                              <div className="d-flex mint-token-container">
+                                <div className={`margin-right ${theme}`}>
+                                  <img
+                                    src={PFENIX}
+                                    alt="Logo"
+                                    width="30"
+                                    height="30"
+                                    className={`iconSize ${theme}`}
+                                  />
                                 </div>
-                                <span className={`normalText ${spanDarkDim}`}>
-                                  {data.map((dataItem, index) => (
-                                    <React.Fragment key={index}>
-                                      {dataItem.PFENIX}
-                                    </React.Fragment>
-                                  ))}
-                                </span>
+                                <div
+                                  className={`flex-grow-1 fontSize text-start d-flex justify-content-between ${textTheme}`}
+                                >
+                                  <div>
+                                    <div className="varSize">
+                                      <span
+                                        className={`spanTex ${spanDarkDim}`}
+                                      >
+                                        PFENIX
+                                      </span>
+                                    </div>
+                                    <span
+                                      className={`normalText ${spanDarkDim}`}
+                                    >
+                                      {data.map((dataItem, index) => (
+                                        <React.Fragment key={index}>
+                                          {dataItem.PFENIX}
+                                        </React.Fragment>
+                                      ))}
+                                    </span>
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -721,7 +765,8 @@ export default function DAV() {
                       </div>
                     </div>
                   </div>
-                </div>
+                  // {/* end the section here*/}
+                )}
               </div>
             </div>
           </>
@@ -878,7 +923,7 @@ export default function DAV() {
               </div>
             </div>
           </>
-        ) : isInflation ? (
+        ) : isInflationPLS || isInflationXEN ? (
           <>
             {/* <div style={{ marginLeft: "550px", marginTop: "-20px" }}>
               <p>DAV token must remain in the wallet that minted them.</p>

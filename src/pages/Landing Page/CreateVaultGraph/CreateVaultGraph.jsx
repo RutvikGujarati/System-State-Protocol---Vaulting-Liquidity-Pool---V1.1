@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 import './CreateVaultGraph.css';
 import { themeContext } from '../../../App';
 import { functionsContext } from '../../../Utils/Functions'
-import { Web3WalletContext } from '../../../Utils/MetamskConnect'
+import { Web3WalletContext } from '../../../Utils/MetamaskConnect'
 import { ethers } from 'ethers';
 
 export default function CreateVaultGraph() {

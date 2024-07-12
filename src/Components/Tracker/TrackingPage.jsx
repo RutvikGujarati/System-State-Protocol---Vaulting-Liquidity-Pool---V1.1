@@ -14,7 +14,7 @@ import metamask from "../../Assets/metamask.png";
 import { themeContext } from "../../App";
 import { useLocation } from "react-router-dom";
 import { functionsContext } from "../../Utils/Functions";
-import { Web3WalletContext } from "../../Utils/MetamskConnect";
+import { Web3WalletContext } from "../../Utils/MetamaskConnect";
 import { ethers } from "ethers";
 import fisrtPumpBrt from "../../Assets/High-Resolutions-Svg/Updated/fist pump small.svg";
 import {
@@ -23,6 +23,7 @@ import {
   PSD_ADDRESS,
   state_token,
 } from "../../Utils/ADDRESSES/Addresses";
+import PxenPriceUpdater from "../../Backend/PXEN";
 // import {STATE_TOKEN_ADDRES}from "../../Utils/ADDRESSES/Addresses"
 const TotalSumContext = createContext();
 
@@ -55,8 +56,10 @@ export default function TrackingPage({ children }) {
   const location = useLocation();
   const isHome = location.pathname === "/mint";
   const isAlpha = location.pathname === "/alpharoom";
-  const isInflation = location.pathname === "/inflation-bank";
-  const isHei = !isHome && !isAlpha && !isInflation && "hei";
+  const isInflationPLS = location.pathname === "/inflation-bank-PLS";
+  const isInflationXEN = location.pathname === "/inflation-bank-XEN";
+  const isHei =
+    !isHome && !isAlpha && !isInflationPLS && !isInflationXEN && "hei";
 
   const {
     socket,
@@ -77,8 +80,10 @@ export default function TrackingPage({ children }) {
     getProtocolFee,
     fetchAutoVaultAmount,
     getUserDistributedTokens,
+    approveAndDeposit,
     getClaimAllReward,
     holdTokens,
+    XenPrice,
   } = useContext(functionsContext);
   const {
     accountAddress,
@@ -243,7 +248,7 @@ export default function TrackingPage({ children }) {
       }
 
       // Format the total amount
-      let formattedTotalToBeClaimed = totalToBeClaimed.toFixed(4);
+      let formattedTotalToBeClaimed = totalToBeClaimed.toFixed(24);
 
       // Update the state with the total amount to be claimed
       setToBeClaimed(formattedTotalToBeClaimed);
@@ -280,8 +285,13 @@ export default function TrackingPage({ children }) {
   const isHandleDeposit = async (e) => {
     e.preventDefault();
 
-    if (selectedValue === "Deposit") {
+    if (selectedValue === "Deposit" && isInflationPLS) {
       const isSuccess = await handleDeposit(depositAmount);
+      if (isSuccess) {
+        setSearch("");
+      }
+    } else {
+      const isSuccess = await approveAndDeposit(depositAmount);
       if (isSuccess) {
         setSearch("");
       }
@@ -398,13 +408,21 @@ export default function TrackingPage({ children }) {
       let formattedParityTokensDeposits = ethers.utils.formatEther(
         ParityTokensDeposits || "0"
       );
-      let fixed =
-        parseFloat(formattedParityTokensDeposits)
-          .toFixed(2)
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
-        " " +
-        currencyName;
-      setParityTokensDeposits(fixed);
+      if (isInflationPLS) {
+        let fixed =
+          parseFloat(formattedParityTokensDeposits)
+            .toFixed(2)
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
+          " " +
+          currencyName;
+        setParityTokensDeposits(fixed);
+      } else {
+        let fixed =
+          parseFloat(formattedParityTokensDeposits)
+            .toFixed(2)
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " XEN";
+        setParityTokensDeposits(fixed);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -437,13 +455,21 @@ export default function TrackingPage({ children }) {
     try {
       let PSTClaimed = await get_PST_Claimed(accountAddress);
       let formatted_PST_Claimed = ethers.utils.formatEther(PSTClaimed || "0");
-      let fixed =
-        parseFloat(formatted_PST_Claimed)
-          .toFixed(2)
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
-        " " +
-        currencyName;
-      setParityTokensClaimed(fixed);
+      if (isInflationPLS) {
+        let fixed =
+          parseFloat(formatted_PST_Claimed)
+            .toFixed(2)
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
+          " " +
+          currencyName;
+        setParityTokensClaimed(fixed);
+      } else {
+        let fixed =
+          parseFloat(formatted_PST_Claimed)
+            .toFixed(2)
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " XEN";
+        setParityTokensClaimed(fixed);
+      }
     } catch (error) {
       console.error("error:", error);
     }
@@ -645,7 +671,7 @@ export default function TrackingPage({ children }) {
       return null;
     }
   };
-
+  const contract = "0xDe5d82bD18Bdc2B0C1ec1997EE375848a21546f8";
   const IPTmultiplySumWithPrice = async () => {
     // Convert the price to a floating-point number
     // Multiply the total sum with the current price
@@ -739,7 +765,7 @@ export default function TrackingPage({ children }) {
         target?.TargetAmount.toString()
       );
       const targetAmount =
-        Number(formattedTargetAmount).toFixed(2) + " " + currencyName ??
+        Number(formattedTargetAmount).toFixed(22) + " " + currencyName ??
         currencyName;
 
       totalSummation += parseFloat(targetAmount);
@@ -765,7 +791,7 @@ export default function TrackingPage({ children }) {
 
   const TotalVaultValueLocked = () => {
     const totalvalue = totalSUm * price + TotalSum * price;
-    const roundedTotal = Number(totalvalue.toFixed(3));
+    const roundedTotal = Number(totalvalue.toFixed(23));
     console.log("roundeeeeed total", roundedTotal);
     setRoundTotal(roundedTotal);
     // Convert the rounded total to string
@@ -1095,7 +1121,7 @@ export default function TrackingPage({ children }) {
                   </div>
                 </div>
               </div>
-            ) : isInflation ? (
+            ) : isInflationPLS || isInflationXEN ? (
               <div className="row g-lg-10">
                 <div
                   className={`col-md-4 border-right ${borderDarkDim} col-lg-3 d-flex flex-column justify-content-between`}
@@ -1112,7 +1138,9 @@ export default function TrackingPage({ children }) {
                       >
                         <div>
                           <div className={`${textTitle}`}>
-                            DEPOSIT TOKENS INTO THE INFLATION BANK
+                            {isInflationPLS
+                              ? "DEPOSIT TOKENS INTO THE INFLATION BANK "
+                              : "DEPOSIT TOKENS INTO THE INFLATION BANK"}
                           </div>
                           <form>
                             <input
@@ -1150,25 +1178,43 @@ export default function TrackingPage({ children }) {
                       </div>
                     </div>
                     <div className="d-flex bt-padding align-items-center pumpBoxImg">
-                      <button
-                        disabled={true}
-                        onClick={(e) => {
-                          isHandleDeposit(e);
-                        }}
-                        className={`first_pump_boxIcon ${
-                          (theme === "darkTheme" && "firstdumDark") ||
-                          (theme === "dimTheme" && "dimThemeBg")
-                        } `}
-                        style={{
-                          cursor: "not-allowed",
-                        }}
-                      >
-                        <img
-                          src={fisrtPumpBrt}
-                          alt="firstpump"
-                          className="w-100 h-100"
-                        />
-                      </button>
+                      {isInflationPLS ? (
+                        <button
+                          onClick={(e) => {
+                            isHandleDeposit(e);
+                          }}
+                          className={`first_pump_boxIcon ${
+                            (theme === "darkTheme" && "firstdumDark") ||
+                            (theme === "dimTheme" && "dimThemeBg")
+                          } `}
+                          // style={{
+                          //   cursor: "not-allowed",
+                          // }}
+                        >
+                          <img
+                            src={fisrtPumpBrt}
+                            alt="firstpump"
+                            className="w-100 h-100"
+                          />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={(e) => {
+                            isHandleDeposit(e);
+                          }}
+                          className={`first_pump_boxIcon ${
+                            (theme === "darkTheme" && "firstdumDark") ||
+                            (theme === "dimTheme" && "dimThemeBg")
+                          } `}
+                          
+                        >
+                          <img
+                            src={fisrtPumpBrt}
+                            alt="firstpump"
+                            className="w-100 h-100"
+                          />
+                        </button>
+                      )}
                     </div>
                   </div>
                   <div className="hrp">{/* <hr className="my-3" /> */}</div>
@@ -1212,16 +1258,7 @@ export default function TrackingPage({ children }) {
                       </div>
                     </div>
                     <div className="d-flex align-items-end pb-3">
-                      {/* <span
-                        className={`${tooltip} heightfixBug hoverText tooltipAlign`}
-                        data-tooltip="ONLY APPLICABLE TO DAV TOKEN HOLDERS."
-                        data-flow="bottom"
-                      >
-                        {" "}
-                        <i
-                          className={`fas mx-2 fa-exclamation-circle ${theme}`}
-                        ></i>
-                      </span> */}
+                     
                     </div>
                   </div>
                 </div>
@@ -1243,7 +1280,11 @@ export default function TrackingPage({ children }) {
                         <div className={`${textTitle}`}>TO BE CLAIMED</div>
                         <div className="varSize">
                           <span className={`spanText ${spanDarkDim}`}>
-                            {toBeClaimed + " " + currencyName}
+                            {isInflationPLS ? (
+                              <div>{toBeClaimed + " " + currencyName}</div>
+                            ) : (
+                              <div>{toBeClaimed + " XEN"}</div>
+                            )}
                           </span>
                         </div>
                         <div className="d-flex align-items-center pumpBoxImg deposit-bt">
@@ -1296,7 +1337,15 @@ export default function TrackingPage({ children }) {
                         <div className={`varSize `}>
                           <span className={`spanText ${spanDarkDim}`}>
                             {" "}
-                            $ {parityDollardeposits} ({PercentageSeted} %)
+                            {isInflationPLS ? (
+                              <>
+                                $ {parityDollardeposits} ({PercentageSeted} %)
+                              </>
+                            ) : (
+                              <>
+                                $ {parityDollardeposits} ({PercentageSeted} %)
+                              </>
+                            )}
                           </span>
                         </div>
                         <div>
@@ -1306,7 +1355,11 @@ export default function TrackingPage({ children }) {
                           ></div>
                           <div className={`varSize ${spanDarkDim}`}>
                             <span className={`spanText ${spanDarkDim} fs-5`}>
-                              $ {parityDollarClaimed}
+                              {isInflationPLS ? (
+                                <>$ {parityDollarClaimed}</>
+                              ) : (
+                                <>$ {parityDollarClaimed}</>
+                              )}
                             </span>
                           </div>
                         </div>
@@ -1352,34 +1405,64 @@ export default function TrackingPage({ children }) {
                           <div className={`varSize ${spanDarkDim}`}>
                             <span className={`spanText ${spanDarkDim} `}>
                               {" "}
-                              {autoVaultAmount} PLS
+                              {isInflationPLS ? (
+                                <>{autoVaultAmount} PLS</>
+                              ) : (
+                                <>{autoVaultAmount} XEN</>
+                              )}
                             </span>
                           </div>
                         </div>
                         <div className="d-flex align-items-center pumpBoxImg deposit-bt">
-                          <button
-                            onClick={() => {
-                              if (isButtonEnabled) {
-                                handleDepositAV();
-                              }
-                            }}
-                            className={`first_pump_boxIcon ${
-                              (theme === "darkTheme" && "firstdumDark") ||
-                              (theme === "dimTheme" && "dimThemeBg")
-                            } ${!isButtonEnabled ? "disabled-button" : ""}`}
-                            disabled={!isButtonEnabled}
-                            style={{
-                              cursor: isButtonEnabled
-                                ? "pointer"
-                                : "not-allowed",
-                            }}
-                          >
-                            <img
-                              src={fisrtPumpBrt}
-                              alt="firstpump"
-                              className="w-100 h-100"
-                            />
-                          </button>
+                          {isInflationPLS ? (
+                            <button
+                              onClick={() => {
+                                if (isButtonEnabled) {
+                                  handleDepositAV();
+                                }
+                              }}
+                              className={`first_pump_boxIcon ${
+                                (theme === "darkTheme" && "firstdumDark") ||
+                                (theme === "dimTheme" && "dimThemeBg")
+                              } ${!isButtonEnabled ? "disabled-button" : ""}`}
+                              disabled={!isButtonEnabled}
+                              style={{
+                                cursor: isButtonEnabled
+                                  ? "pointer"
+                                  : "not-allowed",
+                              }}
+                            >
+                              <img
+                                src={fisrtPumpBrt}
+                                alt="firstpump"
+                                className="w-100 h-100"
+                              />
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                if (isButtonEnabled) {
+                                  handleDepositAV();
+                                }
+                              }}
+                              className={`first_pump_boxIcon ${
+                                (theme === "darkTheme" && "firstdumDark") ||
+                                (theme === "dimTheme" && "dimThemeBg")
+                              } ${!isButtonEnabled ? "disabled-button" : ""}`}
+                              disabled={!isButtonEnabled}
+                              style={{
+                                cursor: isButtonEnabled
+                                  ? "pointer"
+                                  : "not-allowed",
+                              }}
+                            >
+                              <img
+                                src={fisrtPumpBrt}
+                                alt="firstpump"
+                                className="w-100 h-100"
+                              />
+                            </button>
+                          )}
                         </div>
                       </div>
                       <div className="d-flex align-items-end pb-3">
@@ -1468,10 +1551,19 @@ export default function TrackingPage({ children }) {
                     <div
                       className={`flex-grow-1 fontSize text-start justify-content-between ${textTheme}`}
                     >
-                      <div className={`${textTitle}`}>PLS PRICE</div>
+                      {isInflationPLS ? (
+                        <div className={`${textTitle}`}>PLS PRICE</div>
+                      ) : (
+                        <div className={`${textTitle}`}>XEN PRICE</div>
+                      )}
+
                       <div className={`varSize ${spanDarkDim}`}>
                         <span className={`spanText ${spanDarkDim}`}>
-                          $ {Price + " " + currencyName}
+                          {isInflationPLS ? (
+                            <>$ {Price + " " + currencyName}</>
+                          ) : (
+                            <>$ {XenPrice + " XEN"}</>
+                          )}
                         </span>
                       </div>
                     </div>
@@ -1512,7 +1604,11 @@ export default function TrackingPage({ children }) {
                         <div className={`varSize ${spanDarkDim}`}>
                           <span className={`spanText ${spanDarkDim} fs-5`}>
                             {" "}
-                            $ {totalVaultValue}
+                            {isInflationPLS ? (
+                              <>$ {totalVaultValue}</>
+                            ) : (
+                              <>$ {totalVaultValue}</>
+                            )}
                           </span>
                         </div>
                       </div>

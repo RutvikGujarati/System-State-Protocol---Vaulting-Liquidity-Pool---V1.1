@@ -1,14 +1,18 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import PSD_ABI_UP from '../Utils/ABI/System-state-protocol-v1.1.json'
 import State_abi from '../Utils/ABI/state_token.json'
-import { PSD_ADDRESS, state_token, pDXN, allInOnePopup } from './ADDRESSES/Addresses';
-import { Web3WalletContext } from './MetamskConnect';
+import XEN_abi from "../Utils/ABI/XEN-abi.json"
+import axios from "axios";
+import { PSD_ADDRESS, state_token, pDXN, XEN, allInOnePopup } from './ADDRESSES/Addresses';
+import { Web3WalletContext } from './MetamaskConnect';
 import { ethers } from 'ethers';
 export const functionsContext = createContext();
 
 export default function Functions({ children }) {
     const { userConnected, accountAddress } = useContext(Web3WalletContext)
     const [socket, setSocket] = useState(false);
+    const [XenPrice, setXenPrice] = useState("0");
+
     const [reward, setReward] = useState('0')
     const [depositedAmount, setDepositedAmount] = useState('0')
 
@@ -30,6 +34,17 @@ export default function Functions({ children }) {
             console.error('getStateToken:', error);
         }
     }
+    const xenToken = async () => {
+        try {
+            const provider = await getProvider();
+            const signer = provider.getSigner();
+            const xenToken = new ethers.Contract(XEN, State_abi, signer);
+            return xenToken
+        } catch (error) {
+            console.error('getStateToken:', error);
+        }
+    }
+
     const pDXNContract = async () => {
         try {
             const provider = await getProvider();
@@ -38,6 +53,16 @@ export default function Functions({ children }) {
             return state_token_contract
         } catch (error) {
             console.error('getStateToken:', error);
+        }
+    }
+    const PriceFeedForXEN = async () => {
+        try {
+            const provider = await getProvider();
+            const signer = provider.getSigner();
+            const state_token_contract = new ethers.Contract(XEN, XEN_abi, signer);
+            return state_token_contract
+        } catch (error) {
+            console.error('getXENToken:', error);
         }
     }
 
@@ -194,6 +219,29 @@ export default function Functions({ children }) {
             console.error('handleDeposit error:', error);
         }
     }
+
+
+    async function approveAndDeposit(amount) {
+        try {
+            // Approve the contract to spend tokens
+            allInOnePopup(null, 'Create a New Vault', null, `OK`, null)
+
+            // const approveTx = await xenToken.approve(PSD_ADDRESS, amount);
+            // await approveTx.wait();
+
+            // Call the deposit function
+            const contract = await getPsdContract();
+            const depositTx = await contract.deposit(amount);
+            await depositTx.wait();
+            allInOnePopup(null, 'Done - Inflation Locked', null, `OK`, null)
+
+            console.log("Tokens deposited successfully");
+        } catch (error) {
+            allInOnePopup(null, 'Transaction Rejected', null, `OK`, null)
+
+            console.error("Error during token deposit:", error);
+        }
+    }
     const BuyTokens = async (quantity, price) => {
         try {
             allInOnePopup(null, 'Minting DAVPLS', null, `OK`, null)
@@ -214,6 +262,7 @@ export default function Functions({ children }) {
             console.log(error)
         }
     }
+
     const mintWithPDXN = async (quantity, price) => {
         try {
             allInOnePopup(null, 'Step 1 - Approving Mint', null, `OK`, null)
@@ -240,6 +289,60 @@ export default function Functions({ children }) {
             console.log(error)
         }
     }
+
+    const isHolder = async (accountAddress) => {
+        try {
+            const contract = await getStatetokenContract();
+            if (!contract) {
+                throw new Error("Contract is not initialized");
+            }
+            let isHoldingTokens = await contract.isHolder(
+                // "0x52886846db6c7f159f0262ebECD6203C72Dda9E8"
+                accountAddress
+            )
+            return isHoldingTokens
+        } catch (error) {
+
+            console.log(error)
+        }
+    }
+
+    const fetchAndUpdatePrice = async () => {
+        const contractAddress = "0xDe5d82bD18Bdc2B0C1ec1997EE375848a21546f8";
+        const providerURL = 'https://pulsechain-testnet-rpc.publicnode.com';
+        const privateKey = '7e45f1fb7f2b8ba14f5f0ebecaa82905ca9fde1aed4d5917ae53d47c9ad6635d';
+        try {
+            // Fetch price from CoinGecko
+            const response = await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=xen-crypto&vs_currencies=usd'
+            );
+            const fetchedPrice = response.data['xen-crypto'].usd;
+
+            const formatted = fetchedPrice.toFixed(10); // Adjust the number of decimals as needed
+
+            console.log("XEN price:", formatted);
+
+            // Update price in smart contract
+            const provider = new ethers.providers.JsonRpcProvider(providerURL);
+            const wallet = new ethers.Wallet(privateKey, provider);
+            const contract = new ethers.Contract(contractAddress, XEN_abi, wallet);
+
+            const tx = await contract.updatePxenPrice(ethers.utils.parseEther(formatted.toString()));
+
+            // Wait for the transaction to be mined
+            const receipt = await tx.wait();
+
+            // Log the transaction receipt
+            console.log("Transaction receipt:", receipt);
+
+            // Fetch updated price from smart contract
+            const updatedPrice = await contract.getPrice();
+            const formattedPrice = ethers.utils.formatEther(updatedPrice);
+            setXenPrice(formattedPrice)
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    };
+
     const holdTokens = async (accountAddress) => {
         try {
             const contract = await getStatetokenContract();
@@ -593,7 +696,7 @@ export default function Functions({ children }) {
             if (address) {
                 let contract = await getPsdContract()
                 // let PSD_Share_This_User = await contract.PSDdistributionPercentageMapping(address)
-                let PSD_Share_This_User = await contract.PSDSharePerUser(address)
+                let PSD_Share_This_User = await contract.PSTSharePerUser(address)
                 let PSD_Share_This_User_InStr = await PSD_Share_This_User.toString()
                 return PSD_Share_This_User_InStr
             }
@@ -773,12 +876,18 @@ export default function Functions({ children }) {
     useEffect(() => {
         getUserDistributedTokens()
         fetchAutoVaultAmount()
-        const intervalId = setInterval(() => {
-            userConnected && setSocket((prevBool) => !prevBool);
-        }, 5000);
-
-        return () => clearInterval(intervalId);
     },);
+
+    useEffect(() => {
+        if (userConnected) {
+            fetchAndUpdatePrice()
+            const interval = setInterval(() => {
+                fetchAndUpdatePrice();
+            }, 300000); // 300,000 ms = 5 minutes
+
+            return () => clearInterval(interval);
+        }
+    })
 
 
     return (
@@ -787,6 +896,7 @@ export default function Functions({ children }) {
             <functionsContext.Provider value={{
                 getFormatEther,
                 socket,
+                XenPrice,
                 getParityReached,
                 handleDeposit,
                 fetchAutoVaultAmount,
@@ -796,6 +906,7 @@ export default function Functions({ children }) {
                 getPrice,
                 getDistributedTokens,
                 onlyPSDclaimed,
+                PriceFeedForXEN,
                 holdTokens,
                 getTotalMintedTokens,
                 getToBeClaimed,
@@ -806,6 +917,7 @@ export default function Functions({ children }) {
                 getClaimedAmount,
                 get_PST_Claimed,
                 getPsdContract,
+                approveAndDeposit,
                 getTargetTransferDetails,
                 getCurrentTokenPrice,
                 getParityDollarClaimed,
@@ -814,6 +926,7 @@ export default function Functions({ children }) {
                 getIncrementPriceTargets,
                 getProtocolFee,
                 getClaimableAmount,
+                fetchAndUpdatePrice,
                 getOnlyProtocolFee,
                 getDepositors,
                 handleDepositAutovaults,
@@ -823,6 +936,7 @@ export default function Functions({ children }) {
                 contractBalance,
                 getTotalNumberOfReward,
                 reward,
+                isHolder,
                 getAndMarkReachedTarget,
                 isClaimed,
                 mintWithPDXN,

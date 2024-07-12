@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 
 export const Web3WalletContext = createContext();
 
-export default function MetamskConnect({ children }) {
+export default function MetaMaskConnect({ children }) {
   const [userConnected, setUserConnected] = useState(false);
   const [accountAddress, setAccountAddress] = useState(ethers.constants.AddressZero);
   const [walletBalance, setWalletBalance] = useState('0');
@@ -27,6 +27,7 @@ export default function MetamskConnect({ children }) {
       }
     };
   }, []);
+
 
   const checkIfAlreadyConnected = async () => {
     try {
@@ -144,16 +145,16 @@ export default function MetamskConnect({ children }) {
         method: 'eth_requestAccounts',
       });
       const networkId = window.ethereum.networkVersion;
-      if (['369'].includes(networkId)) {
+      if (['369', '943'].includes(networkId)) {
         return metamaskAccounts[0];
       } else {
-        const shouldSwitch = window.confirm('You are not connected to Pulsechain Mainnet. switch to Pulsechain Mainnet?');
-        if (shouldSwitch) {
-          await switchToPulsechainMainnet();
-        } else {
-          alert('Please connect to Pulsechain Mainnet to proceed.');
-          throw new Error('User rejected switching to Pulsechain Mainnet');
-        }
+        // const shouldSwitch = window.confirm('You are not connected to Pulsechain Mainnet. switch to Pulsechain Mainnet?');
+        // if (shouldSwitch) {
+        //   await switchToPulsechainMainnet();
+        // } else {
+        //   alert('Please connect to Pulsechain Mainnet to proceed.');
+        //   throw new Error('User rejected switching to Pulsechain Mainnet');
+        // }
       }
     } catch (error) {
       console.error(error);

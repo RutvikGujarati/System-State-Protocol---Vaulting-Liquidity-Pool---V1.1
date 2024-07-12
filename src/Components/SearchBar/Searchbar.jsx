@@ -4,7 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { themeContext } from "../../App";
 import "../../Utils/Theme.css";
 import "./Searchbar.css";
-import { Web3WalletContext } from "../../Utils/MetamskConnect";
+import { Web3WalletContext } from "../../Utils/MetamaskConnect";
 import Quick_Guide from "../../Assets/Docs/Quick Guide - System State V1.6.pdf";
 import { Link, useLocation } from "react-router-dom";
 import fistPump from "../../Assets/High-Resolutions-Svg/Updated/fist pump small.svg";
@@ -48,7 +48,7 @@ export default function Searchbar() {
   const location = useLocation();
   const isHome = location.pathname === "/mint";
   const isAlpha = location.pathname === "/alpharoom";
-  const isInflation = location.pathname === "/inflation-bank";
+  const isInflation = location.pathname === "/inflation-bank-PLS";
   const isVisible = !isHome && "isVisible";
   const [selectedValue, setSelectedValue] = useState("Deposit");
   const [buyTokenSelector, setBuyTokenSelector] = useState("Inscribe");
@@ -296,7 +296,7 @@ export default function Searchbar() {
                 null
                 )}
               </div>
-              <div style={{ marginBottom: "50px" }}>
+              <div style={{ marginBottom: "0px" }}>
                 {" "}
                 <a
                   href="/"

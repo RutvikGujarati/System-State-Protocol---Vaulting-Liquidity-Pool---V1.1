@@ -5,10 +5,13 @@ import Alpha from "./pages/Landing Page/alpha";
 import Inflation from "./pages/Landing Page/inflation";
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faCloudMoon, faGasPump, faMoon, faSun, fas } from '@fortawesome/free-solid-svg-icons';
-import MetamskConnect from "./Utils/MetamskConnect";
+import MetaMaskConnect from "./Utils/MetamaskConnect"
 import Website from "./Website/Website";
 import Functions from "./Utils/Functions";
 import Layout from "./Protected Route/Layout";
+import PLS from "./pages/Landing Page/PLS";
+import XEN from "./pages/Landing Page/XEN";
+
 
 library.add(fas, faGasPump, faSun, faMoon, faCloudMoon);
 
@@ -35,20 +38,24 @@ function App() {
   return (
     <>
       <themeContext.Provider value={{ theme, themeMode, setThemeMode, navigateToDEX, navigateToDocs }}>
-        <MetamskConnect>
+        <MetaMaskConnect>
           <Functions>
             <Routes>
               <Route index element={<Website />} />
               <Route path="/" element={<Layout />}>
 
-              <Route path="/mint" element={<Index />} />
-              <Route path="/alpharoom" element={<Alpha />} />
-              <Route path="/inflation-bank" element={<Inflation />} />
+                <Route path="/mint" element={<Index />} />
+                {/* <Route path="/alpharoom" element={<Alpha />} /> */}
+
+
+                <Route path="/inflation-bank-PLS" element={<PLS />} />
+                <Route path="/inflation-bank-XEN" element={<XEN />} />
+
               </Route>
 
             </Routes>
           </Functions>
-        </MetamskConnect>
+        </MetaMaskConnect>
       </themeContext.Provider>
     </>
   );

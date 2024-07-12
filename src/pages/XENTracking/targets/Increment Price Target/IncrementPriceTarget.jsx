@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./IncrementPriceTarget.css";
-import { themeContext } from "../../App";
-import "../../Utils/Theme.css";
-import { Web3WalletContext } from "../../Utils/MetamskConnect";
-import { functionsContext } from "../../Utils/Functions";
+import { themeContext } from "../../../../App";
+import "../../../../Utils/Theme.css";
+import { Web3WalletContext } from "../../../../Utils/MetamaskConnect";
+import { functionsContext } from "../../../../Utils/Functions";
 import { ethers } from "ethers";
 
-export default function IncrementPriceTarget() {
+export default function IncrementPriceTargetXEN() {
   const { theme } = useContext(themeContext);
 
   const shadow =
@@ -109,9 +109,9 @@ export default function IncrementPriceTarget() {
       const timeDifference = await formatTimeDifference(
         Number(timeDifferenceInSeconds)
       );
-      const PriceTarget = Number(formattedPriceTarget).toFixed(6);
+      const PriceTarget = Number(formattedPriceTarget).toFixed(16);
       const targetAmount =
-        Number(formattedTargetAmount).toFixed(6) + " " + currencyName;
+        Number(formattedTargetAmount).toFixed(26) + " " + currencyName;
 
       if (!target.isClosed)
         return (

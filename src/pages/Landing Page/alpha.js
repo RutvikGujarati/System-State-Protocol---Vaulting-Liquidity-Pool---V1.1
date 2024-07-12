@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect, createContext } from "react";
 import Searchbar from "../../Components/SearchBar/Searchbar";
-import RatioPriceTargets from "../Ratio Price Targets/RatioPriceTargets";
-import IncrementPriceTarget from "../Increment Price Target/IncrementPriceTarget";
+import RatioPriceTargets from "../PLSTracking/targets/Ratio Price Targets/RatioPriceTargets";
+import IncrementPriceTarget from "../PLSTracking/targets/Increment Price Target/IncrementPriceTarget";
 import DAV from "../bottom/dav";
 import "./Style.css";
 import { themeContext } from "../../App";

@@ -1,13 +1,13 @@
 import React, { useContext, useState, useEffect } from "react";
 import "./RatioPriceTargets.css";
-import "../../Utils/Theme.css";
-import { themeContext } from "../../App";
+import "../../../../Utils/Theme.css"
+import { themeContext } from "../../../../App";
 // import { TotalSumProvider  } from "../../Components/Tracker/TrackingPage";
-import { Web3WalletContext } from "../../Utils/MetamskConnect";
-import { functionsContext } from "../../Utils/Functions";
+import { Web3WalletContext } from "../../../../Utils/MetamaskConnect";
+import { functionsContext } from "../../../../Utils/Functions";
 import { ethers } from "ethers";
 
-export default function RatioPriceTargets() {
+export default function RatioPriceTargetsXEN() {
   // const {setsumofPoints} = useContext(airdrop)
   const { theme } = useContext(themeContext);
 
@@ -88,12 +88,12 @@ export default function RatioPriceTargets() {
       const formattedRatioTarget = ethers.utils.formatEther(
         target?.ratioPriceTarget.toString()
       );
-      const ratioPriceTarget = Number(formattedRatioTarget).toFixed(6);
+      const ratioPriceTarget = Number(formattedRatioTarget).toFixed(10);
       const formattedTargetAmount = ethers.utils.formatEther(
         target?.TargetAmount.toString()
       );
       const targetAmount =
-        Number(formattedTargetAmount).toFixed(4) + " " + currencyName ??
+        Number(formattedTargetAmount).toFixed(25) + " " + currencyName ??
         currencyName;
       const givenTimestamp = target?.Time.toString();
       const currentTimestamp = Math.floor(Date.now() / 1000);
