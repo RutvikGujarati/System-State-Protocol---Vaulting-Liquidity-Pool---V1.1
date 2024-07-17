@@ -11,8 +11,6 @@ import PLSTracking from "../PLSTracking/PLSTracking";
 export default function PLS() {
     const { theme } = useContext(themeContext);
 
-
-
     return (
         <div className={`${theme === "lightTheme" && "light-bg-for-theme"}`}>
             <Searchbar />

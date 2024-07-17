@@ -14,6 +14,7 @@ import { useLocation } from "react-router-dom";
 // import { TotalSumProvider  } from "../../Components/Tracker/TrackingPage";
 import { Web3WalletContext } from "../../Utils/MetamaskConnect";
 import { functionsContext } from "../../Utils/Functions";
+import { XenTrackingContext } from "../XENTracking/XENTracking";
 import { ethers } from "ethers";
 import metamask from "../../Assets/metamask.png";
 import firstPump from "../../Assets/fistPumpBox.svg";
@@ -22,12 +23,15 @@ import {
   PSD_ADDRESS,
   conciseAddress,
   state_token,
+  allInOnePopup,
 } from "../../Utils/ADDRESSES/Addresses";
 import TrackingPage from "../../Components/Tracker/TrackingPage";
 
 export default function DAV() {
   // const {setsumofPoints} = useContext(airdrop)
   const { theme } = useContext(themeContext);
+
+  // const { toBeClaimed , ClaimAllReward} = useContext(XenTrackingContext);
 
   const textTheme =
     (theme === "darkTheme" && "darkColor") ||
@@ -53,11 +57,25 @@ export default function DAV() {
 
   const { accountAddress, userConnected, networkName } =
     useContext(Web3WalletContext);
+  console.log("account address from dav", accountAddress);
   const {
-    // socket,
-    // getRatioPriceTargets,
-    // getPrice,
-    // getDepositors,
+    socket,
+    getToBeClaimed,
+    getPrice,
+    getDepositors,
+    getParityDollarClaimed,
+    get_PST_Claimed,
+    getRatioPriceTargets,
+    getIncrementPriceTargets,
+    getParityReached,
+    handleDepositAutovaults,
+    handleDeposit,
+    getProtocolFee,
+    fetchAutoVaultAmount,
+    getUserDistributedTokens,
+    approveAndDeposit,
+    getClaimAllReward,
+    XenPrice,
     isHolder,
     getTimeStampForCreateValut,
     getParityTokensDeposits,
@@ -70,7 +88,10 @@ export default function DAV() {
   const [DayStamp, setDayStamp] = useState("0");
   const [paritydeposit, setParitydeposit] = useState("0");
   const [HoldAMount, setHoldTokens] = useState("0");
+  const [isButtonEnabled, setIsButtonEnabled] = useState(false);
+  const [autoVaultAmount, setAutoVaultAmount] = useState("0");
   const [totalMinted, setTotalMinted] = useState("0");
+  const [toBeClaimed, setToBeClaimed] = useState("0.0000");
   const [parityDollardeposits, setParityDollardeposits] = useState("0");
   const [totalsumofPOints, setsumofPoints] = useState("0");
 
@@ -140,31 +161,134 @@ export default function DAV() {
     }
   };
 
-  const addTokenToWallet = async () => {
-    if (window.ethereum) {
-      try {
-        await window.ethereum.request({
-          method: "wallet_watchAsset",
-          params: {
-            type: "ERC20",
-            options: {
-              address: "0xB0C278AD98c0a43608889cF317Bd337921cabC51",
-              symbol: "DAVPLS",
-              decimals: "18",
-              image: { firstPump },
-            },
-          },
-        });
-      } catch (error) {
-        console.error("Failed to add token to wallet", error);
+  const ToBeClaimed = async () => {
+    try {
+      // Get the IPT and RPT rewards
+      let iptAndRptReward = await getToBeClaimed(accountAddress);
+      let formattedIptAndRptReward = ethers.utils.formatEther(
+        iptAndRptReward || "0"
+      );
+
+      // Get the user's distributed tokens
+      let userDistributedTokens = await getUserDistributedTokens(
+        accountAddress
+      );
+      let formattedUserDistributedTokens = parseFloat(userDistributedTokens);
+
+      // Get the parity share tokens claimable amount
+      let parityShareTokensDetail = await getParityDollarClaimed(
+        accountAddress
+      );
+      let parityClaimableAmount =
+        parityShareTokensDetail?.parityClaimableAmount;
+      let formattedParityClaimableAmount = ethers.utils.formatEther(
+        parityClaimableAmount || "0"
+      );
+
+      // Get the protocol fee
+      let protocolFeeDetail = await getProtocolFee(accountAddress);
+      let protocolAmount = protocolFeeDetail?.protocolAmount || 0;
+
+      // Check if parity is reached or exceeded
+      let { isParityReachedOrExceed } = await getParityReached(accountAddress);
+
+      // Adjust the total amount to be claimed based on parity status
+      let totalToBeClaimed =
+        parseFloat(formattedIptAndRptReward) +
+        parseFloat(formattedUserDistributedTokens) +
+        parseFloat(protocolAmount);
+
+      // Add parity claimable amount only if parity is not reached or exceeded
+      if (!isParityReachedOrExceed) {
+        totalToBeClaimed += parseFloat(formattedParityClaimableAmount);
       }
-    } else {
-      console.error("MetaMask is not installed");
+
+      // Format the total amount
+      let formattedTotalToBeClaimed = totalToBeClaimed.toFixed(4);
+
+      // Update the state with the total amount to be claimed
+      setToBeClaimed(formattedTotalToBeClaimed);
+    } catch (error) {
+      console.log("Error:", error);
+      // Handle error gracefully, e.g., display an error message to the user
+    }
+  };
+
+  const claimAllReward = async () => {
+    console.log("Number(toBeClaimed):", Number(toBeClaimed));
+    console.log("toBeClaimed:", toBeClaimed);
+
+    if (Number(toBeClaimed) <= 0) {
+      allInOnePopup(null, "Insufficient Balance", null, `OK`, null);
+      return;
+    }
+
+    try {
+      // allInOnePopup(null, 'Processing...', 'Please wait while we claim your rewards', `OK`, null);
+      const allReward = await getClaimAllReward(accountAddress);
+      await allReward.wait(); // Wait for the transaction to be confirmed
+      // setToBeClaimedReward(allReward);
+      allInOnePopup(null, "Successfully Claimed", null, `OK`, null);
+      console.log("allReward:", allReward);
+    } catch (error) {
+      if (error.code === 4001) {
+        // MetaMask user rejected the transaction
+        allInOnePopup(null, "Transaction Rejected", null, `OK`, null);
+        console.error("User rejected the transaction:", error.message);
+      } else {
+        allInOnePopup(null, "Transaction Rejected.", null, `OK`, null);
+        console.error(
+          "Transaction error:",
+          error?.data?.message || error.message
+        );
+      }
+    }
+  };
+
+  let AutoAMount = 0;
+
+  const fetchAutoVaultAmounts = async (address) => {
+    try {
+      let autoVaultAmount = await fetchAutoVaultAmount(accountAddress);
+
+      console.log("AutoVaults from tracking:", autoVaultAmount);
+      const autoVaultAmountNumber = parseFloat(autoVaultAmount);
+
+      AutoAMount += autoVaultAmountNumber;
+      setAutoVaultAmount(autoVaultAmountNumber.toFixed(2));
+      if (AutoAMount > 1000000) {
+        setIsButtonEnabled(true);
+      } else {
+        setIsButtonEnabled(false);
+      }
+    } catch (error) {
+      console.error("fetchAutoVaultAmounts error:", error);
+      setAutoVaultAmount("0");
+    }
+  };
+
+  const handleDepositAV = async () => {
+    try {
+      allInOnePopup(null, "Create a new Vault", null, `OK`, null);
+
+      let deposit = await handleDepositAutovaults(AutoAMount);
+      deposit.wait();
+      allInOnePopup(null, "Done - Inflation Locked", null, `OK`, null);
+      // Reset AutoAMount to 0 after successful deposit
+      AutoAMount = 0;
+      setAutoVaultAmount("0");
+      setIsButtonEnabled(false);
+    } catch (error) {
+      console.error("Deposit error:", error);
     }
   };
 
   useEffect(() => {
-    exploere();
+    if (userConnected) {
+      exploere();
+      ToBeClaimed();
+      fetchAutoVaultAmounts();
+    }
     // totalReachedPriceTarget();
   });
 
@@ -259,9 +383,9 @@ export default function DAV() {
   const [isHolders, setIsHolder] = useState(false);
 
   useEffect(() => {
-    const checkIsHolder = async () => {
+    const checkIsHolder = async (accountAddress) => {
       try {
-        const isHoldingTokens = await isHolder();
+        const isHoldingTokens = await isHolder(accountAddress);
 
         setIsHolder(isHoldingTokens);
       } catch (error) {
@@ -327,7 +451,7 @@ export default function DAV() {
                           <hr className="d-block d-lg-none d-md-none" />
                           <div className="d-flex mint-token-container">
                             <div className="margin-right">
-                              <Link to="/inflation-bank-PLS">
+                              <Link to="/inflation-bank-PLS" target="_blank">
                                 <img
                                   src={LogoTransparent}
                                   alt="Logo"
@@ -392,7 +516,7 @@ export default function DAV() {
                             // style={{ marginTop: "-20px" }}
                           >
                             <div className="margin-right ">
-                              <Link to={"/inflation-bank-XEN"}>
+                              <Link to={"/inflation-bank-XEN"} target="_blank">
                                 <img
                                   src={pxen}
                                   alt="Logo"
@@ -415,16 +539,27 @@ export default function DAV() {
                                         ? "dimThemeBtnBg"
                                         : ""
                                     } ${theme}`}
-                                    // onClick={() => BuyTokens(2, 500000)}
+                                    onClick={() => claimAllReward()}
                                   >
                                     CLAIM
                                   </button>
                                   <span className={`spanValue2 ${spanDarkDim}`}>
-                                    0.00
+                                    {toBeClaimed}
                                   </span>
                                 </div>
                                 <div className="d-flex  button-group items-b">
                                   <button
+                                    onClick={() => {
+                                      if (isButtonEnabled) {
+                                        handleDepositAV();
+                                      }
+                                    }}
+                                    disabled={!isButtonEnabled}
+                                    style={{
+                                      cursor: isButtonEnabled
+                                        ? "pointer"
+                                        : "not-allowed",
+                                    }}
                                     className={` box-4 items mx-2 glowing-button  ${
                                       theme === "darkTheme"
                                         ? "Theme-btn-block"
@@ -432,12 +567,11 @@ export default function DAV() {
                                         ? "dimThemeBtnBg"
                                         : ""
                                     } ${theme}`}
-                                    // onClick={() => mintWithPDXN(2, 0.00)}
                                   >
                                     AUTO-VAULT
                                   </button>
                                   <span className={`spanValue8 ${spanDarkDim}`}>
-                                    0.00
+                                  {autoVaultAmount}
                                   </span>
                                 </div>
                                 <span className={`spanCenter ${spanDarkDim}`}>
@@ -1055,24 +1189,7 @@ export default function DAV() {
                         </a>
                       </p>
                     </div>
-                    {/* <div
-                      className={`info-item  ${
-                        (theme === "darkTheme" && "Theme-btn-block") ||
-                        (theme === "dimTheme" && "dimThemeBtnBg")
-                      } `}
-                    >
-                      <p>
-                        Documentation{" "}
-                        <a
-                          href="https://system-state-documentation.gitbook.io/"
-                          className="link"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <i className="fas fa-external-link-alt"></i>
-                        </a>
-                      </p>
-                    </div> */}
+               
                   </div>
                 </div>
               </div>
@@ -1085,3 +1202,5 @@ export default function DAV() {
     </>
   );
 }
+
+

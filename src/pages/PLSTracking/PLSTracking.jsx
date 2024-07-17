@@ -9,18 +9,16 @@ import React, {
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../Components/Tracker/TrackingPage.css";
 import "../../Utils/Theme.css";
-import { Link } from "react-router-dom";
-import metamask from "../../Assets/metamask.png";
 import { themeContext } from "../../App";
 import { useLocation } from "react-router-dom";
-import { functionsContext } from "../../Utils/Functions";
+import { PLSContext } from "../../Utils/functions_PLS";
 import { Web3WalletContext } from "../../Utils/MetamaskConnect";
 import { ethers } from "ethers";
 import fisrtPumpBrt from "../../Assets/High-Resolutions-Svg/Updated/fist pump small.svg";
 import {
   allInOnePopup,
   conciseAddress,
-  PSD_ADDRESS,
+  PLS_ADDRESS,
   state_token,
 } from "../../Utils/ADDRESSES/Addresses";
 
@@ -76,8 +74,8 @@ export default function PLSTracking({ children }) {
     approveAndDeposit,
     getClaimAllReward,
     holdTokens,
-    XenPrice,
-  } = useContext(functionsContext);
+    PLSPrice,
+  } = useContext(PLSContext);
   const {
     accountAddress,
     networkName,
@@ -122,7 +120,7 @@ export default function PLSTracking({ children }) {
   const navToExplorer = async () => {
     const baseUrl = await explorer_URL();
 
-    return `${baseUrl}/${PSD_ADDRESS}/`;
+    return `${baseUrl}/${PLS_ADDRESS}/`;
   };
   const stateExplorer = async () => {
     const baseUrl = await explorer_URL();
@@ -219,7 +217,7 @@ export default function PLSTracking({ children }) {
       }
 
       // Format the total amount
-      let formattedTotalToBeClaimed = totalToBeClaimed.toFixed(24);
+      let formattedTotalToBeClaimed = totalToBeClaimed.toFixed(4);
 
       // Update the state with the total amount to be claimed
       setToBeClaimed(formattedTotalToBeClaimed);
@@ -590,7 +588,6 @@ export default function PLSTracking({ children }) {
       return null;
     }
   };
-  const contract = "0xDe5d82bD18Bdc2B0C1ec1997EE375848a21546f8";
   const IPTmultiplySumWithPrice = async () => {
     // Convert the price to a floating-point number
     // Multiply the total sum with the current price
@@ -710,7 +707,7 @@ export default function PLSTracking({ children }) {
 
   const TotalVaultValueLocked = () => {
     const totalvalue = totalSUm * price + TotalSum * price;
-    const roundedTotal = Number(totalvalue.toFixed(23));
+    const roundedTotal = Number(totalvalue.toFixed(3));
     console.log("roundeeeeed total", roundedTotal);
     setRoundTotal(roundedTotal);
     // Convert the rounded total to string
@@ -807,7 +804,7 @@ export default function PLSTracking({ children }) {
                     >
                       <div>
                         <div className={`${textTitle}`}>
-                          "DEPOSIT TOKENS INTO THE INFLATION BANK "
+                          DEPOSIT TOKENS INTO THE INFLATION BANK
                         </div>
                         <form>
                           <input

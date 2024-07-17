@@ -149,17 +149,17 @@ export default function Backend() {
     }
 
 
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            main().then((res) => {
-                console.log(res);
-            }).catch((err) => {
-                console.log(err);
-            })
+    // useEffect(() => {
+    //     const intervalId = setInterval(() => {
+    //         main().then((res) => {
+    //             console.log(res);
+    //         }).catch((err) => {
+    //             console.log(err);
+    //         })
 
-        }, 30000);
+    //     }, 30000);
 
-        return () => clearInterval(intervalId);
-    }, [])
+    //     return () => clearInterval(intervalId);
+    // }, [])
 
 }

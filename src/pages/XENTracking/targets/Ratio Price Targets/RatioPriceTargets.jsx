@@ -93,8 +93,7 @@ export default function RatioPriceTargetsXEN() {
         target?.TargetAmount.toString()
       );
       const targetAmount =
-        Number(formattedTargetAmount).toFixed(25) + " " + currencyName ??
-        currencyName;
+        Number(formattedTargetAmount).toFixed(5) + " XEN";
       const givenTimestamp = target?.Time.toString();
       const currentTimestamp = Math.floor(Date.now() / 1000);
       const timeDifferenceInSeconds = currentTimestamp - Number(givenTimestamp);

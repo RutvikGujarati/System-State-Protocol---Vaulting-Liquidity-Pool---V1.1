@@ -24,11 +24,123 @@ import {
   state_token,
 } from "../../Utils/ADDRESSES/Addresses";
 
-const TotalSumContext = createContext();
+export const XenTrackingContext = createContext();
 
-export const useTotalSum = () => useContext(TotalSumContext);
+export const XenTracking = ({ children }) => {
+  const {
+    getToBeClaimed,
 
-export default function XENTracking({ children }) {
+    getParityDollarClaimed,
+
+    getParityReached,
+    handleDepositAutovaults,
+    getProtocolFee,
+    fetchAutoVaultAmount,
+    getUserDistributedTokens,
+    approveAndDeposit,
+    getClaimAllReward,
+  } = useContext(functionsContext);
+  const { accountAddress, userConnected } = useContext(Web3WalletContext);
+  const [toBeClaimed, setToBeClaimed] = useState("0.0000");
+  const ToBeClaimed = async () => {
+    try {
+      // Get the IPT and RPT rewards
+      let iptAndRptReward = await getToBeClaimed(accountAddress);
+      let formattedIptAndRptReward = ethers.utils.formatEther(
+        iptAndRptReward || "0"
+      );
+
+      // Get the user's distributed tokens
+      let userDistributedTokens = await getUserDistributedTokens(
+        accountAddress
+      );
+      let formattedUserDistributedTokens = parseFloat(userDistributedTokens);
+
+      // Get the parity share tokens claimable amount
+      let parityShareTokensDetail = await getParityDollarClaimed(
+        accountAddress
+      );
+      let parityClaimableAmount =
+        parityShareTokensDetail?.parityClaimableAmount;
+      let formattedParityClaimableAmount = ethers.utils.formatEther(
+        parityClaimableAmount || "0"
+      );
+
+      // Get the protocol fee
+      let protocolFeeDetail = await getProtocolFee(accountAddress);
+      let protocolAmount = protocolFeeDetail?.protocolAmount || 0;
+
+      // Check if parity is reached or exceeded
+      let { isParityReachedOrExceed } = await getParityReached(accountAddress);
+
+      // Adjust the total amount to be claimed based on parity status
+      let totalToBeClaimed =
+        parseFloat(formattedIptAndRptReward) +
+        parseFloat(formattedUserDistributedTokens) +
+        parseFloat(protocolAmount);
+
+      // Add parity claimable amount only if parity is not reached or exceeded
+      if (!isParityReachedOrExceed) {
+        totalToBeClaimed += parseFloat(formattedParityClaimableAmount);
+      }
+
+      // Format the total amount
+      let formattedTotalToBeClaimed = totalToBeClaimed.toFixed(4);
+
+      // Update the state with the total amount to be claimed
+      setToBeClaimed(formattedTotalToBeClaimed);
+    } catch (error) {
+      console.log("Error:", error);
+      // Handle error gracefully, e.g., display an error message to the user
+    }
+  };
+
+  const claimAllReward = async () => {
+    console.log("Number(toBeClaimed):", Number(toBeClaimed));
+    console.log("toBeClaimed:", toBeClaimed);
+
+    if (Number(toBeClaimed) <= 0) {
+      allInOnePopup(null, "Insufficient Balance", null, `OK`, null);
+      return;
+    }
+
+    try {
+      // allInOnePopup(null, 'Processing...', 'Please wait while we claim your rewards', `OK`, null);
+      const allReward = await getClaimAllReward(accountAddress);
+      await allReward.wait(); // Wait for the transaction to be confirmed
+      // setToBeClaimedReward(allReward);
+      allInOnePopup(null, "Successfully Claimed", null, `OK`, null);
+      console.log("allReward:", allReward);
+    } catch (error) {
+      if (error.code === 4001) {
+        // MetaMask user rejected the transaction
+        allInOnePopup(null, "Transaction Rejected", null, `OK`, null);
+        console.error("User rejected the transaction:", error.message);
+      } else {
+        allInOnePopup(null, "Transaction Rejected.", null, `OK`, null);
+        console.error(
+          "Transaction error:",
+          error?.data?.message || error.message
+        );
+      }
+    }
+  };
+  useEffect(() => {
+    if (userConnected) {
+      ToBeClaimed();
+    }
+  });
+  <XenTrackingContext.Provider
+    value={{
+      toBeClaimed,
+      claimAllReward,
+    }}
+  >
+    {children}
+  </XenTrackingContext.Provider>;
+};
+
+export default function XENTracking() {
   const { theme } = useContext(themeContext);
   const textTheme =
     (theme === "darkTheme" && "darkColor") ||
@@ -219,7 +331,7 @@ export default function XENTracking({ children }) {
       }
 
       // Format the total amount
-      let formattedTotalToBeClaimed = totalToBeClaimed.toFixed(24);
+      let formattedTotalToBeClaimed = totalToBeClaimed.toFixed(4);
 
       // Update the state with the total amount to be claimed
       setToBeClaimed(formattedTotalToBeClaimed);
@@ -232,15 +344,21 @@ export default function XENTracking({ children }) {
   function addCommasAsYouType(e) {
     try {
       const inputValue = e.target.value;
-      setDepositAmount(inputValue);
+      setDepositAmount(inputValue); // Store the input value as is
       if (/^[0-9,.]*$/.test(inputValue)) {
         const numericValue = inputValue.replace(/,/g, "");
         const formattedValue = numericValue.replace(
           /\B(?=(\d{3})+(?!\d))/g,
           ","
         );
-        const formattedWithDecimals = `${formattedValue} .00`;
+        // const formattedWithDecimals = `${formattedValue} .00`;
         setSearch(formattedValue);
+
+        // Convert the numeric value to wei and store it in the state
+        const numericValueInWei = ethers.utils
+          .parseEther(numericValue || "0")
+          .toString();
+        setDepositAmount(numericValueInWei); // Store the value in wei form
       }
     } catch (error) {
       console.error("error:", error);
@@ -256,16 +374,12 @@ export default function XENTracking({ children }) {
   const isHandleDeposit = async (e) => {
     e.preventDefault();
 
-    if (selectedValue === "Deposit" && isInflationXEN) {
-      const isSuccess = await handleDeposit(depositAmount);
-      if (isSuccess) {
-        setSearch("");
-      }
-    } else {
-      const isSuccess = await approveAndDeposit(depositAmount);
-      if (isSuccess) {
-        setSearch("");
-      }
+    // Remove commas from depositAmount before calling approveAndDeposit
+    const numericDepositAmount = depositAmount.replace(/,/g, "");
+
+    const isSuccess = await approveAndDeposit(numericDepositAmount);
+    if (isSuccess) {
+      setSearch("");
     }
   };
   const fetchPrice = async () => {
@@ -286,8 +400,7 @@ export default function XENTracking({ children }) {
   useEffect(() => {
     try {
       if (!userConnected) {
-        let fixedBalance =
-          Number(WalletBalance || "0").toFixed(4) + " XEN";
+        let fixedBalance = Number(WalletBalance || "0").toFixed(4) + " XEN";
         setBalance(fixedBalance);
       }
     } catch (error) {}
@@ -328,7 +441,7 @@ export default function XENTracking({ children }) {
 
       AutoAMount += autoVaultAmountNumber;
       setAutoVaultAmount(autoVaultAmountNumber.toFixed(2));
-      if (AutoAMount > 1000) {
+      if (AutoAMount > 1000000) {
         setIsButtonEnabled(true);
       } else {
         setIsButtonEnabled(false);
@@ -365,8 +478,7 @@ export default function XENTracking({ children }) {
         let fixed =
           parseFloat(formattedParityTokensDeposits)
             .toFixed(2)
-            .replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
-          " XEN" ;
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " XEN";
         setParityTokensDeposits(fixed);
       } else {
         let fixed =
@@ -389,7 +501,8 @@ export default function XENTracking({ children }) {
       let formattedPrice = Number(ethers.utils.formatEther(Price || "0"));
 
       let total_amount = formattedPrice * formatted_PST_Claimed;
-      let fixed2 = Number(total_amount).toFixed(2);
+      let fixed2 = Number(total_amount).toFixed(10);
+      console.log("deposited amountsssssss", fixed2);
 
       if (/^[0-9,.]*$/.test(fixed2)) {
         const numericValue = fixed2.replace(/,/g, "");
@@ -411,8 +524,7 @@ export default function XENTracking({ children }) {
         let fixed =
           parseFloat(formatted_PST_Claimed)
             .toFixed(2)
-            .replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
-          " XEN"
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " XEN";
         setParityTokensClaimed(fixed);
       } else {
         let fixed =
@@ -708,7 +820,7 @@ export default function XENTracking({ children }) {
 
   const TotalVaultValueLocked = () => {
     const totalvalue = totalSUm * price + TotalSum * price;
-    const roundedTotal = Number(totalvalue.toFixed(23));
+    const roundedTotal = Number(totalvalue.toFixed(7));
     console.log("roundeeeeed total", roundedTotal);
     setRoundTotal(roundedTotal);
     // Convert the rounded total to string
@@ -805,7 +917,7 @@ export default function XENTracking({ children }) {
                     >
                       <div>
                         <div className={`${textTitle}`}>
-                          "DEPOSIT TOKENS INTO THE INFLATION BANK "
+                          DEPOSIT TOKENS INTO THE INFLATION BANK
                         </div>
                         <form>
                           <input
@@ -924,7 +1036,7 @@ export default function XENTracking({ children }) {
                       <div className={`${textTitle}`}>TO BE CLAIMED</div>
                       <div className="varSize">
                         <span className={`spanText ${spanDarkDim}`}>
-                          <div>{toBeClaimed + " XEN" }</div>
+                          <div>{toBeClaimed + " XEN"}</div>
                         </span>
                       </div>
                       <div className="d-flex align-items-center pumpBoxImg deposit-bt">
@@ -1151,7 +1263,7 @@ export default function XENTracking({ children }) {
 
                     <div className={`varSize ${spanDarkDim}`}>
                       <span className={`spanText ${spanDarkDim}`}>
-                        <>$ {XenPrice + " XEN" }</>
+                        <>$ {Price + " XEN"}</>
                       </span>
                     </div>
                   </div>

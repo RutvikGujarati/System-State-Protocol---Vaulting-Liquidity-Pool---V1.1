@@ -27,7 +27,7 @@ Modal.setAppElement("#root");
 export default function Index() {
   const { themeMode, setThemeMode, theme } = useContext(themeContext);
   const {
-    ProvidermetamaskLogin,
+    connectMetamask,
     userConnected,
     accountAddress,
     WalletBalance,
@@ -97,13 +97,13 @@ export default function Index() {
     getThemeIcon();
     if (userConnected) {
       // fetchPrice();
-      ProvidermetamaskLogin();
+      connectMetamask();
     }
   }, [currencyName, theme, socket, userConnected]);
   useEffect(() => {
     // allInOnePopup(`info`, `Welcome to System State Protocol`, `This page is a demo page only`, `OK`, true)
     if (!userConnected) {
-      ProvidermetamaskLogin();
+      connectMetamask();
     }
   }, [currencyName, userConnected]);
 
@@ -546,7 +546,7 @@ export default function Index() {
                   <Link
                     className="dropdown-item color-name"
                     to="#"
-                    onClick={() => !userConnected && ProvidermetamaskLogin()}
+                    onClick={() => !userConnected && connectMetamask()}
                   >
                     {userConnected ? networkName : "Connect Wallet"}
                   </Link>

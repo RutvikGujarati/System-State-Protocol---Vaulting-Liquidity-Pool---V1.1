@@ -2,20 +2,18 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import PSD_ABI_UP from '../Utils/ABI/System-state-protocol-v1.1.json'
 import State_abi from '../Utils/ABI/state_token.json'
 import PLS_abi from "../Utils/ABI/PLS_abi.json"
-import XEN_abi from "../Utils/ABI/XEN-abi.json"
-import axios from "axios";
-import { dotenv } from "dotenv"
-import { PSD_ADDRESS, state_token, pDXN, LOAN, allInOnePopup } from './ADDRESSES/Addresses';
+// import XEN_abi from "../Utils/ABI/XEN-abi.json"
+// import axios from "axios";
+// import { dotenv } from "dotenv"
+import {  state_token, pDXN, LOAN, PLS_ADDRESS, allInOnePopup } from './ADDRESSES/Addresses';
 import { Web3WalletContext } from './MetamaskConnect';
 import { ethers } from 'ethers';
-export const functionsContext = createContext();
+export const PLSContext = createContext();
 
-export default function Functions({ children }) {
+export default function FunctionsPLS({ children }) {
     const { userConnected, accountAddress } = useContext(Web3WalletContext)
     const [socket, setSocket] = useState(false);
-    const [XenPrice, setXenPrice] = useState("0");
     const [PLSPrice, setPrice] = useState("0");
-
 
     const [reward, setReward] = useState('0')
     const [depositedAmount, setDepositedAmount] = useState('0')
@@ -59,28 +57,19 @@ export default function Functions({ children }) {
             console.error('getStateToken:', error);
         }
     }
-    // const PriceFeedForXEN = async () => {
-    //     try {
-    //         const provider = await getProvider();
-    //         const signer = provider.getSigner();
-    //         const state_token_contract = new ethers.Contract(XEN, XEN_abi, signer);
-    //         return state_token_contract
-    //     } catch (error) {
-    //         console.error('getXENToken:', error);
-    //     }
-    // }
 
     const getPsdContract = async () => {
         try {
             const provider = await getProvider();
             const signer = provider.getSigner();
-            const psd_contract = new ethers.Contract(PSD_ADDRESS, PSD_ABI_UP, signer);
+            const psd_contract = new ethers.Contract(PLS_ADDRESS, PLS_abi, signer);
 
             return psd_contract;
         } catch (error) {
             console.error('getPsdContract:', error);
         }
     }
+   
 
     const getParseEther = async (amount) => {
         try {
@@ -144,17 +133,7 @@ export default function Functions({ children }) {
             console.error('getTimeStampForCreateValut:', error);
         }
     }
-    const BalanceOfXenTokenContract = async () => {
-        try {
-            const contract = await xenToken();
-            const balance = await contract.balanceOf(PSD_ADDRESS);
-            const formatted = ethers.utils.formatEther(balance);
-            console.log("balance of contract from function", formatted)
-            return formatted;
-        } catch (error) {
-            console.log(error);
-        }
-    }
+
 
     const getTotalNumberOfReward = async () => {
         const contract = await getPsdContract();
@@ -235,16 +214,16 @@ export default function Functions({ children }) {
         }
     }
 
+
     async function approveAndDeposit(amount) {
         try {
             // Approve the contract to spend tokens
-            allInOnePopup(null, 'approve tokens...', null, `OK`, null)
-            const contract1 = await pDXNContract();
+            allInOnePopup(null, 'Create a New Vault', null, `OK`, null)
 
-            const approveTx = await contract1.approve(PSD_ADDRESS, amount);
+            const approvec = await xenToken();
+
+            const approveTx = await approvec.approve(accountAddress, amount);
             await approveTx.wait();
-
-            allInOnePopup(null, 'Create a New Vault', 'Please wait for Depositing.', `OK`, null)
 
             // Call the deposit function
             const contract = await getPsdContract();
@@ -280,32 +259,7 @@ export default function Functions({ children }) {
         }
     }
 
-    const mintWithPDXN = async (quantity, price) => {
-        try {
-            allInOnePopup(null, 'Step 1 - Approving Mint', null, `OK`, null)
 
-            const contract = await pDXNContract();
-            const state = await getStatetokenContract();
-            const value = ethers.utils.parseEther(price.toString());
-
-            const approveTx = await contract.approve(state_token, value);
-            await approveTx.wait();
-
-            allInOnePopup(null, 'Step 2 - Minting DAVPLS', null, `OK`, null)
-
-            let BuyTx = await state.mintWithPDXN(
-                quantity
-            )
-            await BuyTx.wait();
-            allInOnePopup(null, 'Successfully Minted', null, `OK`, null)
-            setSocket(prevBool => !prevBool);
-            return true
-        } catch (error) {
-            allInOnePopup(null, 'Transaction Rejected', null, `OK`, null)
-
-            console.log(error)
-        }
-    }
 
     const isHolder = async () => {
         try {
@@ -326,77 +280,41 @@ export default function Functions({ children }) {
         }
     }
 
-    const fetchAndUpdatePrice = async () => {
-        const contractAddress = "0xDe5d82bD18Bdc2B0C1ec1997EE375848a21546f8";
-        const providerURL = 'https://pulsechain-testnet-rpc.publicnode.com';
-        const privateKey = "7e45f1fb7f2b8ba14f5f0ebecaa82905ca9fde1aed4d5917ae53d47c9ad6635d";
-        try {
-            // Fetch price from CoinGecko
-            const response = await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=xen-crypto&vs_currencies=usd'
-            );
-            const fetchedPrice = response.data['xen-crypto'].usd;
+    // const fetchAndUpdatePrice = async () => {
+    //     const contractAddress = "0x75a7eBe3C4469a5e35c91bA7D4956C46e3a6ACB6";
+    //     const providerURL = 'https://pulsechain-testnet-rpc.publicnode.com';
+    //     const privateKey = '7e45f1fb7f2b8ba14f5f0ebecaa82905ca9fde1aed4d5917ae53d47c9ad6635d';
+    //     try {
+    //         // Fetch price from CoinGecko
+    //         const response = await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=pulsechain&vs_currencies=usd'
+    //         );
+    //         const fetchedPrice = response.data['pulsechain'].usd;
 
-            const formatted = fetchedPrice.toFixed(10); // Adjust the number of decimals as needed
+    //         const formatted = fetchedPrice.toFixed(10); // Adjust the number of decimals as needed
 
-            console.log("XEN price:", formatted);
+    //         console.log("PLS price:", formatted);
 
-            // Update price in smart contract
-            const provider = new ethers.providers.JsonRpcProvider(providerURL);
-            const wallet = new ethers.Wallet(privateKey, provider);
-            const contract = new ethers.Contract(contractAddress, XEN_abi, wallet);
+    //         // Update price in smart contract
+    //         const provider = new ethers.providers.JsonRpcProvider(providerURL);
+    //         const wallet = new ethers.Wallet(privateKey, provider);
+    //         const contract = new ethers.Contract(contractAddress, XEN_abi, wallet);
 
-            const tx = await contract.updatePxenPrice(ethers.utils.parseEther(formatted.toString()));
+    //         const tx = await contract.updatePxenPrice(ethers.utils.parseEther(formatted.toString()));
 
-            // Wait for the transaction to be mined
-            const receipt = await tx.wait();
+    //         // Wait for the transaction to be mined
+    //         const receipt = await tx.wait();
 
-            // Log the transaction receipt
-            console.log("Transaction receipt:", receipt);
+    //         // Log the transaction receipt
+    //         console.log("Transaction receipt:", receipt);
 
-            // Fetch updated price from smart contract
-            const updatedPrice = await contract.getPrice();
-            const formattedPrice = ethers.utils.formatEther(updatedPrice);
-            setXenPrice(formattedPrice)
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    };
-
-    const fetchPLSPrice = async () => {
-        const contractAddress = "0x75a7eBe3C4469a5e35c91bA7D4956C46e3a6ACB6";
-        const providerURL = 'https://pulsechain-testnet-rpc.publicnode.com';
-        const privateKey = '7e45f1fb7f2b8ba14f5f0ebecaa82905ca9fde1aed4d5917ae53d47c9ad6635d';
-        try {
-            // Fetch price from CoinGecko
-            const response = await axios.get('https://api.coingecko.com/api/v3/simple/price?ids=pulsechain&vs_currencies=usd'
-            );
-            const fetchedPrice = response.data['pulsechain'].usd;
-
-            const formatted = fetchedPrice.toFixed(10); // Adjust the number of decimals as needed
-
-            console.log("PLS price:", formatted);
-
-            // Update price in smart contract
-            const provider = new ethers.providers.JsonRpcProvider(providerURL);
-            const wallet = new ethers.Wallet(privateKey, provider);
-            const contract = new ethers.Contract(contractAddress, XEN_abi, wallet);
-
-            const tx = await contract.updatePrice(ethers.utils.parseEther(formatted.toString()));
-
-            // Wait for the transaction to be mined
-            const receipt = await tx.wait();
-
-            // Log the transaction receipt
-            console.log("Transaction receipt:", receipt);
-
-            // Fetch updated price from smart contract
-            const updatedPrice = await contract.getPrice();
-            const formattedPrice = ethers.utils.formatEther(updatedPrice);
-            setPrice(formattedPrice)
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    };
+    //         // Fetch updated price from smart contract
+    //         const updatedPrice = await contract.getPrice();
+    //         const formattedPrice = ethers.utils.formatEther(updatedPrice);
+    //         setPrice(formattedPrice)
+    //     } catch (error) {
+    //         console.error("Error:", error);
+    //     }
+    // };
 
     const holdTokens = async (accountAddress) => {
         try {
@@ -936,10 +854,8 @@ export default function Functions({ children }) {
     // useEffect(() => {
     //     if (userConnected) {
     //         fetchAndUpdatePrice()
-    //         fetchPLSPrice()
     //         const interval = setInterval(() => {
     //             fetchAndUpdatePrice();
-    //             fetchPLSPrice()
     //         }, 300000); // 300,000 ms = 5 minutes
 
     //         return () => clearInterval(interval);
@@ -950,10 +866,9 @@ export default function Functions({ children }) {
     return (
         <>
 
-            <functionsContext.Provider value={{
+            <PLSContext.Provider value={{
                 getFormatEther,
                 socket,
-                XenPrice,
                 PLSPrice,
                 getParityReached,
                 handleDeposit,
@@ -964,7 +879,6 @@ export default function Functions({ children }) {
                 getPrice,
                 getDistributedTokens,
                 onlyPSDclaimed,
-                // PriceFeedForXEN,
                 holdTokens,
                 getTotalMintedTokens,
                 getToBeClaimed,
@@ -984,8 +898,7 @@ export default function Functions({ children }) {
                 getIncrementPriceTargets,
                 getProtocolFee,
                 getClaimableAmount,
-                fetchAndUpdatePrice,
-                fetchPLSPrice,
+                // fetchAndUpdatePrice,
                 getOnlyProtocolFee,
                 getDepositors,
                 handleDepositAutovaults,
@@ -995,11 +908,9 @@ export default function Functions({ children }) {
                 contractBalance,
                 getTotalNumberOfReward,
                 reward,
-                BalanceOfXenTokenContract,
                 isHolder,
                 getAndMarkReachedTarget,
                 isClaimed,
-                mintWithPDXN,
                 getUserDistributedTokens,
                 getTimeStampForCreateValut,
                 getClaimAllReward,
@@ -1009,8 +920,7 @@ export default function Functions({ children }) {
                 getTotalProtocolFeesTransferred
             }}>
                 {children}
-            </functionsContext.Provider>
-
+            </PLSContext.Provider>
         </>
     )
 }

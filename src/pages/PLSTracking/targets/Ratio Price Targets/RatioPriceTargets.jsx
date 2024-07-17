@@ -4,7 +4,7 @@ import "../../../../Utils/Theme.css"
 import { themeContext } from "../../../../App";
 // import { TotalSumProvider  } from "../../Components/Tracker/TrackingPage";
 import { Web3WalletContext } from "../../../../Utils/MetamaskConnect";
-import { functionsContext } from "../../../../Utils/Functions";
+import { PLSContext } from "../../../../Utils/functions_PLS";
 import { ethers } from "ethers";
 
 export default function RatioPriceTargets() {
@@ -18,7 +18,7 @@ export default function RatioPriceTargets() {
 
   const { accountAddress, currencyName, userConnected } =
     useContext(Web3WalletContext);
-  const { getRatioPriceTargets, getDepositors } = useContext(functionsContext);
+  const { getRatioPriceTargets, getDepositors } = useContext(PLSContext);
   const [ratioPriceTargets, setRatioPriceTargets] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredArray, setFilteredArray] = useState([]);
@@ -88,12 +88,12 @@ export default function RatioPriceTargets() {
       const formattedRatioTarget = ethers.utils.formatEther(
         target?.ratioPriceTarget.toString()
       );
-      const ratioPriceTarget = Number(formattedRatioTarget).toFixed(10);
+      const ratioPriceTarget = Number(formattedRatioTarget).toFixed(6);
       const formattedTargetAmount = ethers.utils.formatEther(
         target?.TargetAmount.toString()
       );
       const targetAmount =
-        Number(formattedTargetAmount).toFixed(25) + " " + currencyName ??
+        Number(formattedTargetAmount).toFixed(5) + " " + currencyName ??
         currencyName;
       const givenTimestamp = target?.Time.toString();
       const currentTimestamp = Math.floor(Date.now() / 1000);

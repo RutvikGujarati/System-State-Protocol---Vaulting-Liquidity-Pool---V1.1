@@ -1,212 +1,103 @@
-import React, { createContext, useEffect, useState } from "react";
-import { ethers } from "ethers";
+import React, { createContext, useState, useEffect, useCallback } from 'react';
+import { ethers } from 'ethers';
 
 export const Web3WalletContext = createContext();
 
-export default function MetaMaskConnect({ children }) {
+export default function MetamaskConnect({ children }) {
   const [userConnected, setUserConnected] = useState(false);
   const [accountAddress, setAccountAddress] = useState(ethers.constants.AddressZero);
   const [walletBalance, setWalletBalance] = useState('0');
   const [networkName, setNetworkName] = useState('');
   const [currencyName, setCurrencyName] = useState('');
-  const [loading, setLoading] = useState(false); // Loading state
 
-  useEffect(() => {
-    if (window.ethereum) {
-      window.ethereum.on('accountsChanged', handleAccountsChanged);
-      window.ethereum.on('networkChanged', handleNetworkChanged);
-
-      // Check if already connected
-      checkIfAlreadyConnected();
-    }
-
-    return () => {
-      if (window.ethereum) {
-        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
-        window.ethereum.removeListener('networkChanged', handleNetworkChanged);
+  const connectMetamask = useCallback(async () => {
+    if (typeof window?.ethereum !== "undefined") {
+      try {
+        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+        const networkVersion = window.ethereum.networkVersion;
+        
+        if (['943', '80002', '11155111', '5', '69', '80001'].includes(networkVersion)) {
+          setAccountAddress(accounts[0]);
+          setUserConnected(true);
+          await updateWalletInfo(accounts[0]);
+        } else {
+          alert("Connect to Pulsechain");
+        }
+      } catch (error) {
+        if (error.code === -32002) {
+          alert('Please manually connect to MetaMask');
+        }
+        console.error(error);
       }
-    };
+    }
   }, []);
 
-
-  const checkIfAlreadyConnected = async () => {
-    try {
-      const accounts = await window.ethereum.request({ method: 'eth_accounts' });
-      if (accounts.length > 0) {
-        setAccountAddress(accounts[0]);
-        setUserConnected(true);
-        getMetamaskBalance(accounts[0]);
-        setNetworkName(getNetworkName(window.ethereum.networkVersion));
-        setCurrencyName(getCurrencySymbol(window.ethereum.networkVersion));
-      }
-    } catch (error) {
-      console.error('Error checking MetaMask connection:', error);
-    }
-  };
-
-  const handleAccountsChanged = (accounts) => {
-    if (accounts.length === 0) {
-      disconnectUser();
-    } else {
-      setAccountAddress(accounts[0]);
-      getMetamaskBalance(accounts[0]);
-    }
-  };
-
-  const handleNetworkChanged = (networkId) => {
-    setNetworkName(getNetworkName(networkId));
-    getMetamaskBalance(accountAddress);
-  };
-
-  const getNetworkName = (networkId) => {
-    switch (networkId) {
-      case '80001':
-      case '80002':
-        return 'Polygon Mumbai';
-      case '5':
-        return 'Goerli Testnet';
-      case '11155111':
-        return 'Sepolia Testnet';
-      case '1':
-        return 'Ethereum Mainnet';
-      case '943':
-        return 'Pulsechain Testnet';
-      case '369':
-        return 'Pulsechain mainnet';
-      default:
-        return 'Unknown Network';
-    }
-  };
-
-  const switchToPulsechainMainnet = async () => {
-    try {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0x171' }], // '0x171' is the hexadecimal representation of 369 for Pulsechain Mainnet
-      });
-    } catch (switchError) {
-      // This error code indicates that the chain has not been added to MetaMask
-      if (switchError.code === 4902) {
-        try {
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [
-              {
-                chainId: '0x171',
-                chainName: 'Pulsechain Mainnet',
-                rpcUrls: ['https://rpc.pulsechain.com/'], // Replace with the actual RPC URL
-                nativeCurrency: {
-                  name: 'Pulse',
-                  symbol: 'PLS',
-                  decimals: 18,
-                },
-                blockExplorerUrls: ['https://explorer.pulsechain.com/'], // Replace with the actual block explorer URL
-              },
-            ],
-          });
-        } catch (addError) {
-          console.error('Failed to add Pulsechain Mainnet to MetaMask:', addError);
-        }
-      }
-    }
-  };
-
-  const ProvidermetamaskLogin = async () => {
-    if (loading) return; // Prevent multiple requests
-
-    if (typeof window.ethereum !== 'undefined') {
-      setLoading(true); // Set loading state to true
-      try {
-        const response = await getMetamaskAccount();
-        if (response) {
-          setUserConnected(true);
-          setAccountAddress(response);
-          getMetamaskBalance(response);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false); // Reset loading state
-      }
-    }
-  };
-
-  const disconnectUser = async () => {
-    setAccountAddress('');
+  const disconnectUser = () => {
+    setAccountAddress(ethers.constants.AddressZero);
     setUserConnected(false);
     setNetworkName('');
-    setWalletBalance('');
+    setWalletBalance('0');
     setCurrencyName('');
   };
 
-  const getMetamaskAccount = async () => {
-    try {
-      const metamaskAccounts = await window.ethereum.request({
-        method: 'eth_requestAccounts',
-      });
-      const networkId = window.ethereum.networkVersion;
-      if (['369', '943'].includes(networkId)) {
-        return metamaskAccounts[0];
-      } else {
-        // const shouldSwitch = window.confirm('You are not connected to Pulsechain Mainnet. switch to Pulsechain Mainnet?');
-        // if (shouldSwitch) {
-        //   await switchToPulsechainMainnet();
-        // } else {
-        //   alert('Please connect to Pulsechain Mainnet to proceed.');
-        //   throw new Error('User rejected switching to Pulsechain Mainnet');
-        // }
-      }
-    } catch (error) {
-      console.error(error);
-      if (error.code === -32002) {
-        alert('Please manually connect to MetaMask');
-      }
-    }
-  };
-
-  const getMetamaskBalance = async (address) => {
+  const updateWalletInfo = useCallback(async (account) => {
     try {
       const balance = await window.ethereum.request({
         method: 'eth_getBalance',
-        params: [address, 'latest'],
+        params: [account, 'latest']
       });
-      const formattedBalance = ethers.utils.formatEther(balance || '0');
-      const networkId = window.ethereum.networkVersion;
-      setWalletBalance(formattedBalance);
-      setNetworkName(getNetworkName(networkId));
-      setCurrencyName(getCurrencySymbol(networkId));
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
-  const getCurrencySymbol = (networkId) => {
-    switch (networkId) {
-      case '80001':
-      case '80002':
-        return 'MATIC';
-      case '5':
-      case '11155111':
-      case '1':
-        return 'ETH';
-      case '943':
-      case '369':
-        return 'PLS';
-      default:
-        return 'ETH';
+      const formattedBalance = ethers.utils.formatEther(balance || '0');
+      const networkVersion = window.ethereum.networkVersion;
+
+      switch (networkVersion) {
+        case '80001':
+        case '80002':
+          setNetworkName('Polygon Mumbai');
+          setCurrencyName('MATIC');
+          break;
+        case '5':
+          setNetworkName('Goerli Testnet');
+          setCurrencyName('ETH');
+          break;
+        case '11155111':
+          setNetworkName('Sepolia Testnet');
+          setCurrencyName('ETH');
+          break;
+        case '1':
+          setNetworkName('Ethereum Mainnet');
+          setCurrencyName('ETH');
+          break;
+        case '943':
+          setNetworkName('Pulsechain Testnet');
+          setCurrencyName('PLS');
+          break;
+        default:
+          setNetworkName('Unknown Network');
+          setCurrencyName('UNKNOWN');
+      }
+
+      setWalletBalance(formattedBalance);
+    } catch (error) {
+      console.error('Failed to fetch balance:', error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (userConnected && accountAddress !== ethers.constants.AddressZero) {
+      updateWalletInfo(accountAddress);
+    }
+  }, [userConnected, accountAddress, updateWalletInfo]);
 
   return (
     <Web3WalletContext.Provider value={{
       userConnected,
       accountAddress,
-      networkName,
       walletBalance,
+      networkName,
       currencyName,
-      ProvidermetamaskLogin,
+      connectMetamask,
       disconnectUser,
-      getMetamaskAccount,
     }}>
       {children}
     </Web3WalletContext.Provider>
